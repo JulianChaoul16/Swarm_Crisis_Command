@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum, IntEnum
 from math import hypot, isfinite
 
+import networkx as nx
+
 
 @dataclass(frozen=True)
 class Coordinate:
@@ -14,6 +16,77 @@ class Coordinate:
 
     def distance_to(self, other: Coordinate) -> float:
         return hypot(self.x - other.x, self.y - other.y)
+
+
+@dataclass(frozen=True)
+class Road:
+    id: str
+    start: Coordinate
+    end: Coordinate
+    is_closed: bool = False
+
+    def __post_init__(self) -> None:
+        if not self.id.strip():
+            raise ValueError("Road id cannot be empty.")
+        if self.start == self.end:
+            raise ValueError("Road endpoints must be different.")
+
+    @property
+    def length(self) -> float:
+        return self.start.distance_to(self.end)
+
+
+class City:
+    def __init__(self, name: str) -> None:
+        if not name.strip():
+            raise ValueError("City name cannot be empty.")
+        self.name = name
+        self.graph = nx.MultiGraph()
+        self._roads: dict[str, Road] = {}
+
+    @property
+    def roads(self) -> tuple[Road, ...]:
+        return tuple(self._roads.values())
+
+    def add_road(self, road: Road) -> None:
+        if road.id in self._roads:
+            raise ValueError(f"Road id {road.id!r} already exists in {self.name}.")
+
+        self.graph.add_edge(
+            road.start,
+            road.end,
+            key=road.id,
+            road_id=road.id,
+            length=road.length,
+            is_closed=road.is_closed,
+        )
+        self._roads[road.id] = road
+
+    def set_road_closed(self, road_id: str, is_closed: bool) -> None:
+        road = self._roads[road_id]
+        self.graph[road.start][road.end][road.id]["is_closed"] = is_closed
+        self._roads[road_id] = Road(
+            id=road.id,
+            start=road.start,
+            end=road.end,
+            is_closed=is_closed,
+        )
+
+    def _open_graph(self) -> nx.MultiGraph:
+        open_roads = self.graph.copy()
+        closed_edges = [
+            (u, v, key)
+            for u, v, key, data in open_roads.edges(keys=True, data=True)
+            if data["is_closed"]
+        ]
+        open_roads.remove_edges_from(closed_edges)
+        return open_roads
+
+    def shortest_route(self, start: Coordinate, end: Coordinate) -> list[Coordinate]:
+        return nx.shortest_path(self._open_graph(), start, end, weight="length")
+
+    def route_distance(self, start: Coordinate, end: Coordinate) -> float:
+        return nx.shortest_path_length(self._open_graph(), start, end, weight="length")
 
 
 class Severity(IntEnum):
