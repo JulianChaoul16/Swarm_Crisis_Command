@@ -44,18 +44,23 @@ class City:
         self.name = name
         self.graph = nx.MultiGraph()
         self._roads: dict[str, Road] = {}
-        self._on_change: Callable[[], None] | None = None
+        self._on_change: Callable[[str, Road, str], None] | None = None
 
-    def set_change_callback(self, callback: Callable[[], None] | None) -> None:
+    def set_change_callback(
+        self,
+        callback: Callable[[str, Road, str], None] | None,
+    ) -> None:
         self._on_change = callback
 
     @property
     def roads(self) -> tuple[Road, ...]:
         return tuple(self._roads.values())
 
-    def add_road(self, road: Road) -> None:
+    def add_road(self, road: Road, reason: str = "Road added to city network.") -> None:
         if road.id in self._roads:
             raise ValueError(f"Road id {road.id!r} already exists in {self.name}.")
+        if not reason.strip():
+            raise ValueError("Road change reason cannot be empty.")
 
         self.graph.add_edge(
             road.start,
@@ -67,12 +72,19 @@ class City:
         )
         self._roads[road.id] = road
         if self._on_change is not None:
-            self._on_change()
+            self._on_change("road_added", road, reason)
 
-    def set_road_closed(self, road_id: str, is_closed: bool) -> None:
+    def set_road_closed(
+        self,
+        road_id: str,
+        is_closed: bool,
+        reason: str = "Road condition changed.",
+    ) -> None:
         road = self._roads[road_id]
         if road.is_closed == is_closed:
             return
+        if not reason.strip():
+            raise ValueError("Road change reason cannot be empty.")
         self.graph[road.start][road.end][road.id]["is_closed"] = is_closed
         self._roads[road_id] = Road(
             id=road.id,
@@ -81,7 +93,8 @@ class City:
             is_closed=is_closed,
         )
         if self._on_change is not None:
-            self._on_change()
+            action = "road_closed" if is_closed else "road_opened"
+            self._on_change(action, self._roads[road_id], reason)
 
     @staticmethod
     def _road_projection(point: Coordinate, road: Road) -> float | None:

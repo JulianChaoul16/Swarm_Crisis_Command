@@ -14,6 +14,8 @@ A Swarm of Agents that help  Emergency Operation Managers make the best decision
   along those roads rather than directly toward incidents.
 - The world can be copied into a planning snapshot; each plan carries its source
   version and is rejected if the world changes before assignments are committed.
+- The world exposes an ordered event log for initial state, incident/resource updates,
+  road changes, dispatch, movement, resolution, and simulation ticks.
 - `planner.py` prioritizes open incidents and assigns the nearest available services,
   covering every service capability an incident requires.
 - `simulation.py` advances the world one time step at a time, moving dispatched

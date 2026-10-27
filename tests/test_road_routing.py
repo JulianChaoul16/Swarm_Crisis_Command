@@ -68,6 +68,48 @@ class RoadRoutingTests(unittest.TestCase):
         self.assertEqual(incident.status, IncidentStatus.RESOLVED)
         self.assertEqual(service.location, self.end)
 
+    def test_assigned_service_replans_when_a_road_closes(self) -> None:
+        start = Coordinate(0, 0)
+        junction = Coordinate(1, 0)
+        destination = Coordinate(2, 0)
+        detour = Coordinate(1, 1)
+        city = City("Changing City")
+        for road in (
+            Road("approach", start, junction),
+            Road("planned", junction, destination),
+            Road("detour-1", junction, detour),
+            Road("detour-2", detour, destination),
+        ):
+            city.add_road(road)
+        incident = Incident(
+            "i1",
+            "fire",
+            destination,
+            Severity.HIGH,
+            frozenset({"fire"}),
+        )
+        service = EmergencyService(
+            "s1",
+            "Engine",
+            start,
+            frozenset({"fire"}),
+            speed=1,
+        )
+        simulation = Simulation(World([incident], [service], city=city))
+
+        simulation.step()
+        self.assertEqual(service.location, junction)
+        city.set_road_closed("planned", True, reason="Road blocked in simulation.")
+        simulation.step()
+
+        self.assertEqual(service.location, detour)
+        self.assertEqual(incident.status, IncidentStatus.ASSIGNED)
+
+        simulation.step()
+        self.assertEqual(incident.status, IncidentStatus.ASSIGNED)
+        simulation.step()
+        self.assertEqual(incident.status, IncidentStatus.RESOLVED)
+
 
 if __name__ == "__main__":
     unittest.main()

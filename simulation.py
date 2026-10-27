@@ -1,11 +1,12 @@
 from copy import deepcopy
 from dataclasses import dataclass, field
+from _thread import RLock as RLockType
 from threading import RLock
 from typing import Callable, Generic, Iterable, TypeVar, cast, overload
 
 import networkx as nx
 
-from model import City, Coordinate, EmergencyService, Incident, IncidentStatus
+from model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road
 from planner import Planner, ResponsePlan
 
 
@@ -17,8 +18,8 @@ class _VersionedList(list[T], Generic[T]):
         self,
         values: Iterable[T],
         validate: Callable[[T], None],
-        on_add: Callable[[], None],
-        lock: RLock,
+        on_add: Callable[[T, str], None],
+        lock: RLockType,
     ) -> None:
         super().__init__(values)
         self._validate = validate
@@ -26,10 +27,15 @@ class _VersionedList(list[T], Generic[T]):
         self._lock = lock
 
     def append(self, value: T) -> None:
+        self.append_with_reason(value, "Added directly to world state.")
+
+    def append_with_reason(self, value: T, reason: str) -> None:
+        if not reason.strip():
+            raise ValueError("World update reason cannot be empty.")
         with self._lock:
             self._validate(value)
             super().append(value)
-            self._on_add()
+            self._on_add(value, reason)
 
     def extend(self, values: Iterable[T]) -> None:
         with self._lock:
@@ -40,7 +46,7 @@ class _VersionedList(list[T], Generic[T]):
         with self._lock:
             self._validate(value)
             super().insert(index, value)
-            self._on_add()
+            self._on_add(value, "Added directly to world state.")
 
     def __iadd__(self, values: Iterable[T]) -> _VersionedList[T]:
         self.extend(values)
@@ -59,14 +65,14 @@ class _VersionedList(list[T], Generic[T]):
                 for item in values:
                     self._validate(item)
                 super().__setitem__(index, values)
-                for _ in values:
-                    self._on_add()
+                for item in values:
+                    self._on_add(item, "Added or replaced in world state.")
                 return
 
             item = cast(T, value)
             self._validate(item)
             super().__setitem__(index, item)
-            self._on_add()
+            self._on_add(item, "Added or replaced in world state.")
 
 
 @dataclass(frozen=True)
@@ -76,6 +82,17 @@ class WorldSnapshot:
     services: tuple[EmergencyService, ...]
     city: City | None
     state_signature: tuple[object, ...]
+
+
+@dataclass(frozen=True)
+class WorldEvent:
+    sequence: int
+    tick: int
+    version: int
+    kind: str
+    entity_ids: tuple[str, ...]
+    reason: str
+    details: tuple[tuple[str, str], ...] = ()
 
 
 class StalePlanError(RuntimeError):
@@ -89,7 +106,13 @@ class World:
     tick_count: int = 0
     version: int = 1
     city: City | None = None
-    _lock: RLock = field(default_factory=RLock, init=False, repr=False, compare=False)
+    _lock: RLockType = field(
+        default_factory=RLock,
+        init=False,
+        repr=False,
+        compare=False,
+    )
+    _events: list[WorldEvent] = field(default_factory=list, init=False, repr=False)
 
     def __post_init__(self) -> None:
         incident_ids = [incident.id for incident in self.incidents]
@@ -108,21 +131,80 @@ class World:
         self.incidents = _VersionedList(
             self.incidents,
             self._validate_incident,
-            self._increment_version,
+            self._record_entity_added,
             self._lock,
         )
         self.services = _VersionedList(
             self.services,
             self._validate_service,
-            self._increment_version,
+            self._record_entity_added,
             self._lock,
         )
         if self.city is not None:
-            self.city.set_change_callback(self._increment_version)
+            self.city.set_change_callback(self._record_road_change)
+        self._append_event(
+            "world_initialized",
+            (),
+            "Initial world state loaded.",
+            (
+                ("incident_count", str(len(self.incidents))),
+                ("service_count", str(len(self.services))),
+                ("road_count", str(len(self.city.roads) if self.city else 0)),
+            ),
+        )
 
-    def _increment_version(self) -> None:
+    @property
+    def event_log(self) -> tuple[WorldEvent, ...]:
+        with self._lock:
+            return tuple(self._events)
+
+    def _append_event(
+        self,
+        kind: str,
+        entity_ids: tuple[str, ...],
+        reason: str,
+        details: tuple[tuple[str, str], ...] = (),
+    ) -> None:
+        self._events.append(
+            WorldEvent(
+                sequence=len(self._events) + 1,
+                tick=self.tick_count,
+                version=self.version,
+                kind=kind,
+                entity_ids=entity_ids,
+                reason=reason,
+                details=details,
+            )
+        )
+
+    def _record_entity_added(
+        self,
+        entity: Incident | EmergencyService,
+        reason: str,
+    ) -> None:
         with self._lock:
             self.version += 1
+            if isinstance(entity, Incident):
+                kind = "incident_added"
+            elif isinstance(entity, EmergencyService):
+                kind = "service_added"
+            else:
+                raise TypeError(f"Unsupported world entity: {type(entity).__name__}.")
+            self._append_event(kind, (entity.id,), reason)
+
+    def _record_road_change(self, kind: str, road: Road, reason: str) -> None:
+        with self._lock:
+            self.version += 1
+            self._append_event(
+                kind,
+                (road.id,),
+                reason,
+                (
+                    ("start", f"({road.start.x}, {road.start.y})"),
+                    ("end", f"({road.end.x}, {road.end.y})"),
+                    ("is_closed", str(road.is_closed).lower()),
+                ),
+            )
 
     def _validate_incident(self, incident: Incident) -> None:
         if any(existing.id == incident.id for existing in self.incidents):
@@ -137,11 +219,23 @@ class World:
         ):
             raise ValueError("Service must reference an incident in this world.")
 
-    def add_incident(self, incident: Incident) -> None:
-        self.incidents.append(incident)
+    def add_incident(
+        self,
+        incident: Incident,
+        reason: str = "New incident reported.",
+    ) -> None:
+        if not reason.strip():
+            raise ValueError("Incident addition reason cannot be empty.")
+        self.incidents.append_with_reason(incident, reason)
 
-    def add_emergency_service(self, service: EmergencyService) -> None:
-        self.services.append(service)
+    def add_emergency_service(
+        self,
+        service: EmergencyService,
+        reason: str = "Emergency service added to the world.",
+    ) -> None:
+        if not reason.strip():
+            raise ValueError("Service addition reason cannot be empty.")
+        self.services.append_with_reason(service, reason)
 
     def snapshot(self) -> WorldSnapshot:
         with self._lock:
@@ -250,11 +344,30 @@ class Simulation:
     def _advance_world(self, plan: ResponsePlan) -> ResponsePlan:
         incidents_by_id = {incident.id: incident for incident in self.world.incidents}
         services_by_id = {service.id: service for service in self.world.services}
+        pending_events: list[
+            tuple[str, tuple[str, ...], str, tuple[tuple[str, str], ...]]
+        ] = []
 
         for dispatch in plan.assignments:
             service = services_by_id[dispatch.service_id]
             service.assigned_incident_id = dispatch.incident_id
             incidents_by_id[dispatch.incident_id].status = IncidentStatus.ASSIGNED
+            pending_events.append(
+                (
+                    "service_dispatched",
+                    (service.id, dispatch.incident_id),
+                    "Planner selected an available service that meets incident requirements.",
+                    (
+                        ("estimated_arrival", f"{dispatch.estimated_arrival:.3f}"),
+                        (
+                            "route",
+                            " -> ".join(
+                                f"({point.x}, {point.y})" for point in dispatch.route
+                            ),
+                        ),
+                    ),
+                )
+            )
 
         planned_routes = {
             dispatch.service_id: dispatch.route for dispatch in plan.assignments
@@ -276,8 +389,17 @@ class Simulation:
                 for assigned in self.world.services:
                     if assigned.assigned_incident_id == incident.id:
                         assigned.assigned_incident_id = None
+                pending_events.append(
+                    (
+                        "dispatch_released",
+                        (incident.id,),
+                        "No open route remained; services were released for replanning.",
+                        (),
+                    )
+                )
                 continue
 
+            previous_location = service.location
             remaining_distance = service.speed
             current = service.location
             for waypoint in route[1:]:
@@ -294,6 +416,21 @@ class Simulation:
                     )
                 break
             service.location = current
+            if service.location != previous_location:
+                pending_events.append(
+                    (
+                        "service_moved",
+                        (service.id, incident.id),
+                        "Simulation advanced the service along its current route.",
+                        (
+                            (
+                                "from",
+                                f"({previous_location.x}, {previous_location.y})",
+                            ),
+                            ("to", f"({service.location.x}, {service.location.y})"),
+                        ),
+                    )
+                )
 
         for incident in self.world.incidents:
             if incident.status != IncidentStatus.ASSIGNED:
@@ -308,11 +445,26 @@ class Simulation:
                 for service in assigned_services
             ):
                 incident.status = IncidentStatus.RESOLVED
+                pending_events.append(
+                    (
+                        "incident_resolved",
+                        (incident.id,),
+                        "All assigned services arrived at the incident.",
+                        (),
+                    )
+                )
                 for service in assigned_services:
                     service.assigned_incident_id = None
 
         self.world.tick_count += 1
         self.world.version += 1
+        for kind, entity_ids, reason, details in pending_events:
+            self.world._append_event(kind, entity_ids, reason, details)
+        self.world._append_event(
+            "simulation_tick",
+            (),
+            "Simulation advanced by one time step.",
+        )
         return plan
 
     def run(self, max_steps: int = 100) -> int:
