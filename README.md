@@ -12,6 +12,8 @@ A Swarm of Agents that help  Emergency Operation Managers make the best decision
   parallel roads, and calculates shortest routes and distances without using closed roads.
 - The planner uses road routes for dispatch ETAs, and the simulation moves services
   along those roads rather than directly toward incidents.
+- The world can be copied into a planning snapshot; each plan carries its source
+  version and is rejected if the world changes before assignments are committed.
 - `planner.py` prioritizes open incidents and assigns the nearest available services,
   covering every service capability an incident requires.
 - `simulation.py` advances the world one time step at a time, moving dispatched
@@ -25,7 +27,7 @@ python -m pip install -r requirements.txt
 python main.py
 ```
 
-Run the road-routing tests with:
+Run the unit tests with:
 
 ```powershell
 python -B -m unittest discover -s tests

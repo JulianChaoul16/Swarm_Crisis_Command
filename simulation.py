@@ -1,4 +1,6 @@
+from copy import deepcopy
 from dataclasses import dataclass, field
+from threading import RLock
 from typing import Callable, Generic, Iterable, TypeVar, cast, overload
 
 import networkx as nx
@@ -16,24 +18,29 @@ class _VersionedList(list[T], Generic[T]):
         values: Iterable[T],
         validate: Callable[[T], None],
         on_add: Callable[[], None],
+        lock: RLock,
     ) -> None:
         super().__init__(values)
         self._validate = validate
         self._on_add = on_add
+        self._lock = lock
 
     def append(self, value: T) -> None:
-        self._validate(value)
-        super().append(value)
-        self._on_add()
+        with self._lock:
+            self._validate(value)
+            super().append(value)
+            self._on_add()
 
     def extend(self, values: Iterable[T]) -> None:
-        for value in values:
-            self.append(value)
+        with self._lock:
+            for value in values:
+                self.append(value)
 
     def insert(self, index: int, value: T) -> None:
-        self._validate(value)
-        super().insert(index, value)
-        self._on_add()
+        with self._lock:
+            self._validate(value)
+            super().insert(index, value)
+            self._on_add()
 
     def __iadd__(self, values: Iterable[T]) -> _VersionedList[T]:
         self.extend(values)
@@ -46,19 +53,33 @@ class _VersionedList(list[T], Generic[T]):
     def __setitem__(self, index: slice, value: Iterable[T]) -> None: ...
 
     def __setitem__(self, index: int | slice, value: T | Iterable[T]) -> None:
-        if isinstance(index, slice):
-            values = list(cast(Iterable[T], value))
-            for item in values:
-                self._validate(item)
-            super().__setitem__(index, values)
-            for _ in values:
-                self._on_add()
-            return
+        with self._lock:
+            if isinstance(index, slice):
+                values = list(cast(Iterable[T], value))
+                for item in values:
+                    self._validate(item)
+                super().__setitem__(index, values)
+                for _ in values:
+                    self._on_add()
+                return
 
-        item = cast(T, value)
-        self._validate(item)
-        super().__setitem__(index, item)
-        self._on_add()
+            item = cast(T, value)
+            self._validate(item)
+            super().__setitem__(index, item)
+            self._on_add()
+
+
+@dataclass(frozen=True)
+class WorldSnapshot:
+    version: int
+    incidents: tuple[Incident, ...]
+    services: tuple[EmergencyService, ...]
+    city: City | None
+    state_signature: tuple[object, ...]
+
+
+class StalePlanError(RuntimeError):
+    pass
 
 
 @dataclass
@@ -68,6 +89,7 @@ class World:
     tick_count: int = 0
     version: int = 1
     city: City | None = None
+    _lock: RLock = field(default_factory=RLock, init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         incident_ids = [incident.id for incident in self.incidents]
@@ -87,15 +109,20 @@ class World:
             self.incidents,
             self._validate_incident,
             self._increment_version,
+            self._lock,
         )
         self.services = _VersionedList(
             self.services,
             self._validate_service,
             self._increment_version,
+            self._lock,
         )
+        if self.city is not None:
+            self.city.set_change_callback(self._increment_version)
 
     def _increment_version(self) -> None:
-        self.version += 1
+        with self._lock:
+            self.version += 1
 
     def _validate_incident(self, incident: Incident) -> None:
         if any(existing.id == incident.id for existing in self.incidents):
@@ -116,6 +143,53 @@ class World:
     def add_emergency_service(self, service: EmergencyService) -> None:
         self.services.append(service)
 
+    def snapshot(self) -> WorldSnapshot:
+        with self._lock:
+            city_snapshot = None
+            if self.city is not None:
+                city_snapshot = City(self.city.name)
+                for road in self.city.roads:
+                    city_snapshot.add_road(deepcopy(road))
+            return WorldSnapshot(
+                version=self.version,
+                incidents=tuple(deepcopy(incident) for incident in self.incidents),
+                services=tuple(deepcopy(service) for service in self.services),
+                city=city_snapshot,
+                state_signature=self._state_signature(),
+            )
+
+    def _state_signature(self) -> tuple[object, ...]:
+        incidents = tuple(
+            (
+                incident.id,
+                incident.kind,
+                incident.location,
+                incident.severity,
+                incident.required_services,
+                incident.status,
+            )
+            for incident in self.incidents
+        )
+        services = tuple(
+            (
+                service.id,
+                service.name,
+                service.location,
+                service.capabilities,
+                service.speed,
+                service.assigned_incident_id,
+            )
+            for service in self.services
+        )
+        roads = (
+            self.city.name,
+            tuple(
+                (road.id, road.start, road.end, road.is_closed)
+                for road in self.city.roads
+            ),
+        ) if self.city is not None else None
+        return self.tick_count, incidents, services, roads
+
 
 @dataclass
 class Simulation:
@@ -123,11 +197,57 @@ class Simulation:
     planner: Planner = field(default_factory=Planner)
 
     def step(self) -> ResponsePlan:
+        snapshot = self.world.snapshot()
         plan = self.planner.plan(
-            self.world.incidents,
-            self.world.services,
-            self.world.city,
+            list(snapshot.incidents),
+            list(snapshot.services),
+            snapshot.city,
+            world_version=snapshot.version,
         )
+        with self.world._lock:
+            if (
+                self.world.version != snapshot.version
+                or self.world._state_signature() != snapshot.state_signature
+            ):
+                raise StalePlanError(
+                    f"Plan used world version {snapshot.version}, "
+                    f"but current world is version {self.world.version}."
+                )
+            if plan.world_version != snapshot.version:
+                raise StalePlanError("Planner returned a plan for a different world version.")
+            self._validate_plan(plan)
+            return self._advance_world(plan)
+
+    def _validate_plan(self, plan: ResponsePlan) -> None:
+        incidents_by_id = {incident.id: incident for incident in self.world.incidents}
+        services_by_id = {service.id: service for service in self.world.services}
+        assigned_service_ids: set[str] = set()
+        capabilities_by_incident: dict[str, set[str]] = {}
+
+        for dispatch in plan.assignments:
+            if dispatch.incident_id not in incidents_by_id:
+                raise ValueError(f"Unknown incident in dispatch: {dispatch.incident_id!r}.")
+            if dispatch.service_id not in services_by_id:
+                raise ValueError(f"Unknown service in dispatch: {dispatch.service_id!r}.")
+            if dispatch.service_id in assigned_service_ids:
+                raise ValueError(f"Service {dispatch.service_id!r} is assigned more than once.")
+            incident = incidents_by_id[dispatch.incident_id]
+            service = services_by_id[dispatch.service_id]
+            if incident.status != IncidentStatus.OPEN:
+                raise ValueError(f"Incident {incident.id!r} is not open.")
+            if not service.available:
+                raise ValueError(f"Service {service.id!r} is not available.")
+            assigned_service_ids.add(service.id)
+            capabilities_by_incident.setdefault(incident.id, set()).update(
+                service.capabilities
+            )
+
+        for incident_id, capabilities in capabilities_by_incident.items():
+            required = incidents_by_id[incident_id].required_services
+            if not required.issubset(capabilities):
+                raise ValueError(f"Dispatch does not cover all requirements for {incident_id!r}.")
+
+    def _advance_world(self, plan: ResponsePlan) -> ResponsePlan:
         incidents_by_id = {incident.id: incident for incident in self.world.incidents}
         services_by_id = {service.id: service for service in self.world.services}
 
@@ -192,6 +312,7 @@ class Simulation:
                     service.assigned_incident_id = None
 
         self.world.tick_count += 1
+        self.world.version += 1
         return plan
 
     def run(self, max_steps: int = 100) -> int:

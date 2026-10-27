@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum, IntEnum
 from math import hypot, isfinite
+from typing import Callable
 
 import networkx as nx
 
@@ -43,6 +44,10 @@ class City:
         self.name = name
         self.graph = nx.MultiGraph()
         self._roads: dict[str, Road] = {}
+        self._on_change: Callable[[], None] | None = None
+
+    def set_change_callback(self, callback: Callable[[], None] | None) -> None:
+        self._on_change = callback
 
     @property
     def roads(self) -> tuple[Road, ...]:
@@ -61,9 +66,13 @@ class City:
             is_closed=road.is_closed,
         )
         self._roads[road.id] = road
+        if self._on_change is not None:
+            self._on_change()
 
     def set_road_closed(self, road_id: str, is_closed: bool) -> None:
         road = self._roads[road_id]
+        if road.is_closed == is_closed:
+            return
         self.graph[road.start][road.end][road.id]["is_closed"] = is_closed
         self._roads[road_id] = Road(
             id=road.id,
@@ -71,6 +80,8 @@ class City:
             end=road.end,
             is_closed=is_closed,
         )
+        if self._on_change is not None:
+            self._on_change()
 
     @staticmethod
     def _road_projection(point: Coordinate, road: Road) -> float | None:

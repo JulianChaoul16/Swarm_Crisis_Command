@@ -17,6 +17,7 @@ class Dispatch:
 class ResponsePlan:
     assignments: tuple[Dispatch, ...]
     unassigned_incident_ids: tuple[str, ...]
+    world_version: int | None = None
 
 
 class Planner:
@@ -27,6 +28,7 @@ class Planner:
         incidents: list[Incident],
         services: list[EmergencyService],
         city: City | None = None,
+        world_version: int | None = None,
     ) -> ResponsePlan:
         open_incidents = sorted(
             (incident for incident in incidents if incident.status == IncidentStatus.OPEN),
@@ -111,4 +113,8 @@ class Planner:
                 assignments.append(Dispatch(incident.id, service.id, eta, route))
                 del available[service.id]
 
-        return ResponsePlan(tuple(assignments), tuple(unassigned))
+        return ResponsePlan(
+            tuple(assignments),
+            tuple(unassigned),
+            world_version=world_version,
+        )
