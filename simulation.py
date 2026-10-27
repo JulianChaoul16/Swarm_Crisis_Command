@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Callable, Generic, Iterable, TypeVar, cast, overload
 
-from model import Coordinate, EmergencyService, Incident, IncidentStatus
+import networkx as nx
+
+from model import City, Coordinate, EmergencyService, Incident, IncidentStatus
 from planner import Planner, ResponsePlan
 
 
@@ -65,6 +67,7 @@ class World:
     services: list[EmergencyService] = field(default_factory=list)
     tick_count: int = 0
     version: int = 1
+    city: City | None = None
 
     def __post_init__(self) -> None:
         incident_ids = [incident.id for incident in self.incidents]
@@ -120,7 +123,11 @@ class Simulation:
     planner: Planner = field(default_factory=Planner)
 
     def step(self) -> ResponsePlan:
-        plan = self.planner.plan(self.world.incidents, self.world.services)
+        plan = self.planner.plan(
+            self.world.incidents,
+            self.world.services,
+            self.world.city,
+        )
         incidents_by_id = {incident.id: incident for incident in self.world.incidents}
         services_by_id = {service.id: service for service in self.world.services}
 
@@ -129,18 +136,44 @@ class Simulation:
             service.assigned_incident_id = dispatch.incident_id
             incidents_by_id[dispatch.incident_id].status = IncidentStatus.ASSIGNED
 
+        planned_routes = {
+            dispatch.service_id: dispatch.route for dispatch in plan.assignments
+        }
         for service in self.world.services:
             if service.assigned_incident_id is None:
                 continue
             incident = incidents_by_id[service.assigned_incident_id]
-            distance = service.location.distance_to(incident.location)
-            travel_distance = min(distance, service.speed)
-            if distance:
-                scale = travel_distance / distance
-                service.location = Coordinate(
-                    service.location.x + (incident.location.x - service.location.x) * scale,
-                    service.location.y + (incident.location.y - service.location.y) * scale,
-                )
+            try:
+                route = planned_routes.get(service.id)
+                if route is None:
+                    route = (
+                        self.world.city.shortest_route(service.location, incident.location)
+                        if self.world.city is not None
+                        else [service.location, incident.location]
+                    )
+            except (nx.NetworkXNoPath, nx.NodeNotFound):
+                incident.status = IncidentStatus.OPEN
+                for assigned in self.world.services:
+                    if assigned.assigned_incident_id == incident.id:
+                        assigned.assigned_incident_id = None
+                continue
+
+            remaining_distance = service.speed
+            current = service.location
+            for waypoint in route[1:]:
+                segment_distance = current.distance_to(waypoint)
+                if remaining_distance >= segment_distance:
+                    current = waypoint
+                    remaining_distance -= segment_distance
+                    continue
+                if segment_distance:
+                    scale = remaining_distance / segment_distance
+                    current = Coordinate(
+                        current.x + (waypoint.x - current.x) * scale,
+                        current.y + (waypoint.y - current.y) * scale,
+                    )
+                break
+            service.location = current
 
         for incident in self.world.incidents:
             if incident.status != IncidentStatus.ASSIGNED:

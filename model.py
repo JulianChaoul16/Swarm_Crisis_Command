@@ -72,7 +72,27 @@ class City:
             is_closed=is_closed,
         )
 
-    def _open_graph(self) -> nx.MultiGraph:
+    @staticmethod
+    def _road_projection(point: Coordinate, road: Road) -> float | None:
+        dx = road.end.x - road.start.x
+        dy = road.end.y - road.start.y
+        length_squared = dx * dx + dy * dy
+        projection = (
+            (point.x - road.start.x) * dx + (point.y - road.start.y) * dy
+        ) / length_squared
+        if projection < 0 or projection > 1:
+            return None
+        projected = Coordinate(
+            road.start.x + projection * dx,
+            road.start.y + projection * dy,
+        )
+        return projection if point.distance_to(projected) <= 1e-9 else None
+
+    def _open_graph(
+        self,
+        start: Coordinate | None = None,
+        end: Coordinate | None = None,
+    ) -> nx.MultiGraph:
         open_roads = self.graph.copy()
         closed_edges = [
             (u, v, key)
@@ -80,13 +100,48 @@ class City:
             if data["is_closed"]
         ]
         open_roads.remove_edges_from(closed_edges)
+
+        for road in self._roads.values():
+            if road.is_closed:
+                continue
+            split_points = [(0.0, road.start), (1.0, road.end)]
+            for point in (start, end):
+                if point is None or point in (road.start, road.end):
+                    continue
+                projection = self._road_projection(point, road)
+                if projection is not None:
+                    split_points.append((projection, point))
+            if len(split_points) == 2:
+                continue
+
+            edge_data = open_roads[road.start][road.end][road.id].copy()
+            open_roads.remove_edge(road.start, road.end, road.id)
+            split_points.sort(key=lambda item: item[0])
+            for index, ((_, left), (_, right)) in enumerate(
+                zip(split_points, split_points[1:])
+            ):
+                open_roads.add_edge(
+                    left,
+                    right,
+                    key=f"{road.id}:segment:{index}",
+                    **{**edge_data, "length": left.distance_to(right)},
+                )
         return open_roads
 
     def shortest_route(self, start: Coordinate, end: Coordinate) -> list[Coordinate]:
-        return nx.shortest_path(self._open_graph(), start, end, weight="length")
+        if start == end:
+            return [start]
+        return nx.shortest_path(self._open_graph(start, end), start, end, weight="length")
 
     def route_distance(self, start: Coordinate, end: Coordinate) -> float:
-        return nx.shortest_path_length(self._open_graph(), start, end, weight="length")
+        if start == end:
+            return 0.0
+        return nx.shortest_path_length(
+            self._open_graph(start, end),
+            start,
+            end,
+            weight="length",
+        )
 
 
 class Severity(IntEnum):

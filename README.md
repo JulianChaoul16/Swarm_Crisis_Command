@@ -10,6 +10,8 @@ A Swarm of Agents that help  Emergency Operation Managers make the best decision
 - `model.py` defines incidents, coordinates, service capabilities, severity, and status.
 - `City` in `model.py` stores road segments in a NetworkX multigraph, including
   parallel roads, and calculates shortest routes and distances without using closed roads.
+- The planner uses road routes for dispatch ETAs, and the simulation moves services
+  along those roads rather than directly toward incidents.
 - `planner.py` prioritizes open incidents and assigns the nearest available services,
   covering every service capability an incident requires.
 - `simulation.py` advances the world one time step at a time, moving dispatched
@@ -21,4 +23,10 @@ Install dependencies and run the demo with Python 3.10 or later:
 ```powershell
 python -m pip install -r requirements.txt
 python main.py
+```
+
+Run the road-routing tests with:
+
+```powershell
+python -B -m unittest discover -s tests
 ```

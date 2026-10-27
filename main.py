@@ -1,21 +1,41 @@
-from model import Coordinate, EmergencyService, Incident, IncidentStatus, Severity
+from model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road, Severity
 from simulation import Simulation, World
 
 
 def build_demo_world() -> World:
+    fire_station = Coordinate(1, 1)
+    ambulance_station = Coordinate(1, 2)
+    police_station = Coordinate(0, 4)
+    intersection_a = Coordinate(4, 1)
+    intersection_b = Coordinate(4, 2)
+    intersection_c = Coordinate(4, 4)
+    fire_location = Coordinate(8, 5)
+    collision_location = Coordinate(2, 4)
+    city = City("Demo City")
+    for road_id, start, end in (
+        ("fire-road-1", fire_station, intersection_a),
+        ("fire-road-2", intersection_a, fire_location),
+        ("medical-road-1", ambulance_station, intersection_b),
+        ("connector-1", intersection_b, intersection_a),
+        ("connector-2", intersection_b, intersection_c),
+        ("police-road-1", police_station, collision_location),
+        ("collision-road", collision_location, intersection_c),
+    ):
+        city.add_road(Road(road_id, start, end))
+
     return World(
         incidents=[
             Incident(
                 id="incident-1",
                 kind="building fire",
-                location=Coordinate(8, 5),
+                location=fire_location,
                 severity=Severity.CRITICAL,
                 required_services=frozenset({"fire", "medical"}),
             ),
             Incident(
                 id="incident-2",
                 kind="road collision",
-                location=Coordinate(2, 4),
+                location=collision_location,
                 severity=Severity.HIGH,
                 required_services=frozenset({"medical", "police"}),
             ),
@@ -24,25 +44,26 @@ def build_demo_world() -> World:
             EmergencyService(
                 id="unit-fire-1",
                 name="Fire engine 1",
-                location=Coordinate(1, 1),
+                location=fire_station,
                 capabilities=frozenset({"fire"}),
                 speed=2.0,
             ),
             EmergencyService(
                 id="unit-medical-1",
                 name="Ambulance 1",
-                location=Coordinate(1, 2),
+                location=ambulance_station,
                 capabilities=frozenset({"medical"}),
                 speed=2.5,
             ),
             EmergencyService(
                 id="unit-police-1",
                 name="Police unit 1",
-                location=Coordinate(0, 4),
+                location=police_station,
                 capabilities=frozenset({"police"}),
                 speed=3.0,
             ),
         ],
+        city=city,
     )
 
 
