@@ -1,7 +1,62 @@
 from dataclasses import dataclass, field
+from typing import Callable, Generic, Iterable, TypeVar, cast, overload
 
 from model import Coordinate, EmergencyService, Incident, IncidentStatus
 from planner import Planner, ResponsePlan
+
+
+T = TypeVar("T")
+
+
+class _VersionedList(list[T], Generic[T]):
+    def __init__(
+        self,
+        values: Iterable[T],
+        validate: Callable[[T], None],
+        on_add: Callable[[], None],
+    ) -> None:
+        super().__init__(values)
+        self._validate = validate
+        self._on_add = on_add
+
+    def append(self, value: T) -> None:
+        self._validate(value)
+        super().append(value)
+        self._on_add()
+
+    def extend(self, values: Iterable[T]) -> None:
+        for value in values:
+            self.append(value)
+
+    def insert(self, index: int, value: T) -> None:
+        self._validate(value)
+        super().insert(index, value)
+        self._on_add()
+
+    def __iadd__(self, values: Iterable[T]) -> _VersionedList[T]:
+        self.extend(values)
+        return self
+
+    @overload
+    def __setitem__(self, index: int, value: T) -> None: ...
+
+    @overload
+    def __setitem__(self, index: slice, value: Iterable[T]) -> None: ...
+
+    def __setitem__(self, index: int | slice, value: T | Iterable[T]) -> None:
+        if isinstance(index, slice):
+            values = list(cast(Iterable[T], value))
+            for item in values:
+                self._validate(item)
+            super().__setitem__(index, values)
+            for _ in values:
+                self._on_add()
+            return
+
+        item = cast(T, value)
+        self._validate(item)
+        super().__setitem__(index, item)
+        self._on_add()
 
 
 @dataclass
@@ -9,6 +64,7 @@ class World:
     incidents: list[Incident] = field(default_factory=list)
     services: list[EmergencyService] = field(default_factory=list)
     tick_count: int = 0
+    version: int = 1
 
     def __post_init__(self) -> None:
         incident_ids = [incident.id for incident in self.incidents]
@@ -24,6 +80,38 @@ class World:
             if service.assigned_incident_id is not None
         ):
             raise ValueError("Services must reference an incident in this world.")
+        self.incidents = _VersionedList(
+            self.incidents,
+            self._validate_incident,
+            self._increment_version,
+        )
+        self.services = _VersionedList(
+            self.services,
+            self._validate_service,
+            self._increment_version,
+        )
+
+    def _increment_version(self) -> None:
+        self.version += 1
+
+    def _validate_incident(self, incident: Incident) -> None:
+        if any(existing.id == incident.id for existing in self.incidents):
+            raise ValueError(f"Incident id {incident.id!r} already exists in this world.")
+
+    def _validate_service(self, service: EmergencyService) -> None:
+        if any(existing.id == service.id for existing in self.services):
+            raise ValueError(f"Service id {service.id!r} already exists in this world.")
+        if (
+            service.assigned_incident_id is not None
+            and all(incident.id != service.assigned_incident_id for incident in self.incidents)
+        ):
+            raise ValueError("Service must reference an incident in this world.")
+
+    def add_incident(self, incident: Incident) -> None:
+        self.incidents.append(incident)
+
+    def add_emergency_service(self, service: EmergencyService) -> None:
+        self.services.append(service)
 
 
 @dataclass
