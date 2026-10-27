@@ -26,10 +26,10 @@ class World:
             raise ValueError("Services must reference an incident in this world.")
 
 
+@dataclass
 class Simulation:
-    def __init__(self, world: World, planner: Planner | None = None) -> None:
-        self.world = world
-        self.planner = planner or Planner()
+    world: World
+    planner: Planner = field(default_factory=Planner)
 
     def step(self) -> ResponsePlan:
         plan = self.planner.plan(self.world.incidents, self.world.services)
