@@ -10,6 +10,7 @@ from crisis_command.model import (
     Road,
     Severity,
 )
+from crisis_command.coordinator import Coordinator, UnserviceableIncidentsError
 from crisis_command.planner import (
     Claim,
     EvidenceArbitrator,
@@ -156,7 +157,7 @@ class PlannerEvidenceTests(unittest.TestCase):
         self.assertFalse(plan.assignments)
         self.assertEqual(plan.unassigned_incident_ids, (self.incident.id,))
 
-    def test_verified_evidence_outranks_unverified_source_reliability(self) -> None:
+    def test_unverified_conflict_is_flagged_even_when_verified_claim_wins(self) -> None:
         verified_open = self.make_claim(
             source="verified_source",
             value=False,
@@ -189,7 +190,10 @@ class PlannerEvidenceTests(unittest.TestCase):
         )
 
         self.assertEqual(plan.claim_resolutions[0].selected_claim, verified_open)
-        self.assertTrue(plan.assignments)
+        self.assertTrue(plan.claim_resolutions[0].requires_review)
+        self.assertTrue(plan.claim_resolutions[0].status_unknown)
+        self.assertFalse(plan.assignments)
+        self.assertEqual(plan.unassigned_incident_ids, (self.incident.id,))
 
     def test_claim_from_older_world_cannot_override_current_road_state(self) -> None:
         self.city.set_road_closed("bridge", True)
@@ -212,6 +216,119 @@ class PlannerEvidenceTests(unittest.TestCase):
         self.assertTrue(
             any("old-open-report" in rationale for rationale in plan.rationale)
         )
+
+    def test_verified_authoritative_closure_overrides_stale_road_snapshot(self) -> None:
+        authoritative_closure = self.make_claim(
+            source="road_authority",
+            value=True,
+            confidence=0.7,
+            evidence_reference="authority-closure-order",
+            world_version=1,
+        )
+
+        plan = Planner().plan(
+            [self.incident],
+            [self.service],
+            self.city,
+            world_version=2,
+            claims=(authoritative_closure,),
+        )
+
+        self.assertEqual(
+            plan.claim_resolutions[0].selected_claim,
+            authoritative_closure,
+        )
+        self.assertFalse(plan.assignments)
+        self.assertEqual(plan.unassigned_incident_ids, (self.incident.id,))
+
+    def test_newer_authoritative_open_report_supersedes_stale_closure(self) -> None:
+        old_closure = self.make_claim(
+            source="road_authority",
+            value=True,
+            confidence=0.9,
+            evidence_reference="old-closure-order",
+            world_version=1,
+        )
+        current_open_report = self.make_claim(
+            source="road_authority",
+            value=False,
+            confidence=0.9,
+            evidence_reference="current-reopening-order",
+            world_version=2,
+        )
+
+        plan = Planner().plan(
+            [self.incident],
+            [self.service],
+            self.city,
+            world_version=2,
+            claims=(old_closure, current_open_report),
+        )
+
+        self.assertEqual(
+            plan.claim_resolutions[0].selected_claim,
+            current_open_report,
+        )
+        self.assertTrue(plan.assignments)
+
+    def test_unverified_road_conflict_triggers_review_and_blocks_road(self) -> None:
+        unverified_closure = self.make_claim(
+            source="field_agent",
+            value=True,
+            confidence=1.0,
+            evidence_reference="unverified-closure-report",
+            verification_status=VerificationStatus.UNVERIFIED,
+        )
+
+        plan = Planner().plan(
+            [self.incident],
+            [self.service],
+            self.city,
+            world_version=1,
+            claims=(unverified_closure,),
+        )
+
+        resolution = plan.claim_resolutions[0]
+        self.assertTrue(resolution.requires_review)
+        self.assertTrue(resolution.status_unknown)
+        self.assertEqual(plan.unknown_road_ids, ("bridge",))
+        self.assertFalse(plan.assignments)
+
+    def test_unknown_road_status_blocks_safety_critical_route(self) -> None:
+        unknown_status = Claim(
+            subject="bridge",
+            attribute="is_closed",
+            value=None,
+            source="road_authority",
+            timestamp=datetime(2026, 10, 27, 14, tzinfo=timezone.utc),
+            world_version=1,
+            verification_status=VerificationStatus.VERIFIED,
+            confidence=1.0,
+            evidence_reference="status-unavailable",
+        )
+
+        plan = Planner().plan(
+            [self.incident],
+            [self.service],
+            self.city,
+            world_version=1,
+            claims=(unknown_status,),
+        )
+
+        self.assertEqual(plan.unknown_road_ids, ("bridge",))
+        self.assertFalse(plan.assignments)
+        self.assertEqual(plan.unassigned_incident_ids, (self.incident.id,))
+
+    def test_safety_critical_incident_requires_a_road_network(self) -> None:
+        plan = Planner().plan(
+            [self.incident],
+            [self.service],
+            world_version=1,
+        )
+
+        self.assertFalse(plan.assignments)
+        self.assertEqual(plan.unassigned_incident_ids, (self.incident.id,))
+        self.assertTrue(any("road status is unknown" in text for text in plan.rationale))
 
     def test_unknown_road_claim_is_rejected(self) -> None:
         claim = Claim(
@@ -259,6 +376,34 @@ class PlannerEvidenceTests(unittest.TestCase):
         self.assertEqual(recorded_claims[0]["verification_status"], "verified")
         self.assertEqual(recorded_claims[0]["confidence"], 0.91)
         self.assertEqual(recorded_claims[0]["world_version"], 1)
+
+    def test_blocked_decision_records_supporting_evidence(self) -> None:
+        claim = Claim(
+            subject="bridge",
+            attribute="is_closed",
+            value=None,
+            source="road_authority",
+            timestamp=datetime(2026, 10, 27, 14, tzinfo=timezone.utc),
+            world_version=1,
+            verification_status=VerificationStatus.VERIFIED,
+            confidence=1.0,
+            evidence_reference="missing-road-status-report",
+        )
+        world = World([self.incident], [self.service], city=self.city)
+
+        with self.assertRaises(UnserviceableIncidentsError):
+            Coordinator(world).step(claims=(claim,))
+
+        blocked_event = next(
+            event for event in world.event_log if event.kind == "plan_blocked"
+        )
+        details = dict(blocked_event.details)
+        recorded_claims = json.loads(details["claims"])
+        self.assertEqual(
+            recorded_claims[0]["evidence_reference"],
+            "missing-road-status-report",
+        )
+        self.assertEqual(json.loads(details["unknown_road_ids"]), ["bridge"])
 
     def test_future_version_claim_is_rejected(self) -> None:
         claim = self.make_claim(

@@ -372,19 +372,31 @@ class Simulation:
 
         incidents_by_id = {incident.id: incident for incident in self.world.incidents}
         services_by_id = {service.id: service for service in self.world.services}
+        authoritative_closures = tuple(
+            resolution
+            for resolution in plan.claim_resolutions
+            if resolution.selected_claim is not None
+            and self.planner.state_agent.arbitrator.is_authoritative_closure(
+                resolution.selected_claim
+            )
+        )
+        effective_city = self.planner.state_agent.city_with_evidence(
+            self.world.city,
+            authoritative_closures,
+        )
         updated_dispatches = []
         for dispatch in plan.assignments:
             incident = incidents_by_id[dispatch.incident_id]
             service = services_by_id[dispatch.service_id]
             try:
                 route = (
-                    self.world.city.shortest_route(service.location, incident.location)
-                    if self.world.city is not None
+                    effective_city.shortest_route(service.location, incident.location)
+                    if effective_city is not None
                     else [service.location, incident.location]
                 )
                 distance = (
-                    self.world.city.route_distance(service.location, incident.location)
-                    if self.world.city is not None
+                    effective_city.route_distance(service.location, incident.location)
+                    if effective_city is not None
                     else service.location.distance_to(incident.location)
                 )
             except (nx.NetworkXNoPath, nx.NodeNotFound):
@@ -404,7 +416,7 @@ class Simulation:
 
     def _validate_plan(self, plan: ResponsePlan) -> None:
         self._validate_assignments(plan)
-        effective_city = self.planner.city_with_evidence(
+        effective_city = self.planner.state_agent.city_with_evidence(
             self.world.city,
             plan.claim_resolutions,
         )
@@ -461,12 +473,17 @@ class Simulation:
     def _advance_world(self, plan: ResponsePlan) -> ResponsePlan:
         incidents_by_id = {incident.id: incident for incident in self.world.incidents}
         services_by_id = {service.id: service for service in self.world.services}
-        applicable_resolutions = (
-            plan.claim_resolutions
-            if plan.world_version == self.world.version
-            else ()
-        )
-        effective_city = self.planner.city_with_evidence(
+        applicable_resolutions = plan.claim_resolutions
+        if plan.world_version != self.world.version:
+            applicable_resolutions = tuple(
+                resolution
+                for resolution in plan.claim_resolutions
+                if resolution.selected_claim is not None
+                and self.planner.state_agent.arbitrator.is_authoritative_closure(
+                    resolution.selected_claim
+                )
+            )
+        effective_city = self.planner.state_agent.city_with_evidence(
             self.world.city,
             applicable_resolutions,
         )
@@ -623,6 +640,8 @@ class Simulation:
                 "attribute": resolution.attribute,
                 "value": resolution.value,
                 "disputed": resolution.disputed,
+                "requires_review": resolution.requires_review,
+                "status_unknown": resolution.status_unknown,
                 "selected_evidence_reference": (
                     resolution.selected_claim.evidence_reference
                     if resolution.selected_claim is not None
@@ -636,6 +655,7 @@ class Simulation:
             ("rationale", json.dumps(plan.rationale)),
             ("claims", json.dumps(claims, default=str)),
             ("claim_resolutions", json.dumps(resolutions)),
+            ("unknown_road_ids", json.dumps(plan.unknown_road_ids)),
         )
 
     def run(self, max_steps: int = 100) -> int:

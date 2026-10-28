@@ -55,7 +55,9 @@ class EventLogTests(unittest.TestCase):
             frozenset({"medical"}),
             speed=1,
         )
-        simulation = Simulation(World([incident], [service]))
+        city = City("Response City")
+        city.add_road(Road("response-road", start, end))
+        simulation = Simulation(World([incident], [service], city=city))
 
         simulation.run(max_steps=3)
 

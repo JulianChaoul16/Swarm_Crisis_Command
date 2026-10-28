@@ -20,13 +20,19 @@ A Swarm of Agents that help  Emergency Operation Managers make the best decision
 - The world exposes an ordered event log for initial state, incident/resource updates,
   road changes, accepted/rejected plans, dispatch, movement, resolution, and simulation
   ticks. Each plan records its rationale and evidence-backed claims.
-- Planner claims retain their source, timezone-aware timestamp, analyzed world version,
-  verification status, confidence, and evidence reference. Conflicts are resolved by
-  verification status, configured source reliability, confidence, and recency; tied
-  conflicting road reports are treated conservatively as closed. Claims from older
-  world versions remain in the audit record but cannot override current road state.
-  The current city-network road state is included as verified evidence; unknown sources
-  have a neutral reliability score until configured.
+- The `AuthoritativeStateAgent` is the planner's head-of-state preset. It resolves
+  evidence by verification status, authority, configured source reliability, confidence,
+  and recency. Verified authoritative road closures override an outdated road snapshot;
+  `road_authority` and `authoritative_state_agent` are the preset authoritative sources.
+  Unverified conflicts are flagged for review, and unknown road status blocks that road
+  from route approval. Safety-critical incidents require a known city road network.
+  Stale claims remain in the audit record but cannot override current state unless they
+  are verified authoritative closures.
+- Claims retain their source, timezone-aware timestamp, analyzed world version,
+  verification status, confidence, and evidence reference. The current city-network
+  road state is included as evidence; unknown sources have a neutral reliability score
+  until configured. Approved and blocked decisions record their supporting claims,
+  evidence references, version, and rationale.
 - `crisis_command/agents/agent_models.py` contains the current role and agent data models.
 - `crisis_command/database/` contains SQLite connection and repository code; the schema is in
   `crisis_command/database/schema.sql` and runtime database files are stored under ignored
