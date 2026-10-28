@@ -1,3 +1,6 @@
 __pycache__/
+.env
+.env.*
+!.env.example
 context/
 crisis_command/data/*.db

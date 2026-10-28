@@ -69,6 +69,7 @@ export default function CrisisMap({ world, selectedRoadId, onSelectRoad }: Props
   useEffect(() => {
     let cancelled = false;
     let map: MapLibreMap | undefined;
+    let resizeObserver: ResizeObserver | undefined;
 
     import("maplibre-gl").then((maplibregl) => {
       if (cancelled || !container.current) return;
@@ -87,6 +88,9 @@ export default function CrisisMap({ world, selectedRoadId, onSelectRoad }: Props
       instance.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
       map = instance;
       mapRef.current = instance;
+      // Keep the canvas sized to its tile when the map is expanded or collapsed.
+      resizeObserver = new ResizeObserver(() => instance.resize());
+      resizeObserver.observe(container.current);
 
       instance.on("load", () => {
         const empty: Collection = { type: "FeatureCollection", features: [] };
@@ -197,6 +201,7 @@ export default function CrisisMap({ world, selectedRoadId, onSelectRoad }: Props
 
     return () => {
       cancelled = true;
+      resizeObserver?.disconnect();
       map?.remove();
       mapRef.current = null;
     };

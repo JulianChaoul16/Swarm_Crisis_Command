@@ -8,6 +8,7 @@ export type Incident = {
   severity: "low" | "medium" | "high" | "critical";
   severity_level: number;
   status: "open" | "assigned" | "resolved";
+  reported_tick: number;
   required_services: string[];
   location: { x: number; y: number };
   position: LngLat;
@@ -57,6 +58,17 @@ export type WorldState = {
   roads: Road[];
   last_plan: Plan | null;
   notice: string | null;
+};
+
+// Not served by the API yet: specialist agents are mocked in lib/mock.ts.
+export type AgentReport = {
+  id: string;
+  agent: "Situation" | "Logistics" | "Routing" | "State" | "Planner";
+  type: "finding" | "recommendation" | "warning" | "needs_review";
+  message: string;
+  related_ids: string[];
+  confidence: number | null;
+  at: string;
 };
 
 export type WorldEvent = {

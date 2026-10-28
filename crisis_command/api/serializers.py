@@ -14,13 +14,18 @@ def _coordinate(point: Coordinate) -> dict[str, float]:
     return {"x": point.x, "y": point.y}
 
 
-def serialize_incident(incident: Incident, services: list[EmergencyService]) -> dict[str, Any]:
+def serialize_incident(
+    incident: Incident,
+    services: list[EmergencyService],
+    reported_tick: int,
+) -> dict[str, Any]:
     return {
         "id": incident.id,
         "kind": incident.kind,
         "severity": incident.severity.name.lower(),
         "severity_level": int(incident.severity),
         "status": incident.status.value,
+        "reported_tick": reported_tick,
         "required_services": sorted(incident.required_services),
         "location": _coordinate(incident.location),
         "position": to_lng_lat(incident.location),
@@ -116,6 +121,11 @@ def serialize_world(
     incidents = list(world.incidents)
     services = list(world.services)
     incidents_by_id = {incident.id: incident for incident in incidents}
+    reported_ticks = {
+        event.entity_ids[0]: event.tick
+        for event in world.event_log
+        if event.kind == "incident_added"
+    }
     return {
         "city": world.city.name if world.city is not None else None,
         "version": world.version,
@@ -123,7 +133,10 @@ def serialize_world(
         "all_resolved": all(
             incident.status == IncidentStatus.RESOLVED for incident in incidents
         ),
-        "incidents": [serialize_incident(incident, services) for incident in incidents],
+        "incidents": [
+            serialize_incident(incident, services, reported_ticks.get(incident.id, 0))
+            for incident in incidents
+        ],
         "services": [
             serialize_service(service, incidents_by_id, world.city) for service in services
         ],
