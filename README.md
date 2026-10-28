@@ -42,8 +42,13 @@ A Swarm of Agents that help  Emergency Operation Managers make the best decision
   each change advances the persisted world version recorded on its event. Database
   initialization also upgrades the earlier events-table schema when needed.
 - `crisis_command/coordinator/` coordinates planning and simulation and reports incidents
-  that no available service can handle. The dashboard package is a boundary for future UI
-  work; no dashboard implementation is present yet.
+  that no available service can handle.
+- `crisis_command/api/` exposes the coordinator over HTTP with FastAPI: world state, event
+  log, simulation steps, reset, road closures, and incident intake. Grid coordinates are
+  projected onto a Richmond-inspired map area for display only.
+- `app/` is the emergency operations dashboard (Next.js, React, MapLibre). It shows roads,
+  incidents, units, and current routes on a map, plus the latest plan rationale and the
+  event log. Clicking a road lets the operator close or reopen it.
 - The planner prioritizes open incidents by severity and chooses reachable services
   based on capability coverage and estimated arrival, recording rationale and claim
   arbitration with each version-tagged decision.
@@ -58,6 +63,22 @@ Install dependencies and run the demo from the repository root with Python 3.10 
 python -m pip install -r requirements.txt
 python -m crisis_command.main
 ```
+
+Run the dashboard with two terminals from the repository root (Node.js 20 or later):
+
+```powershell
+python -m uvicorn crisis_command.api.server:app --reload --port 8000
+```
+
+```powershell
+cd app
+npm install
+npm run dev
+```
+
+Then open http://localhost:3000. The dashboard proxies `/api/*` to `http://127.0.0.1:8000`;
+set `CRISIS_API_ORIGIN` to point it elsewhere. Scripts use webpack because Windows
+Application Control can block Next.js's native Turbopack bindings.
 
 Run the unit tests with:
 
