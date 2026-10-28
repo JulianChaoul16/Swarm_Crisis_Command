@@ -38,9 +38,68 @@ CREATE TABLE IF NOT EXISTS events (
     task_id INTEGER REFERENCES tasks(id) ON DELETE SET NULL,
     world_version INTEGER NOT NULL DEFAULT 1,
     occurred_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    payload_json TEXT NOT NULL DEFAULT '{}'
+    payload_json TEXT NOT NULL DEFAULT '{}',
+    run_id TEXT,
+    sequence INTEGER,
+    actor TEXT NOT NULL DEFAULT 'system',
+    entity_ids_json TEXT NOT NULL DEFAULT '[]'
 );
 
 CREATE INDEX IF NOT EXISTS idx_tasks_incident_id ON tasks(incident_id);
 CREATE INDEX IF NOT EXISTS idx_events_incident_id ON events(incident_id);
 CREATE INDEX IF NOT EXISTS idx_events_task_id ON events(task_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_events_run_sequence ON events(run_id, sequence);
+
+-- Command-service state: one run per scenario reset.
+CREATE TABLE IF NOT EXISTS runs (
+    id TEXT PRIMARY KEY,
+    scenario TEXT NOT NULL,
+    started_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS reports (
+    id TEXT PRIMARY KEY,
+    run_id TEXT NOT NULL REFERENCES runs(id),
+    content TEXT NOT NULL,
+    source TEXT NOT NULL,
+    received_at TEXT NOT NULL,
+    occurred_at TEXT,
+    status TEXT NOT NULL,
+    extracted_by TEXT,
+    fields_json TEXT NOT NULL,
+    missing_fields_json TEXT NOT NULL,
+    linked_incident_id TEXT,
+    linked_road_id TEXT
+);
+
+CREATE TABLE IF NOT EXISTS plans (
+    id TEXT PRIMARY KEY,
+    run_id TEXT NOT NULL REFERENCES runs(id),
+    world_version INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    plan_json TEXT NOT NULL,
+    checks_json TEXT NOT NULL,
+    decided_at TEXT,
+    decided_by TEXT,
+    decision_reason TEXT
+);
+
+CREATE TABLE IF NOT EXISTS approvals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    plan_id TEXT NOT NULL REFERENCES plans(id),
+    run_id TEXT NOT NULL REFERENCES runs(id),
+    world_version INTEGER NOT NULL,
+    decision TEXT NOT NULL,
+    actor TEXT NOT NULL,
+    decided_at TEXT NOT NULL,
+    reason TEXT
+);
+
+CREATE TABLE IF NOT EXISTS world_snapshots (
+    run_id TEXT NOT NULL REFERENCES runs(id),
+    world_version INTEGER NOT NULL,
+    tick INTEGER NOT NULL,
+    snapshot_json TEXT NOT NULL,
+    PRIMARY KEY (run_id, world_version)
+);

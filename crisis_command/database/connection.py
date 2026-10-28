@@ -39,3 +39,11 @@ def _migrate_events_table(conn: sqlite3.Connection) -> None:
         )
     if "task_id" not in columns:
         conn.execute("ALTER TABLE events ADD COLUMN task_id INTEGER")
+    for column, definition in (
+        ("run_id", "TEXT"),
+        ("sequence", "INTEGER"),
+        ("actor", "TEXT NOT NULL DEFAULT 'system'"),
+        ("entity_ids_json", "TEXT NOT NULL DEFAULT '[]'"),
+    ):
+        if column not in columns:
+            conn.execute(f"ALTER TABLE events ADD COLUMN {column} {definition}")

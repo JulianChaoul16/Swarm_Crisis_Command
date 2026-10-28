@@ -192,14 +192,14 @@ input {
   display: none;
 }
 
-/* Row 1: map + what needs a decision. Row 2: the three live feeds. Row 3: conversations. */
-.t-map { grid-column: span 7; height: 460px; }
-.t-attention { grid-column: span 5; height: 460px; }
-.t-emergencies,
-.t-agents,
-.t-units { grid-column: span 4; height: 420px; }
-.t-chat,
-.t-comms { grid-column: span 6; height: 360px; }
+/* Row 1: map + the decision. Row 2: intake and state. Row 3: timeline. */
+.t-map { grid-column: span 7; height: 520px; }
+.t-review { grid-column: span 5; height: 520px; }
+.t-intake { grid-column: span 5; height: 480px; }
+.t-incidents,
+.t-resources { grid-column: span 7; height: 232px; }
+.t-incidents { grid-row: span 1; }
+.t-timeline { grid-column: span 12; height: 340px; }
 
 .tile {
   display: flex;
@@ -401,38 +401,6 @@ li.sev-high {
   padding-left: 8px;
 }
 
-/* Agent reports */
-
-.report {
-  display: grid;
-  gap: 4px;
-}
-
-.report.done {
-  opacity: 0.5;
-}
-
-.agent {
-  font-weight: 600;
-  font-size: 12px;
-}
-
-.report-msg {
-  font-size: 13px;
-}
-
-.tag {
-  font-size: 11px;
-  padding: 1px 7px;
-  border-radius: 4px;
-  background: #f1f5f9;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-.tag.type-warning { background: #ffedd5; color: #9a3412; }
-.tag.type-needs_review { background: #fee2e2; color: #991b1b; }
-.tag.type-recommendation { background: #dbeafe; color: #1e40af; }
 
 /* Units */
 
@@ -591,73 +559,33 @@ tbody tr:hover {
 tr.sev-critical td:first-child { box-shadow: inset 3px 0 0 var(--critical); }
 tr.sev-high td:first-child { box-shadow: inset 3px 0 0 var(--high); }
 
-/* ---------- Manager operations ---------- */
+/* ---------- MVP surfaces ---------- */
 
-.alert-bar {
-  position: sticky;
-  top: 53px;
-  z-index: 15;
-  display: grid;
-  gap: 1px;
-  background: var(--critical);
-}
-
-.alert {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 16px;
-  background: #fef2f2;
-  color: #7f1d1d;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-.alert.sev-critical {
-  background: #fee2e2;
-}
-
-.alert-sev {
+.sim-badge {
   font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
-  padding: 2px 8px;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
   border-radius: 4px;
-  background: var(--critical);
+  background: #7c3aed;
   color: #fff;
 }
 
-.alert.sev-high .alert-sev {
-  background: var(--high);
+.error-text { color: var(--open); }
+
+.bento {
+  grid-auto-flow: dense;
 }
 
-.alert button {
-  background: var(--critical);
-  border-color: var(--critical);
-}
+.t-intake { grid-row: span 2; }
 
-@keyframes pulse {
-  50% { background: #fecaca; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .alert { animation: none; }
-}
-
-h3.sub {
-  margin: 10px 0 2px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.proposal {
-  display: grid;
-  gap: 4px;
-}
-
-.meta.latest {
-  margin-top: 2px;
-  color: var(--text);
+textarea {
+  font: inherit;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  resize: vertical;
 }
 
 select {
@@ -668,75 +596,168 @@ select {
   background: var(--panel);
 }
 
-select.small {
-  font-size: 12px;
-  padding: 2px 4px;
-  max-width: 130px;
-}
-
-.composer {
-  display: flex;
+.intake-form {
+  display: grid;
   gap: 6px;
-  padding: 8px 0;
+  padding: 8px 0 12px;
+  border-bottom: 1px solid var(--border);
 }
 
-.composer input {
-  flex: 1;
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 10px;
+  font-size: 12px;
+  color: var(--muted);
 }
 
-.comms .list .msg.out {
-  padding-left: 24px;
+.fields label {
+  display: grid;
+  gap: 2px;
 }
 
-.comms .list .msg.in {
-  box-shadow: inset 3px 0 0 var(--accent);
-  padding-left: 8px;
-}
-
-.chat {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.chat-log {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-top: 8px;
-}
-
-.t-chat .tile-body {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.suggestions {
+.fields fieldset {
+  grid-column: span 2;
   display: flex;
   flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+label.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text);
+  font-size: 12px;
+}
+
+label.check input {
+  width: auto;
+}
+
+.nowrap { white-space: nowrap; }
+
+.report-card {
+  display: grid;
   gap: 6px;
 }
 
-.bubble {
-  max-width: 85%;
-  padding: 8px 10px;
-  border-radius: 10px;
+.quote {
+  font-style: italic;
+}
+
+.note {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.note.warn { background: #fef3c7; color: #78350f; }
+.note.error { background: #fee2e2; color: #7f1d1d; }
+
+.tag {
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: var(--muted);
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.tag.report-ready, .tag.plan-proposed { background: #dbeafe; color: #1e40af; }
+.tag.report-needs_clarification, .tag.report-needs_extraction, .tag.plan-stale { background: #fef3c7; color: #78350f; }
+.tag.report-confirmed, .tag.plan-approved { background: #dcfce7; color: #14532d; }
+.tag.report-rejected, .tag.plan-rejected, .tag.plan-invalid { background: #fee2e2; color: #7f1d1d; }
+.tag.change-new { background: #dbeafe; color: #1e40af; }
+.tag.change-reassigned { background: #ffedd5; color: #9a3412; }
+.tag.change-dropped { background: #fee2e2; color: #7f1d1d; }
+
+li.change-reassigned { box-shadow: inset 3px 0 0 var(--high); padding-left: 8px; }
+li.change-dropped { box-shadow: inset 3px 0 0 var(--open); padding-left: 8px; }
+
+h3.sub {
+  margin: 12px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.agents {
+  display: grid;
+  gap: 4px;
+}
+
+.agent-chip {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.agent-chip summary { color: var(--text); }
+.agent-chip.agent-completed { border-color: var(--resolved); }
+.agent-chip.agent-unavailable { border-style: dashed; }
+.agent-chip.agent-failed,
+.agent-chip.agent-timed_out { border-color: var(--open); }
+.agent-chip p { margin: 4px 0; }
+
+.unmet {
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  background: #fef2f2;
+  color: #7f1d1d;
   font-size: 13px;
 }
 
-.bubble.manager {
-  align-self: flex-end;
-  background: var(--accent);
-  color: #fff;
+.checks {
+  list-style: none;
+  margin: 4px 0;
+  padding: 0;
+  font-size: 12px;
 }
 
-.bubble.agent {
-  align-self: flex-start;
-  background: #f1f5f9;
+.checks .pass { color: var(--resolved); }
+.checks .fail { color: var(--open); }
+
+.decide {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
 }
+
+.decide input {
+  flex: 1;
+  min-width: 120px;
+}
+
+.review details,
+.intake details {
+  margin-top: 8px;
+}
+
+.map-overlay.road-card {
+  gap: 6px;
+}
+
+.map-overlay .meta { margin: 0; }
+
+.pad { padding: 12px; }
+
+li.event-plan_approved,
+li.event-report_confirmed { box-shadow: inset 3px 0 0 var(--resolved); padding-left: 8px; }
+li.event-approval_refused,
+li.event-plan_stale,
+li.event-proposal_discarded,
+li.event-plan_invalid { box-shadow: inset 3px 0 0 var(--open); padding-left: 8px; }
 
 /* ---------- Responsive ---------- */
 
@@ -746,12 +767,11 @@ select.small {
   }
 
   .t-map,
-  .t-attention,
-  .t-emergencies,
-  .t-agents,
-  .t-units,
-  .t-chat,
-  .t-comms {
+  .t-review,
+  .t-intake,
+  .t-incidents,
+  .t-resources,
+  .t-timeline {
     grid-column: span 12;
   }
 }

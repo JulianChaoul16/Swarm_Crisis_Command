@@ -1,5 +1,6 @@
 import json
 from copy import deepcopy
+from datetime import datetime, timezone
 from dataclasses import dataclass, field, replace
 from threading import RLock
 from typing import Callable, Generic, Iterable, TypeVar, cast, overload
@@ -14,6 +15,7 @@ from .planner import Claim, Planner, ResponsePlan
 
 
 T = TypeVar("T")
+PendingEvent = tuple[str, tuple[str, ...], str, tuple[tuple[str, str], ...]]
 
 
 class _VersionedList(list[T], Generic[T]):
@@ -96,6 +98,20 @@ class WorldEvent:
     entity_ids: tuple[str, ...]
     reason: str
     details: tuple[tuple[str, str], ...] = ()
+    actor: str = "simulation"
+    recorded_at: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
+
+
+@dataclass(frozen=True)
+class WorldCheckpoint:
+    incidents: tuple[Incident, ...]
+    services: tuple[EmergencyService, ...]
+    road_states: tuple[tuple[str, bool], ...]
+    version: int
+    tick_count: int
+    event_count: int
 
 
 class StalePlanError(RuntimeError):
@@ -167,6 +183,7 @@ class World:
         entity_ids: tuple[str, ...],
         reason: str,
         details: tuple[tuple[str, str], ...] = (),
+        actor: str = "simulation",
     ) -> None:
         self._events.append(
             WorldEvent(
@@ -177,8 +194,41 @@ class World:
                 entity_ids=entity_ids,
                 reason=reason,
                 details=details,
+                actor=actor,
             )
         )
+
+    def checkpoint(self) -> WorldCheckpoint:
+        """Capture enough state to undo a transition whose persistence failed."""
+        with self._lock:
+            return WorldCheckpoint(
+                incidents=tuple(deepcopy(incident) for incident in self.incidents),
+                services=tuple(deepcopy(service) for service in self.services),
+                road_states=tuple(
+                    (road.id, road.is_closed) for road in self.city.roads
+                ) if self.city is not None else (),
+                version=self.version,
+                tick_count=self.tick_count,
+                event_count=len(self._events),
+            )
+
+    def rollback(self, checkpoint: WorldCheckpoint) -> None:
+        with self._lock:
+            # Base-class list methods bypass the versioning hooks on purpose.
+            list.clear(self.incidents)
+            list.extend(self.incidents, deepcopy(checkpoint.incidents))
+            list.clear(self.services)
+            list.extend(self.services, deepcopy(checkpoint.services))
+            if self.city is not None:
+                self.city.set_change_callback(None)
+                try:
+                    for road_id, is_closed in checkpoint.road_states:
+                        self.city.set_road_closed(road_id, is_closed, "Rolled back.")
+                finally:
+                    self.city.set_change_callback(self._record_road_change)
+            self.version = checkpoint.version
+            self.tick_count = checkpoint.tick_count
+            del self._events[checkpoint.event_count:]
 
     def _record_entity_added(
         self,
@@ -471,8 +521,50 @@ class Simulation:
                 raise ValueError(f"Dispatch does not cover all requirements for {incident_id!r}.")
 
     def _advance_world(self, plan: ResponsePlan) -> ResponsePlan:
-        incidents_by_id = {incident.id: incident for incident in self.world.incidents}
-        services_by_id = {service.id: service for service in self.world.services}
+        pending_events = self._dispatch(plan)
+        self._progress(
+            self._effective_city(plan),
+            {dispatch.service_id: dispatch.route for dispatch in plan.assignments},
+            pending_events,
+        )
+        self.world.tick_count += 1
+        self.world.version += 1
+        self._flush_events(pending_events)
+        self.world._append_event(
+            "simulation_tick",
+            (),
+            "Simulation advanced by one time step.",
+        )
+        return plan
+
+    def apply_dispatches(
+        self,
+        plan: ResponsePlan,
+        decision_details: tuple[tuple[str, str], ...] = (),
+    ) -> None:
+        """Commit an approved, already validated plan without advancing the clock.
+
+        Callers must hold the world lock and have checked the plan's world version.
+        """
+        pending_events = self._dispatch(plan, decision_details)
+        self.world.version += 1
+        self._flush_events(pending_events)
+
+    def advance_clock(self) -> None:
+        """Move dispatched services one time step and resolve arrivals; no new dispatches."""
+        with self.world._lock:
+            pending_events: list[PendingEvent] = []
+            self._progress(self.world.city, {}, pending_events)
+            self.world.tick_count += 1
+            self.world.version += 1
+            self._flush_events(pending_events)
+            self.world._append_event(
+                "simulation_tick",
+                (),
+                "Simulation advanced by one time step.",
+            )
+
+    def _effective_city(self, plan: ResponsePlan) -> City | None:
         applicable_resolutions = plan.claim_resolutions
         if plan.world_version != self.world.version:
             applicable_resolutions = tuple(
@@ -483,21 +575,30 @@ class Simulation:
                     resolution.selected_claim
                 )
             )
-        effective_city = self.planner.state_agent.city_with_evidence(
+        return self.planner.state_agent.city_with_evidence(
             self.world.city,
             applicable_resolutions,
         )
-        pending_events: list[
-            tuple[str, tuple[str, ...], str, tuple[tuple[str, str], ...]]
-        ] = []
-        pending_events.append(
+
+    def _flush_events(self, pending_events: list[PendingEvent]) -> None:
+        for kind, entity_ids, reason, details in pending_events:
+            self.world._append_event(kind, entity_ids, reason, details)
+
+    def _dispatch(
+        self,
+        plan: ResponsePlan,
+        decision_details: tuple[tuple[str, str], ...] = (),
+    ) -> list[PendingEvent]:
+        incidents_by_id = {incident.id: incident for incident in self.world.incidents}
+        services_by_id = {service.id: service for service in self.world.services}
+        pending_events: list[PendingEvent] = [
             (
                 "plan_decision",
                 tuple(dispatch.incident_id for dispatch in plan.assignments),
                 "Planner decision accepted for execution.",
-                self._plan_audit_details(plan),
+                self._plan_audit_details(plan) + decision_details,
             )
-        )
+        ]
 
         for dispatch in plan.assignments:
             service = services_by_id[dispatch.service_id]
@@ -519,10 +620,15 @@ class Simulation:
                     ),
                 )
             )
+        return pending_events
 
-        planned_routes = {
-            dispatch.service_id: dispatch.route for dispatch in plan.assignments
-        }
+    def _progress(
+        self,
+        effective_city: City | None,
+        planned_routes: dict[str, tuple[Coordinate, ...]],
+        pending_events: list[PendingEvent],
+    ) -> None:
+        incidents_by_id = {incident.id: incident for incident in self.world.incidents}
         for service in self.world.services:
             if service.assigned_incident_id is None:
                 continue
@@ -606,17 +712,6 @@ class Simulation:
                 )
                 for service in assigned_services:
                     service.assigned_incident_id = None
-
-        self.world.tick_count += 1
-        self.world.version += 1
-        for kind, entity_ids, reason, details in pending_events:
-            self.world._append_event(kind, entity_ids, reason, details)
-        self.world._append_event(
-            "simulation_tick",
-            (),
-            "Simulation advanced by one time step.",
-        )
-        return plan
 
     @staticmethod
     def _plan_audit_details(plan: ResponsePlan) -> tuple[tuple[str, str], ...]:

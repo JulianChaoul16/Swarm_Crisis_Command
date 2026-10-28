@@ -43,12 +43,23 @@ A Swarm of Agents that help  Emergency Operation Managers make the best decision
   initialization also upgrades the earlier events-table schema when needed.
 - `crisis_command/coordinator/` coordinates planning and simulation and reports incidents
   that no available service can handle.
-- `crisis_command/api/` exposes the coordinator over HTTP with FastAPI: world state, event
-  log, simulation steps, reset, road closures, and incident intake. Grid coordinates are
-  projected onto a Richmond-inspired map area for display only.
-- `app/` is the emergency operations dashboard (Next.js, React, MapLibre). It shows roads,
-  incidents, units, and current routes on a map, plus the latest plan rationale and the
-  event log. Clicking a road lets the operator close or reopen it.
+- `crisis_command/operations/` is the command service, the only writer of authoritative
+  state. Reports keep their source, receipt time, extracted fields, missing fields, and
+  status; nothing changes the world until an operator confirms a complete report. Each
+  plan proposal records the world version it was computed against, per-rule feasibility
+  checks, changes from the previous proposal, and specialist results. Approval must name
+  the current plan and its world version; a stale plan is refused and recomputed. Every
+  commit writes events, plan/approval records, and a world snapshot to SQLite in one
+  transaction, and in-memory state is rolled back if that write fails.
+- `crisis_command/agents/specialists.py` runs the Situation, Resources, and Routing
+  specialists concurrently with a timeout. Their graph and inventory tools are
+  deterministic; model analysis is reported only when a model call succeeds. No Meta model
+  client is configured yet, so specialists and report extraction report `unavailable`.
+- `crisis_command/api/` exposes the command service over HTTP with FastAPI. Grid
+  coordinates are projected onto a Richmond-inspired map area for display only.
+- `app/` is the dashboard (Next.js, React, MapLibre) with a persistent SIMULATION label:
+  map, report intake and clarification, plan review and approval, incidents, resources,
+  and the event timeline, in a grid or table layout.
 - The planner prioritizes open incidents by severity and chooses reachable services
   based on capability coverage and estimated arrival, recording rationale and claim
   arbitration with each version-tagged decision.
