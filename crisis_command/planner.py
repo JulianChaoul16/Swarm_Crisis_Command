@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import networkx as nx
 
-from model import City, Coordinate, EmergencyService, Incident, IncidentStatus
+from .model import City, Coordinate, EmergencyService, Incident, IncidentStatus
 
 
 @dataclass(frozen=True)

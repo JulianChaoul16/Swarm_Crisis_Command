@@ -1,5 +1,14 @@
-from model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road, Severity
-from simulation import Simulation, World
+from .model import (
+    City,
+    Coordinate,
+    EmergencyService,
+    Incident,
+    IncidentStatus,
+    Road,
+    Severity,
+)
+from .coordinator import Coordinator, UnserviceableIncidentsError
+from .simulation import World
 
 
 def build_demo_world() -> World:
@@ -68,35 +77,30 @@ def build_demo_world() -> World:
 
 
 def main() -> None:
-    simulation = Simulation(build_demo_world())
-    while any(
-        incident.status != IncidentStatus.RESOLVED
-        for incident in simulation.world.incidents
-    ):
-        plan = simulation.step()
-        if plan.assignments:
-            dispatches = ", ".join(
-                f"{dispatch.service_id} -> {dispatch.incident_id} "
-                f"(ETA {dispatch.estimated_arrival:.1f})"
-                for dispatch in plan.assignments
-            )
-            print(f"Tick {simulation.world.tick_count}: {dispatches}")
-        elif plan.unassigned_incident_ids:
-            print(
-                "Waiting for available services: "
-                + ", ".join(plan.unassigned_incident_ids)
-            )
-            if all(service.available for service in simulation.world.services):
-                next_plan = simulation.planner.plan(
-                    simulation.world.incidents,
-                    simulation.world.services,
+    coordinator = Coordinator(build_demo_world())
+    try:
+        while any(
+            incident.status != IncidentStatus.RESOLVED
+            for incident in coordinator.world.incidents
+        ):
+            plan = coordinator.step()
+            if plan.assignments:
+                dispatches = ", ".join(
+                    f"{dispatch.service_id} -> {dispatch.incident_id} "
+                    f"(ETA {dispatch.estimated_arrival:.1f})"
+                    for dispatch in plan.assignments
                 )
-                if not next_plan.assignments:
-                    raise RuntimeError(
-                        "No available service can handle the remaining incidents."
-                    )
+                print(f"Tick {coordinator.world.tick_count}: {dispatches}")
+            elif plan.unassigned_incident_ids:
+                print(
+                    "Waiting for available services: "
+                    + ", ".join(plan.unassigned_incident_ids)
+                )
+    except UnserviceableIncidentsError as error:
+        print(error)
+        raise SystemExit(1) from error
 
-    print(f"All incidents resolved in {simulation.world.tick_count} ticks.")
+    print(f"All incidents resolved in {coordinator.world.tick_count} ticks.")
 
 
 if __name__ == "__main__":

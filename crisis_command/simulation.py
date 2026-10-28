@@ -6,8 +6,8 @@ from typing import Callable, Generic, Iterable, TypeVar, cast, overload
 
 import networkx as nx
 
-from model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road
-from planner import Planner, ResponsePlan
+from .model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road
+from .planner import Planner, ResponsePlan
 
 
 T = TypeVar("T")
@@ -290,14 +290,19 @@ class Simulation:
     world: World
     planner: Planner = field(default_factory=Planner)
 
-    def step(self) -> ResponsePlan:
-        snapshot = self.world.snapshot()
-        plan = self.planner.plan(
-            list(snapshot.incidents),
-            list(snapshot.services),
-            snapshot.city,
-            world_version=snapshot.version,
-        )
+    def step(
+        self,
+        snapshot: WorldSnapshot | None = None,
+        plan: ResponsePlan | None = None,
+    ) -> ResponsePlan:
+        snapshot = snapshot or self.world.snapshot()
+        if plan is None:
+            plan = self.planner.plan(
+                list(snapshot.incidents),
+                list(snapshot.services),
+                snapshot.city,
+                world_version=snapshot.version,
+            )
         with self.world._lock:
             if (
                 self.world.version != snapshot.version

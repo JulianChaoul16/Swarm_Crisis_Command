@@ -1,8 +1,8 @@
 import unittest
 
-from model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road, Severity
-from planner import Planner
-from simulation import Simulation, World
+from crisis_command.model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road, Severity
+from crisis_command.planner import Planner
+from crisis_command.simulation import Simulation, World
 
 
 class RoadRoutingTests(unittest.TestCase):

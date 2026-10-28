@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from model import Coordinate, EmergencyService, Incident
+from ..model import Coordinate, EmergencyService, Incident
 @dataclass
 class Role: 
     name: str
@@ -21,4 +21,3 @@ class Authorative_State:
     incidents: list[Incident]
     services: list[EmergencyService]
     Agents: list[Agent]
-

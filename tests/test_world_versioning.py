@@ -1,8 +1,8 @@
 import unittest
 
-from model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road, Severity
-from planner import Planner, ResponsePlan
-from simulation import Simulation, StalePlanError, World
+from crisis_command.model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road, Severity
+from crisis_command.planner import Planner, ResponsePlan
+from crisis_command.simulation import Simulation, StalePlanError, World
 
 
 class WorldVersioningTests(unittest.TestCase):
