@@ -112,3 +112,25 @@ Known limitations after Gate C:
   performed in the browser during Gates A–C.
 
 ## Gate E — submission package
+
+- [x] README restructured: problem, capabilities, model status, quickstart, demo, tests and
+  evaluation, layout, limitations
+- [x] `.env.example` (placeholders only); setup via `requirements.txt` and `app/package.json`
+  (npm lockfile committed)
+- [x] `docs/architecture.md`: AI vs software responsibilities, coordinator ownership,
+  state/version/approval flow, allocation objective
+- [x] `docs/demo.md`: exact inputs and expected results (re-verified by script on
+  2026-10-28), stale-state example, reset, replay labeling
+- [x] `docs/evaluation.md` + `docs/evaluation/results.json`
+- [x] `docs/submission.md`: draft text, honest Meta-tooling status, evidence, limitations
+- [ ] Demo recording: **not recorded** (no recording capability used here)
+- [ ] Official requirements: **unverified**, checklist in `docs/submission.md`
+- [ ] Meta model integration: **blocked** on credentials
+
+## Remaining blockers for Julian
+
+1. Provide model credentials (and the model ID and docs or endpoint) so the client, the AI
+   evaluation configurations, and extraction metrics can be completed.
+2. Verify the official submission requirements (checklist in `docs/submission.md`).
+3. Record the demo video following `docs/demo.md`.
+4. Review, merge, and push `feature/hackathon-mvp`; authorize final submission.
