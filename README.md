@@ -21,6 +21,10 @@ A Swarm of Agents that help  Emergency Operation Managers make the best decision
 - `crisis_command/database/` contains SQLite connection and repository code; the schema is in
   `crisis_command/database/schema.sql` and runtime database files are stored under ignored
   `crisis_command/data/`.
+- The SQLite schema includes incidents, tasks, resources, world metadata, and events.
+  Repository helpers create incidents/tasks and record matching events in one transaction;
+  each change advances the persisted world version recorded on its event. Database
+  initialization also upgrades the earlier events-table schema when needed.
 - `crisis_command/coordinator/` coordinates planning and simulation and reports incidents
   that no available service can handle. The dashboard package is a boundary for future UI
   work; no dashboard implementation is present yet.
@@ -28,8 +32,8 @@ A Swarm of Agents that help  Emergency Operation Managers make the best decision
   covering every service capability an incident requires.
 - The simulation advances the world one time step at a time, moving dispatched
   services and resolving incidents when all assigned services arrive.
-- Database modules are currently a scaffold and are not yet wired to the in-memory
-  simulation state; integrate persistence after the coordinator interfaces settle.
+- The database repository is usable on its own but is not yet wired to persist the
+  coordinator's in-memory simulation state.
 
 Install dependencies and run the demo from the repository root with Python 3.10 or later:
 
