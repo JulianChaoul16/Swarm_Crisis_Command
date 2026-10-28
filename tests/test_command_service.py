@@ -11,6 +11,7 @@ from crisis_command.agents.specialists import AgentStatus, run_specialists
 from crisis_command.database import connection
 from crisis_command.model import IncidentStatus
 from crisis_command.operations import (
+    DEMO_SCENARIO,
     CommandService,
     ConflictError,
     PlanStatus,
@@ -34,7 +35,7 @@ class CommandServiceTestCase(unittest.TestCase):
         self.database_path = Path(self.temp_dir.name) / "test.db"
         self.path_patcher = patch.object(connection, "DB_PATH", self.database_path)
         self.path_patcher.start()
-        self.service = CommandService(agent_timeout=2)
+        self.service = CommandService(scenario=DEMO_SCENARIO, agent_timeout=2)
 
     def tearDown(self) -> None:
         self.path_patcher.stop()

@@ -55,6 +55,13 @@ A Swarm of Agents that help  Emergency Operation Managers make the best decision
   specialists concurrently with a timeout. Their graph and inventory tools are
   deterministic; model analysis is reported only when a model call succeeds. No Meta model
   client is configured yet, so specialists and report extraction report `unavailable`.
+- `crisis_command/operations/scenario.py` seeds the default synthetic flood exercise on a
+  Richmond-inspired grid: 6 incidents, 8 resources, and one open river crossing. The
+  "Confirm main street bridge closure" control files and confirms an ordinary report; committed
+  missions that lose their route are released and the plan is recomputed in full. Incidents
+  can require carrying people, and boats and ambulances have capacity. The planner serves
+  incidents greedily in a stated, configurable priority order (a simulator setting, not
+  triage doctrine) and explains every unmet need.
 - `crisis_command/api/` exposes the command service over HTTP with FastAPI. Grid
   coordinates are projected onto a Richmond-inspired map area for display only.
 - `app/` is the dashboard (Next.js, React, MapLibre) with a persistent SIMULATION label:

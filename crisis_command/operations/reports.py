@@ -34,6 +34,7 @@ class ReportFields:
     road_id: str | None = None
     road_closed: bool | None = None
     certainty: str | None = None
+    people: int | None = None
 
     @classmethod
     def from_mapping(cls, data: dict[str, Any]) -> "ReportFields":
@@ -51,6 +52,7 @@ class ReportFields:
             road_id=_clean(data.get("road_id")),
             road_closed=data.get("road_closed") if isinstance(data.get("road_closed"), bool) else None,
             certainty=_clean(data.get("certainty")),
+            people=_count(data.get("people")),
         )
 
     def merged(self, update: "ReportFields") -> "ReportFields":
@@ -62,6 +64,15 @@ class ReportFields:
                 if value is not None
             },
         )
+
+
+def _count(value: Any) -> int | None:
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
 
 
 def _clean(value: Any) -> str | None:
@@ -117,6 +128,10 @@ def validate_fields(
                 missing.append(name)
         if not fields.required_services:
             missing.append("required_services")
+        if "rescue" in (fields.required_services or ()) and fields.people is None:
+            missing.append("people")
+        if fields.people is not None and fields.people < 0:
+            errors.append("People affected cannot be negative.")
         if fields.severity is not None and fields.severity not in SEVERITIES:
             errors.append(f"Severity must be one of {', '.join(SEVERITIES)}.")
         if fields.location is not None and fields.location not in context.places:

@@ -80,6 +80,7 @@ export function IncidentList({ incidents }: { incidents: Incident[] }) {
             </div>
             <div className="meta">
               {incident.severity} · needs {incident.required_services.join(", ") || "any unit"}
+              {incident.people > 0 && ` · ${incident.people} people`}
               {incident.assigned_service_ids.length > 0 && ` · ${incident.assigned_service_ids.join(", ")}`}
             </div>
           </div>
@@ -99,7 +100,9 @@ export function ResourceList({ services }: { services: Service[] }) {
           <div className="grow">
             <div className="title">{service.name}</div>
             <div className="meta">
-              {service.capabilities.join(", ")} · grid ({service.location.x.toFixed(1)}, {service.location.y.toFixed(1)})
+              {service.capabilities.join(", ")}
+              {service.capacity > 0 && ` · carries ${service.capacity}`} · grid ({service.location.x.toFixed(1)},{" "}
+              {service.location.y.toFixed(1)})
               {service.assigned_incident_id && !service.route && " · no open route"}
             </div>
           </div>
@@ -123,6 +126,7 @@ const EMPTY_FIELDS: ReportFields = {
   road_id: null,
   road_closed: null,
   certainty: null,
+  people: null,
 };
 
 function FieldsEditor({ value, onChange, options }: {
@@ -162,6 +166,16 @@ function FieldsEditor({ value, onChange, options }: {
               <option value="">unknown</option>
               {options.places.map((place) => <option key={place}>{place}</option>)}
             </select>
+          </label>
+          <label>
+            People to move
+            <input
+              type="number"
+              min={0}
+              value={value.people ?? ""}
+              placeholder="unknown"
+              onChange={(e) => set({ people: e.target.value === "" ? null : Number(e.target.value) })}
+            />
           </label>
           <fieldset>
             <legend>Needs</legend>
@@ -350,11 +364,20 @@ function ReportCard({ report, options, busy, onClarify, onConfirm, onReject }: {
 
 // ---------- Review ----------
 
-const CHANGE_LABEL = { new: "New", reassigned: "Changed", dropped: "Dropped", unchanged: "Kept" };
+const CHANGE_LABEL: Record<Proposal["changes"][number]["change"], string> = {
+  invalidated: "Invalidated",
+  reassigned: "Changed",
+  replacement: "Replacement",
+  dropped: "Dropped",
+  new: "New",
+  rerouted: "Rerouted",
+  unchanged: "Kept",
+};
 
-export function ReviewPanel({ plan, worldVersion, busy, onApprove, onReject, onRecompute }: {
+export function ReviewPanel({ plan, worldVersion, priorityRule, busy, onApprove, onReject, onRecompute }: {
   plan: Proposal | null;
   worldVersion: number;
+  priorityRule: string;
   busy: boolean;
   onApprove: (plan: Proposal) => void;
   onReject: (plan: Proposal, reason: string) => void;
@@ -384,6 +407,19 @@ export function ReviewPanel({ plan, worldVersion, busy, onApprove, onReject, onR
         {stale ? <span className="error-text"> · world is now v{worldVersion} (stale)</span> : " (current)"} ·{" "}
         {plan.valid ? "all hard constraints pass" : `${failed.length} constraint checks failed`}
       </div>
+      <div className="meta">Priority rule (simulator setting): {priorityRule}</div>
+      {plan.invalidated.length > 0 && (
+        <div className="unmet">
+          <strong>Missions invalidated by the latest change:</strong>
+          <ul className="rationale">
+            {plan.invalidated.map((mission) => (
+              <li key={mission.incident_id}>
+                {mission.incident_id} ({mission.service_ids.join(", ")}): {mission.cause}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <h3 className="sub">Specialists</h3>
       <div className="agents">
@@ -404,7 +440,9 @@ export function ReviewPanel({ plan, worldVersion, busy, onApprove, onReject, onR
       {plan.assignments.length === 0 && <p className="muted">No new dispatches proposed.</p>}
       <ul className="list">
         {plan.changes.map((change) => {
-          const dispatch = plan.assignments.find((item) => item.service_id === change.service_id);
+          const dispatch = change.incident_id
+            ? plan.assignments.find((item) => item.service_id === change.service_id)
+            : undefined;
           return (
             <li key={`${change.service_id}-${change.change}`} className={`change change-${change.change}`}>
               <div className="row">

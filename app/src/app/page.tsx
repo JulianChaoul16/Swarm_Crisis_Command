@@ -120,6 +120,17 @@ export default function Dashboard() {
           <button className={view === "table" ? "active" : ""} onClick={() => changeView("table")}>Table</button>
         </div>
         <div className="actions">
+          {world?.disruptions.map((disruption) => (
+            <button
+              key={disruption.key}
+              className="danger"
+              title="Files the scripted report and confirms it through normal intake."
+              disabled={busy || disruption.in_effect}
+              onClick={() => run(() => api.injectDisruption(disruption.key), `${disruption.label}: confirmed through intake; plan recomputed.`)}
+            >
+              {disruption.label}
+            </button>
+          ))}
           <button disabled={!world || busy || playing || world.all_resolved} onClick={() => run(api.advance)}>
             Advance clock
           </button>
@@ -206,6 +217,7 @@ export default function Dashboard() {
               <ReviewPanel
                 plan={world.current_plan}
                 worldVersion={world.version}
+                priorityRule={world.priority_rule}
                 busy={busy}
                 onApprove={(plan) => run(() => api.approve(plan.id, plan.world_version), `${plan.id} approved and committed.`)}
                 onReject={(plan, reason) => run(() => api.rejectPlan(plan.id, reason), `${plan.id} rejected.`)}

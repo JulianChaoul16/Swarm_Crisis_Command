@@ -23,7 +23,7 @@ from ..model import Incident, IncidentStatus, Severity
 from ..planner import Planner
 from ..simulation import Simulation, World
 from .feasibility import all_passed, check_plan
-from .plans import PlanProposal, PlanStatus, diff_plans
+from .plans import InvalidatedMission, PlanProposal, PlanStatus, diff_plans
 from .reports import (
     REPORT_TYPES,
     SEVERITIES,
@@ -33,7 +33,7 @@ from .reports import (
     ReportStatus,
     evaluate,
 )
-from .scenario import DEMO_SCENARIO, Scenario
+from .scenario import FLOOD_SCENARIO, Scenario
 from .store import OperationsStore
 
 MAX_PROPOSAL_ATTEMPTS = 3
@@ -49,6 +49,7 @@ EXTRACTION_SCHEMA: dict[str, Any] = {
         "road_id": {"type": ["string", "null"]},
         "road_closed": {"type": ["boolean", "null"]},
         "certainty": {"type": ["string", "null"], "enum": ["confirmed", "possible", None]},
+        "people": {"type": ["integer", "null"]},
     },
     "required": ["report_type"],
 }
@@ -79,7 +80,7 @@ def _now() -> datetime:
 class CommandService:
     def __init__(
         self,
-        scenario: Scenario = DEMO_SCENARIO,
+        scenario: Scenario = FLOOD_SCENARIO,
         client: ModelClient | None = None,
         store: OperationsStore | None = None,
         agent_timeout: float = DEFAULT_AGENT_TIMEOUT_SECONDS,
@@ -103,6 +104,8 @@ class CommandService:
             self._reports: dict[str, Report] = {}
             self._plans: dict[str, PlanProposal] = {}
             self.current_plan_id: str | None = None
+            # Missions released since the last proposal; explained in its diff.
+            self._invalidated: list[InvalidatedMission] = []
             self._persisted_events = 0
             self.store.start_run(self.run_id, self.scenario.name, _now().isoformat())
             self.world._append_event(
@@ -146,11 +149,13 @@ class CommandService:
             reports = dict(self._reports)
             plans = {plan_id: replace(plan) for plan_id, plan in self._plans.items()}
             current = self.current_plan_id
+            invalidated = list(self._invalidated)
             try:
                 yield
             except Exception:
                 self.world.rollback(checkpoint)
                 self._reports, self._plans, self.current_plan_id = reports, plans, current
+                self._invalidated = invalidated
                 raise
 
     # ----- intake --------------------------------------------------------
@@ -251,12 +256,26 @@ class CommandService:
                     location=self.scenario.places[fields.location],
                     severity=Severity[fields.severity.upper()],
                     required_services=frozenset(fields.required_services or ()),
+                    people=fields.people or 0,
                 )
                 self.world.add_incident(incident, reason)
                 report = replace(report, linked_incident_id=incident.id)
             else:
                 self.world.city.set_road_closed(fields.road_id, fields.road_closed, reason)
                 report = replace(report, linked_road_id=fields.road_id)
+                cause = (
+                    f"{fields.road_id} {'closed' if fields.road_closed else 'reopened'} "
+                    f"(report {report.id}, {report.source})."
+                )
+                for incident_id, service_ids, blocked in self.simulation.release_unreachable_missions(cause):
+                    self._invalidated.append(
+                        InvalidatedMission(
+                            incident_id,
+                            service_ids,
+                            blocked,
+                            f"Mission to {incident_id} has no open route after {cause}",
+                        )
+                    )
             report = replace(report, status=ReportStatus.CONFIRMED)
             self._reports[report.id] = report
             self.world._append_event(
@@ -281,6 +300,14 @@ class CommandService:
             self.world._append_event("report_rejected", (report.id,), reason, actor=actor)
             self._commit(reports=(report,))
         return report
+
+    def inject_disruption(self, key: str, actor: str = "operator") -> Report:
+        """Scenario control: file the scripted report and confirm it through normal intake."""
+        disruption = self.scenario.disruptions.get(key)
+        if disruption is None:
+            raise NotFoundError(f"Scenario {self.scenario.name!r} has no disruption {key!r}.")
+        report = self.submit_report(disruption.content, disruption.source, fields=disruption.fields)
+        return self.confirm_report(report.id, actor=actor)
 
     def _open_report(self, report_id: str) -> Report:
         report = self._reports.get(report_id)
@@ -352,12 +379,19 @@ class CommandService:
             state_signature=snapshot.state_signature,
             plan=plan,
             checks=checks,
-            changes=diff_plans(plan, comparable.plan if comparable else None),
+            changes=diff_plans(
+                plan,
+                comparable.plan if comparable else None,
+                self.world.city,
+                tuple(self._invalidated),
+            ),
+            invalidated=tuple(self._invalidated),
             agent_findings=findings,
             created_at=_now(),
             previous_plan_id=previous.id if previous else None,
             status=PlanStatus.PROPOSED if all_passed(checks) else PlanStatus.INVALID,
         )
+        self._invalidated = []
         if previous is not None and previous.status == PlanStatus.PROPOSED:
             previous.status = PlanStatus.SUPERSEDED
         self._plans[proposal.id] = proposal

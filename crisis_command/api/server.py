@@ -107,6 +107,12 @@ def reject_report(report_id: str, payload: Decision) -> dict[str, Any]:
     return _state()
 
 
+@app.post("/api/scenario/disruptions/{key}")
+def inject_disruption(key: str) -> dict[str, Any]:
+    service.inject_disruption(key)
+    return _state()
+
+
 @app.post("/api/plans/propose")
 def propose() -> dict[str, Any]:
     if service.propose() is None:

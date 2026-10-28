@@ -27,6 +27,7 @@ def serialize_incident(
         "severity_level": int(incident.severity),
         "status": incident.status.value,
         "reported_tick": reported_tick,
+        "people": incident.people,
         "required_services": sorted(incident.required_services),
         "location": _coordinate(incident.location),
         "position": to_lng_lat(incident.location),
@@ -62,6 +63,7 @@ def serialize_service(
         "name": service.name,
         "capabilities": sorted(service.capabilities),
         "speed": service.speed,
+        "capacity": service.capacity,
         "available": service.available,
         "assigned_incident_id": service.assigned_incident_id,
         "location": _coordinate(service.location),
@@ -105,6 +107,7 @@ def serialize_proposal(proposal: PlanProposal) -> dict[str, Any]:
         "rationale": list(plan.rationale),
         "checks": [asdict(check) for check in proposal.checks],
         "changes": [asdict(change) for change in proposal.changes],
+        "invalidated": [asdict(mission) for mission in proposal.invalidated],
         "agents": [
             {
                 "agent": finding.agent,
@@ -159,6 +162,13 @@ def serialize_event(event: WorldEvent) -> dict[str, Any]:
     }
 
 
+def _disruption_in_effect(fields: dict[str, Any], world) -> bool:
+    if fields.get("report_type") != "road_status" or world.city is None:
+        return False
+    road = next((road for road in world.city.roads if road.id == fields.get("road_id")), None)
+    return road is not None and road.is_closed == fields.get("road_closed")
+
+
 def serialize_state(service: CommandService) -> dict[str, Any]:
     world = service.world
     incidents = list(world.incidents)
@@ -190,6 +200,15 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
         ],
         "roads": [serialize_road(road) for road in world.city.roads] if world.city else [],
         "places": sorted(service.scenario.places),
+        "priority_rule": service.planner.priority_rule,
+        "disruptions": [
+            {
+                "key": key,
+                "label": disruption.label,
+                "in_effect": _disruption_in_effect(disruption.fields, world),
+            }
+            for key, disruption in service.scenario.disruptions.items()
+        ],
         "current_plan": serialize_proposal(current) if current is not None else None,
         "reports": [serialize_report(report) for report in reversed(service.reports)],
     }

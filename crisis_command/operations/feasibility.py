@@ -26,6 +26,25 @@ def _on_open_road(city: City, a: Coordinate, b: Coordinate) -> bool:
     return False
 
 
+def closed_roads_on_route(city: City | None, route: tuple[Coordinate, ...]) -> list[str]:
+    """Roads a route travels along that are now closed (evidence for why a plan changed)."""
+    if city is None:
+        return []
+    closed: list[str] = []
+    for a, b in zip(route, route[1:]):
+        carrying = [
+            road
+            for road in city.roads
+            if all(
+                point in (road.start, road.end) or City._road_projection(point, road) is not None
+                for point in (a, b)
+            )
+        ]
+        if carrying and all(road.is_closed for road in carrying):
+            closed.extend(road.id for road in carrying if road.id not in closed)
+    return closed
+
+
 def check_plan(
     plan: ResponsePlan,
     incidents: Iterable[Incident],
@@ -42,6 +61,7 @@ def check_plan(
             "resources_available",
             "no_double_booking",
             "capabilities_cover",
+            "capacity_sufficient",
             "routes_open",
             "unmet_needs_reported",
         )
@@ -49,6 +69,7 @@ def check_plan(
 
     seen: set[str] = set()
     coverage: dict[str, set[str]] = {}
+    carried: dict[str, int] = {}
     for dispatch in plan.assignments:
         incident = incidents_by_id.get(dispatch.incident_id)
         service = services_by_id.get(dispatch.service_id)
@@ -67,6 +88,7 @@ def check_plan(
                 f"{service.id} is already on {service.assigned_incident_id}"
             )
         coverage.setdefault(incident.id, set()).update(service.capabilities)
+        carried[incident.id] = carried.get(incident.id, 0) + service.capacity
 
         route = dispatch.route
         if not route or route[0] != service.location or route[-1] != incident.location:
@@ -83,6 +105,11 @@ def check_plan(
         if missing:
             problems["capabilities_cover"].append(
                 f"{incident_id} still needs {', '.join(sorted(missing))}"
+            )
+        people = incidents_by_id[incident_id].people
+        if carried[incident_id] < people:
+            problems["capacity_sufficient"].append(
+                f"{incident_id} units carry {carried[incident_id]} of {people} people"
             )
 
     open_ids = {

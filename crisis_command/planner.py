@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Callable
 
 import networkx as nx
 
@@ -38,14 +39,29 @@ class ResponsePlan:
     unknown_road_ids: tuple[str, ...] = ()
 
 
+def default_priority(incident: Incident) -> tuple[object, ...]:
+    return (-incident.severity, -incident.people, incident.id)
+
+
+DEFAULT_PRIORITY_RULE = "severity (critical first), then people affected, then incident id"
+
+
 class Planner:
-    """Make explainable dispatch decisions using the authoritative state agent."""
+    """Make explainable dispatch decisions using the authoritative state agent.
+
+    Incidents are served greedily in priority order. The priority rule is a simulator
+    setting, not validated triage doctrine; pass `priority_key` and `priority_rule` to change it.
+    """
 
     def __init__(
         self,
         evidence_arbitrator: EvidenceArbitrator | None = None,
         state_agent: AuthoritativeStateAgent | None = None,
+        priority_key: Callable[[Incident], tuple[object, ...]] = default_priority,
+        priority_rule: str = DEFAULT_PRIORITY_RULE,
     ) -> None:
+        self.priority_key = priority_key
+        self.priority_rule = priority_rule
         if evidence_arbitrator is not None and state_agent is not None:
             if evidence_arbitrator is not state_agent.arbitrator:
                 raise ValueError(
@@ -53,6 +69,29 @@ class Planner:
                 )
         self.state_agent = state_agent or AuthoritativeStateAgent(evidence_arbitrator)
         self.evidence_arbitrator = self.state_agent.arbitrator
+
+    @staticmethod
+    def _shortage_reason(capability, incident, services, assignments, route_for) -> str:
+        """Explain why no unit covers `capability`, naming any higher-priority tradeoff."""
+        holders = [service for service in services if capability in service.capabilities]
+        if not holders:
+            return f"no resource provides {capability}"
+        planned = {dispatch.service_id: dispatch.incident_id for dispatch in assignments}
+        reachable = [service for service in holders if route_for(service, incident) is not None]
+        competing = sorted(
+            {planned[service.id] for service in reachable if service.id in planned}
+        )
+        if competing:
+            return (
+                f"{capability} units that can reach it are committed to higher-priority "
+                f"{', '.join(competing)}"
+            )
+        busy = sorted(
+            {service.assigned_incident_id for service in reachable if not service.available}
+        )
+        if busy:
+            return f"{capability} units that can reach it are already on {', '.join(busy)}"
+        return f"no {capability} unit can reach it over open roads"
 
     def plan(
         self,
@@ -73,12 +112,12 @@ class Planner:
         )
         open_incidents = sorted(
             (incident for incident in incidents if incident.status == IncidentStatus.OPEN),
-            key=lambda incident: (-incident.severity, incident.id),
+            key=self.priority_key,
         )
         available = {service.id: service for service in services if service.available}
         assignments: list[Dispatch] = []
         unassigned: list[str] = []
-        rationale: list[str] = []
+        rationale: list[str] = [f"Priority rule: {self.priority_rule}."]
 
         if state_review.ignored_stale_claims:
             references = ", ".join(
@@ -185,19 +224,47 @@ class Planner:
                 selected_routes[service.id] = candidate_routes[service.id]
                 remaining_capabilities.difference_update(service.capabilities)
 
-            if remaining_capabilities:
+            carried = sum(service.capacity for service in selected)
+            while not remaining_capabilities and carried < incident.people:
+                carriers = {
+                    service.id: route
+                    for service in available.values()
+                    if service.capacity > 0 and service not in selected
+                    if (route := route_for(service, incident)) is not None
+                }
+                if not carriers:
+                    break
+                service = min(
+                    (available[service_id] for service_id in carriers),
+                    key=lambda candidate: (
+                        carriers[candidate.id][1] / candidate.speed,
+                        -candidate.capacity,
+                        candidate.id,
+                    ),
+                )
+                selected.append(service)
+                selected_routes[service.id] = carriers[service.id]
+                carried += service.capacity
+
+            if remaining_capabilities or carried < incident.people:
                 unassigned.append(incident.id)
                 if effective_city is None and incident.severity >= Severity.HIGH:
                     reason = "safety-critical routing is blocked because road status is unknown"
+                elif remaining_capabilities:
+                    reason = "; ".join(
+                        self._shortage_reason(
+                            capability, incident, services, assignments, route_for
+                        )
+                        for capability in sorted(remaining_capabilities)
+                    )
                 else:
                     reason = (
-                        "no reachable available services cover "
-                        f"{', '.join(sorted(remaining_capabilities))}"
+                        f"reachable units can carry {carried} of {incident.people} people"
                     )
                 rationale.append(f"Incident {incident.id} left unassigned; {reason}.")
                 continue
 
-            if not incident.required_services:
+            if not incident.required_services and not selected:
                 candidate_routes = {
                     service.id: route
                     for service in available.values()
@@ -251,6 +318,8 @@ class Planner:
 
 
 __all__ = [
+    "DEFAULT_PRIORITY_RULE",
+    "default_priority",
     "AuthoritativeStateAgent",
     "Claim",
     "ClaimResolution",

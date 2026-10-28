@@ -53,6 +53,31 @@ Known limitations after Gate A:
 - Map still loads external tiles (Gate C).
 
 ## Gate B — adaptation
+
+- [x] Seeded flood scenario: 6 incidents, 8 resources, river crossing only at the main street
+  bridge (upriver bridge closed at seed) (`operations/scenario.py`)
+- [x] Capacity modeled: incident `people`, unit `capacity`; planner adds carriers and reports
+  "can carry X of Y people"; feasibility rule `capacity_sufficient`. Rescue reports without a
+  head count are held for clarification. Destination (shelter) capacity is not modeled.
+- [x] Priority rule explicit and configurable (`Planner(priority_key=..., priority_rule=...)`),
+  stated in every plan's rationale and in the Review panel
+- [x] Confirmed closure releases committed missions with no open route immediately
+  (`Simulation.release_unreachable_missions`, `mission_invalidated` events)
+- [x] Full recompute after the change; diff explains each change (closed road on the earlier
+  route, replacement, reassignment, reroute) and unmet needs name the higher-priority tradeoff
+- [x] Bridge closure is a scenario control that files and confirms an ordinary report
+  (`CommandService.inject_disruption`, `POST /api/scenario/disruptions/bridge_closure`)
+- [x] Evidence: 64 tests OK (`tests/test_flood_scenario.py` adds 7). Browser: P-001 covers all
+  6 incidents → bridge closure → P-001 stale, P-002 at v2 moves fire-1 to incident-3, drops
+  fire-2 and medic-1 (route used main-street-bridge), leaves incident-4 and incident-6 unmet
+  with tradeoffs → P-002 approved → P-003 shows the remaining unmet needs.
+
+Known limitations after Gate B:
+- Greedy priority-order assignment, not a global optimizer; committed missions are not
+  preempted for higher-priority needs (shown as "already on incident-N").
+- One active mission per resource; units return to available on arrival (no transport to
+  a destination is simulated).
+
 ## Gate C — presentation
 ## Gate D — proof
 ## Gate E — submission package

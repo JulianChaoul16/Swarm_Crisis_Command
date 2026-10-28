@@ -189,6 +189,8 @@ class Incident:
     severity: Severity
     required_services: frozenset[str] = frozenset()
     status: IncidentStatus = IncidentStatus.OPEN
+    # People who must be carried away; 0 when transport is not part of the response.
+    people: int = 0
 
     def __post_init__(self) -> None:
         if not self.id.strip():
@@ -197,6 +199,8 @@ class Incident:
             raise ValueError("Incident kind cannot be empty.")
         if any(not service.strip() for service in self.required_services):
             raise ValueError("Required service names cannot be empty.")
+        if self.people < 0:
+            raise ValueError("Incident people count cannot be negative.")
 
 
 @dataclass
@@ -207,6 +211,8 @@ class EmergencyService:
     capabilities: frozenset[str]
     speed: float = 1.0
     assigned_incident_id: str | None = None
+    # People the unit can carry in one trip; 0 for units that do not transport people.
+    capacity: int = 0
 
     def __post_init__(self) -> None:
         if not self.id.strip():
@@ -215,6 +221,8 @@ class EmergencyService:
             raise ValueError("Emergency service name cannot be empty.")
         if not isfinite(self.speed) or self.speed <= 0:
             raise ValueError("Emergency service speed must be finite and greater than zero.")
+        if self.capacity < 0:
+            raise ValueError("Emergency service capacity cannot be negative.")
         if any(not capability.strip() for capability in self.capabilities):
             raise ValueError("Capability names cannot be empty.")
 

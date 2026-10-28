@@ -9,6 +9,7 @@ export type Incident = {
   severity_level: number;
   status: "open" | "assigned" | "resolved";
   reported_tick: number;
+  people: number;
   required_services: string[];
   location: { x: number; y: number };
   position: LngLat;
@@ -20,6 +21,7 @@ export type Service = {
   name: string;
   capabilities: string[];
   speed: number;
+  capacity: number;
   available: boolean;
   assigned_incident_id: string | null;
   location: { x: number; y: number };
@@ -39,7 +41,7 @@ export type Check = { rule: string; passed: boolean; detail: string };
 export type Change = {
   service_id: string;
   incident_id: string | null;
-  change: "new" | "unchanged" | "reassigned" | "dropped";
+  change: "invalidated" | "reassigned" | "replacement" | "dropped" | "new" | "rerouted" | "unchanged";
   previous_incident_id: string | null;
   explanation: string;
 };
@@ -72,6 +74,7 @@ export type Proposal = {
   rationale: string[];
   checks: Check[];
   changes: Change[];
+  invalidated: { incident_id: string; service_ids: string[]; blocked_service_ids: string[]; cause: string }[];
   agents: AgentRun[];
 };
 
@@ -84,6 +87,7 @@ export type ReportFields = {
   road_id: string | null;
   road_closed: boolean | null;
   certainty: "confirmed" | "possible" | null;
+  people: number | null;
 };
 
 export type Report = {
@@ -117,6 +121,8 @@ export type WorldState = {
   services: Service[];
   roads: Road[];
   places: string[];
+  priority_rule: string;
+  disruptions: { key: string; label: string; in_effect: boolean }[];
   current_plan: Proposal | null;
   reports: Report[];
 };

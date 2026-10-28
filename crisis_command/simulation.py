@@ -564,6 +564,57 @@ class Simulation:
                 "Simulation advanced by one time step.",
             )
 
+    def release_unreachable_missions(
+        self,
+        cause: str,
+        actor: str = "coordinator",
+    ) -> list[tuple[str, tuple[str, ...], tuple[str, ...]]]:
+        """Release committed missions that no open route can complete.
+
+        Returns (incident id, released service ids, service ids without a route) per mission.
+        """
+        with self.world._lock:
+            released = []
+            for incident in self.world.incidents:
+                if incident.status != IncidentStatus.ASSIGNED:
+                    continue
+                assigned = [
+                    service
+                    for service in self.world.services
+                    if service.assigned_incident_id == incident.id
+                ]
+                blocked = tuple(
+                    service.id
+                    for service in assigned
+                    if not self._reachable(service.location, incident.location)
+                )
+                if not blocked:
+                    continue
+                incident.status = IncidentStatus.OPEN
+                for service in assigned:
+                    service.assigned_incident_id = None
+                released.append((incident.id, tuple(service.id for service in assigned), blocked))
+            if released:
+                self.world.version += 1
+                for incident_id, service_ids, blocked in released:
+                    self.world._append_event(
+                        "mission_invalidated",
+                        (incident_id, *service_ids),
+                        f"No open route for {', '.join(blocked)}; mission released for "
+                        f"replanning. {cause}",
+                        actor=actor,
+                    )
+            return released
+
+    def _reachable(self, start: Coordinate, end: Coordinate) -> bool:
+        if self.world.city is None:
+            return True
+        try:
+            self.world.city.shortest_route(start, end)
+            return True
+        except (nx.NetworkXNoPath, nx.NodeNotFound):
+            return False
+
     def _effective_city(self, plan: ResponsePlan) -> City | None:
         applicable_resolutions = plan.claim_resolutions
         if plan.world_version != self.world.version:

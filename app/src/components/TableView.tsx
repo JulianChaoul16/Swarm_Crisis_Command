@@ -32,7 +32,7 @@ export default function TableView({ world, events }: { world: WorldState; events
         {tab === "Incidents" && (
           <table>
             <thead>
-              <tr><th>Severity</th><th>Incident</th><th>ID</th><th>Status</th><th>Needs</th><th>Assigned</th><th>Reported</th><th>Grid</th></tr>
+              <tr><th>Severity</th><th>Incident</th><th>ID</th><th>Status</th><th>Needs</th><th>People</th><th>Assigned</th><th>Reported</th><th>Grid</th></tr>
             </thead>
             <tbody>
               {orderIncidents(world.incidents).map((incident) => (
@@ -42,6 +42,7 @@ export default function TableView({ world, events }: { world: WorldState; events
                   <td className="mono">{incident.id}</td>
                   <td><span className={`pill status-${incident.status}`}>{incident.status}</span></td>
                   <td>{incident.required_services.join(", ") || "any"}</td>
+                  <td>{incident.people || "—"}</td>
                   <td>{incident.assigned_service_ids.join(", ") || "—"}</td>
                   <td>tick {incident.reported_tick}</td>
                   <td className="mono">{incident.location.x}, {incident.location.y}</td>
@@ -53,7 +54,7 @@ export default function TableView({ world, events }: { world: WorldState; events
         {tab === "Resources" && (
           <table>
             <thead>
-              <tr><th>Resource</th><th>ID</th><th>Capabilities</th><th>Status</th><th>Mission</th><th>Grid</th></tr>
+              <tr><th>Resource</th><th>ID</th><th>Capabilities</th><th>Carries</th><th>Status</th><th>Mission</th><th>Grid</th></tr>
             </thead>
             <tbody>
               {world.services.map((service) => (
@@ -61,6 +62,7 @@ export default function TableView({ world, events }: { world: WorldState; events
                   <td>{service.name}</td>
                   <td className="mono">{service.id}</td>
                   <td>{service.capabilities.join(", ")}</td>
+                  <td>{service.capacity || "—"}</td>
                   <td>{service.available ? "Available" : service.route ? "En route" : "No open route"}</td>
                   <td>{service.assigned_incident_id ?? "—"}</td>
                   <td className="mono">{service.location.x.toFixed(1)}, {service.location.y.toFixed(1)}</td>
