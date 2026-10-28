@@ -64,6 +64,9 @@ A Swarm of Agents that help  Emergency Operation Managers make the best decision
   triage doctrine) and explains every unmet need.
 - `crisis_command/api/` exposes the command service over HTTP with FastAPI. Grid
   coordinates are projected onto a Richmond-inspired map area for display only.
+- The dashboard map draws the road graph without network access; the street basemap is an
+  opt-in toggle and is illustrative only. Replay mode reads a recorded run's events and world
+  snapshots back from SQLite under a RECORDED REPLAY banner; it performs no inference.
 - `app/` is the dashboard (Next.js, React, MapLibre) with a persistent SIMULATION label:
   map, report intake and clarification, plan review and approval, incidents, resources,
   and the event timeline, in a grid or table layout.
@@ -85,7 +88,7 @@ python -m crisis_command.main
 Run the dashboard with two terminals from the repository root (Node.js 20 or later):
 
 ```powershell
-python -m uvicorn crisis_command.api.server:app --reload --port 8000
+python -m uvicorn crisis_command.api.server:app --port 8000
 ```
 
 ```powershell
@@ -95,7 +98,7 @@ npm run dev
 ```
 
 Then open http://localhost:3000. The dashboard proxies `/api/*` to `http://127.0.0.1:8000`;
-set `CRISIS_API_ORIGIN` to point it elsewhere. Scripts use webpack because Windows
+set `CRISIS_API_ORIGIN` to point it elsewhere. Restart the API after Python changes; `--reload` can hang on Windows with this app. Scripts use webpack because Windows
 Application Control can block Next.js's native Turbopack bindings.
 
 Run the unit tests with:

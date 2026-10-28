@@ -122,6 +122,7 @@ export type WorldState = {
   roads: Road[];
   places: string[];
   priority_rule: string;
+  annotations: { label: string; path: LngLat[] }[];
   disruptions: { key: string; label: string; in_effect: boolean }[];
   current_plan: Proposal | null;
   reports: Report[];
@@ -137,4 +138,22 @@ export type WorldEvent = {
   entity_ids: string[];
   reason: string;
   details: Record<string, string>;
+};
+
+export type RunSummary = { id: string; scenario: string; started_at: string; event_count: number };
+
+export type ReplaySnapshot = {
+  version: number;
+  tick: number;
+  incidents: (Pick<Incident, "id" | "kind" | "severity" | "severity_level" | "status" | "position"> & {
+    required_services: string[];
+  })[];
+  services: Pick<Service, "id" | "name" | "available" | "position" | "route">[];
+  roads: Pick<Road, "id" | "is_closed" | "path">[];
+};
+
+export type ReplayData = {
+  run: RunSummary;
+  events: WorldEvent[];
+  snapshots: ReplaySnapshot[];
 };

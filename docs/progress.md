@@ -79,5 +79,24 @@ Known limitations after Gate B:
   a destination is simulated).
 
 ## Gate C — presentation
+
+- [x] Map renders offline (plain background, HTML labels, river annotation); street basemap is
+  an opt-in toggle labeled illustrative, with automatic fallback if tiles fail
+- [x] Committed routes (solid) vs proposed routes (dashed); closed roads dashed red
+- [x] Plan diff explanations cite the report that changed a road (e.g. `main-street-bridge
+  (R-001)`) as links that open that report
+- [x] Status shows clock running/paused and whether a request (planning/model calls) is in
+  flight; Run pauses automatically while a proposal awaits review
+- [x] Replay mode: `GET /api/runs`, `GET /api/runs/{id}/replay`; RECORDED REPLAY banner,
+  event scrubber, map from persisted snapshots; no inference
+- [x] Evidence: 66 tests OK (`EvidenceAndReplayTests`). Browser: offline map with proposed
+  routes → bridge closure → R-001 link opens the confirming report → replay of the earlier run
+  shows bridge closed and missions assigned at v3.
+
+Known limitations after Gate C:
+- Agent status is reported after each planning request completes (queued/running states are
+  not streamed); the UI shows "request in flight" while a request runs.
+- Replay road geometry comes from the current scenario definition.
+
 ## Gate D — proof
 ## Gate E — submission package

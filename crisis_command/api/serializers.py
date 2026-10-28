@@ -1,6 +1,7 @@
 """Convert domain objects into JSON-ready dictionaries for the dashboard."""
 
 from dataclasses import asdict
+import json
 from typing import Any
 
 import networkx as nx
@@ -162,6 +163,66 @@ def serialize_event(event: WorldEvent) -> dict[str, Any]:
     }
 
 
+def serialize_replay(service: CommandService, run_id: str) -> dict[str, Any]:
+    """Recorded events and world snapshots for one run, projected for the map."""
+    run = next((run for run in service.store.runs() if run["id"] == run_id), None)
+    if run is None:
+        return {}
+    # Road geometry comes from the scenario; snapshots record only road status.
+    geometry = (
+        {road.id: to_line([road.start, road.end]) for road in service.world.city.roads}
+        if run["scenario"] == service.scenario.name and service.world.city is not None
+        else {}
+    )
+    severity_levels = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+    snapshots = []
+    for snapshot in service.store.snapshots(run_id):
+        world = snapshot["world"]
+        snapshots.append(
+            {
+                "version": snapshot["version"],
+                "tick": snapshot["tick"],
+                "incidents": [
+                    {
+                        **incident,
+                        "severity_level": severity_levels[incident["severity"]],
+                        "position": to_lng_lat(Coordinate(*incident["location"])),
+                    }
+                    for incident in world["incidents"]
+                ],
+                "services": [
+                    {
+                        **unit,
+                        "available": unit["assigned_incident_id"] is None,
+                        "position": to_lng_lat(Coordinate(*unit["location"])),
+                        "route": None,
+                    }
+                    for unit in world["services"]
+                ],
+                "roads": [
+                    {**road, "path": geometry[road["id"]]}
+                    for road in world["roads"]
+                    if road["id"] in geometry
+                ],
+            }
+        )
+    events = [
+        {
+            "sequence": row["sequence"],
+            "tick": None,
+            "version": row["world_version"],
+            "kind": row["event_type"],
+            "actor": row["actor"],
+            "recorded_at": row["occurred_at"],
+            "entity_ids": json.loads(row["entity_ids_json"]),
+            "reason": row["message"],
+            "details": json.loads(row["payload_json"]),
+        }
+        for row in service.store.events(run_id)
+    ]
+    return {"run": run, "events": events, "snapshots": snapshots}
+
+
 def _disruption_in_effect(fields: dict[str, Any], world) -> bool:
     if fields.get("report_type") != "road_status" or world.city is None:
         return False
@@ -201,6 +262,10 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
         "roads": [serialize_road(road) for road in world.city.roads] if world.city else [],
         "places": sorted(service.scenario.places),
         "priority_rule": service.planner.priority_rule,
+        "annotations": [
+            {"label": label, "path": to_line(points)}
+            for label, points in service.scenario.annotations
+        ],
         "disruptions": [
             {
                 "key": key,

@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from ..operations import CommandError, StaleApprovalError
-from .serializers import serialize_event, serialize_state
+from .serializers import serialize_event, serialize_replay, serialize_state
 from .session import service
 
 app = FastAPI(title="Crisis Command API")
@@ -69,6 +69,19 @@ def get_state() -> dict[str, Any]:
 def get_events(limit: int = 200) -> list[dict[str, Any]]:
     events = service.world.event_log[-limit:] if limit > 0 else ()
     return [serialize_event(event) for event in reversed(events)]
+
+
+@app.get("/api/runs")
+def list_runs() -> list[dict[str, Any]]:
+    return service.store.runs()
+
+
+@app.get("/api/runs/{run_id}/replay")
+def replay(run_id: str) -> dict[str, Any]:
+    data = serialize_replay(service, run_id)
+    if not data:
+        raise HTTPException(404, f"Unknown run {run_id}.")
+    return data
 
 
 @app.post("/api/reset")

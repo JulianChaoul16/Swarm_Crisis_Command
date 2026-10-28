@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import CrisisMap from "@/components/CrisisMap";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import CrisisMap, { type MapData } from "@/components/CrisisMap";
+import ReplayView from "@/components/ReplayView";
 import TableView from "@/components/TableView";
 import {
   IncidentList,
@@ -17,6 +18,7 @@ import type { WorldEvent, WorldState } from "@/lib/types";
 
 const PLAY_INTERVAL_MS = 1500;
 const VIEW_KEY = "crisis-command:view";
+const BASEMAP_KEY = "crisis-command:basemap";
 type View = "grid" | "table";
 
 export default function Dashboard() {
@@ -29,6 +31,8 @@ export default function Dashboard() {
   const [view, setView] = useState<View>("grid");
   const [mapExpanded, setMapExpanded] = useState(false);
   const [selectedRoadId, setSelectedRoadId] = useState<string | null>(null);
+  const [mode, setMode] = useState<"live" | "replay">("live");
+  const [basemap, setBasemap] = useState(false);
 
   const refresh = useCallback(async () => {
     const [state, log] = await Promise.all([api.state(), api.events()]);
@@ -65,6 +69,7 @@ export default function Dashboard() {
     try {
       const saved = localStorage.getItem(VIEW_KEY);
       if (saved === "grid" || saved === "table") setView(saved);
+      setBasemap(localStorage.getItem(BASEMAP_KEY) === "on");
     } catch {}
     refresh().catch((caught) =>
       setError(`Cannot reach the Crisis Command API (${caught instanceof Error ? caught.message : caught}). Start it with: python -m uvicorn crisis_command.api.server:app --port 8000`),
@@ -100,6 +105,25 @@ export default function Dashboard() {
     } catch {}
   };
 
+  const toggleBasemap = (on: boolean) => {
+    setBasemap(on);
+    try {
+      localStorage.setItem(BASEMAP_KEY, on ? "on" : "off");
+    } catch {}
+  };
+
+  const mapData: MapData | null = useMemo(
+    () =>
+      world && {
+        incidents: world.incidents,
+        services: world.services,
+        roads: world.roads,
+        annotations: world.annotations,
+        proposedRoutes: world.current_plan?.status === "proposed" ? world.current_plan.assignments : [],
+      },
+    [world],
+  );
+
   const selectedRoad = world?.roads.find((road) => road.id === selectedRoadId) ?? null;
 
   return (
@@ -114,11 +138,26 @@ export default function Dashboard() {
           <span>Tick {world?.tick ?? "–"}</span>
           <span>World v{world?.version ?? "–"}</span>
           <span className={world?.model === "unavailable" ? "error-text" : ""}>Model: {world?.model ?? "–"}</span>
+          <span>Clock: {playing ? "running" : "paused"}</span>
+          <span className={busy ? "busy" : ""}>{busy ? "Request in flight (planning/model calls)…" : "No requests in flight"}</span>
         </div>
+        <div className="segmented" role="tablist" aria-label="Mode">
+          <button className={mode === "live" ? "active" : ""} onClick={() => { setNotice(null); setMode("live"); }}>Live</button>
+          <button className={mode === "replay" ? "active" : ""} onClick={() => { setPlaying(false); setNotice(null); setMode("replay"); }}>
+            Replay
+          </button>
+        </div>
+        <label className="check nowrap" title="Street tiles from OpenFreeMap; illustrative context only. The road graph works without them.">
+          <input type="checkbox" checked={basemap} onChange={(e) => toggleBasemap(e.target.checked)} />
+          Street basemap (illustrative)
+        </label>
+        {mode === "live" && (
         <div className="segmented" role="tablist" aria-label="Layout">
           <button className={view === "grid" ? "active" : ""} onClick={() => changeView("grid")}>Grid</button>
           <button className={view === "table" ? "active" : ""} onClick={() => changeView("table")}>Table</button>
         </div>
+        )}
+        {mode === "live" && (
         <div className="actions">
           {world?.disruptions.map((disruption) => (
             <button
@@ -149,12 +188,19 @@ export default function Dashboard() {
             Reset
           </button>
         </div>
+        )}
       </header>
 
       {error && <div className="banner error">{error}</div>}
       {notice && <div className="banner">{notice}</div>}
 
-      {world && (
+      {world && mode === "replay" && (
+        <main className="content">
+          <ReplayView basemap={basemap} currentRunId={world.run_id} annotations={world.annotations} />
+        </main>
+      )}
+
+      {world && mode === "live" && (
         <main className="content">
           <KpiStrip world={world} />
 
@@ -172,7 +218,16 @@ export default function Dashboard() {
               }
             >
               <div className="map-wrap">
-                <CrisisMap world={world} selectedRoadId={selectedRoadId} onSelectRoad={setSelectedRoadId} />
+                <CrisisMap
+                  data={mapData}
+                  basemap={basemap}
+                  onBasemapError={() => {
+                    toggleBasemap(false);
+                    setNotice("Street basemap unavailable; showing the offline road graph.");
+                  }}
+                  selectedRoadId={selectedRoadId}
+                  onSelectRoad={setSelectedRoadId}
+                />
                 {selectedRoad && (
                   <div className="map-overlay road-card">
                     <div className="row">
@@ -209,6 +264,9 @@ export default function Dashboard() {
                   <span><i className="dot unit-busy" /> En route</span>
                   <span><i className="dot unit-idle" /> Available</span>
                   <span><i className="swatch closed" /> Closed road</span>
+                  <span><i className="swatch committed" /> Committed route</span>
+                  <span><i className="swatch proposed" /> Proposed route</span>
+                  {basemap && <span className="muted">Basemap illustrative only</span>}
                 </div>
               </div>
             </Tile>

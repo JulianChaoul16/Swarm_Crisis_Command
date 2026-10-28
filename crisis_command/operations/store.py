@@ -205,9 +205,33 @@ class OperationsStore:
         finally:
             conn.close()
 
+    def snapshots(self, run_id: str) -> list[dict[str, Any]]:
+        conn = get_connection()
+        try:
+            rows = conn.execute(
+                "SELECT world_version, tick, snapshot_json FROM world_snapshots "
+                "WHERE run_id = ? ORDER BY world_version",
+                (run_id,),
+            ).fetchall()
+            return [
+                {"version": row["world_version"], "tick": row["tick"], "world": json.loads(row["snapshot_json"])}
+                for row in rows
+            ]
+        finally:
+            conn.close()
+
     def runs(self) -> list[dict[str, Any]]:
         conn = get_connection()
         try:
-            return [dict(row) for row in conn.execute("SELECT * FROM runs ORDER BY started_at")]
+            return [
+                dict(row)
+                for row in conn.execute(
+                    """
+                    SELECT runs.*, COUNT(events.id) AS event_count
+                    FROM runs LEFT JOIN events ON events.run_id = runs.id
+                    GROUP BY runs.id ORDER BY runs.started_at DESC
+                    """
+                )
+            ]
         finally:
             conn.close()

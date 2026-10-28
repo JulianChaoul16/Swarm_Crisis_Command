@@ -34,6 +34,32 @@ export function Tile({ title, count, actions, className = "", children }: {
 
 export const label = (value: string) => value.replaceAll("_", " ");
 
+export function openReport(id: string) {
+  const element = document.getElementById(`report-${id}`);
+  if (!element) return;
+  element.closest("details")?.setAttribute("open", "");
+  element.scrollIntoView({ behavior: "smooth", block: "center" });
+  element.classList.add("flash");
+  setTimeout(() => element.classList.remove("flash"), 1600);
+}
+
+// Report references such as "R-001" link to the report that supplied the evidence.
+export function Evidence({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(R-\d{3})/).map((part, index) =>
+        /^R-\d{3}$/.test(part) ? (
+          <a key={index} href={`#report-${part}`} className="evidence" onClick={(e) => { e.preventDefault(); openReport(part); }}>
+            {part}
+          </a>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
 export function time(iso: string) {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
@@ -289,7 +315,7 @@ export function IntakePanel({ world, busy, onSubmit, onClarify, onConfirm, onRej
           <summary>{closed.length} closed reports</summary>
           <ul className="list">
             {closed.map((report) => (
-              <li key={report.id}>
+              <li key={report.id} id={`report-${report.id}`}>
                 <div className="row">
                   <span className="title grow">{report.id} · {report.source}</span>
                   <span className={`tag report-${report.status}`}>{label(report.status)}</span>
@@ -320,7 +346,7 @@ function ReportCard({ report, options, busy, onClarify, onConfirm, onReject }: {
   const [fields, setFields] = useState<ReportFields>(report.fields);
   const [editing, setEditing] = useState(report.status !== "ready");
   return (
-    <li className="report-card">
+    <li className="report-card" id={`report-${report.id}`}>
       <div className="row">
         <span className="title grow">{report.id} · {report.source}</span>
         <span className={`tag report-${report.status}`}>{label(report.status)}</span>
@@ -414,7 +440,7 @@ export function ReviewPanel({ plan, worldVersion, priorityRule, busy, onApprove,
           <ul className="rationale">
             {plan.invalidated.map((mission) => (
               <li key={mission.incident_id}>
-                {mission.incident_id} ({mission.service_ids.join(", ")}): {mission.cause}
+                {mission.incident_id} ({mission.service_ids.join(", ")}): <Evidence text={mission.cause} />
               </li>
             ))}
           </ul>
@@ -453,7 +479,7 @@ export function ReviewPanel({ plan, worldVersion, priorityRule, busy, onApprove,
                 </span>
                 {dispatch && <span className="muted">ETA {dispatch.estimated_arrival.toFixed(1)}</span>}
               </div>
-              {change.explanation && <div className="meta">{change.explanation}</div>}
+              {change.explanation && <div className="meta"><Evidence text={change.explanation} /></div>}
             </li>
           );
         })}

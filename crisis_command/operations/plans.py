@@ -89,8 +89,19 @@ def diff_plans(
     previous: ResponsePlan | None,
     city: City | None = None,
     invalidated: tuple[InvalidatedMission, ...] = (),
+    road_evidence: dict[str, str] | None = None,
 ) -> tuple[AssignmentChange, ...]:
-    """Compare a proposal with the previous one and with missions released since then."""
+    """Compare a proposal with the previous one and with missions released since then.
+
+    `road_evidence` maps road ids to the report that changed them, cited in explanations.
+    """
+    road_evidence = road_evidence or {}
+
+    def cite(roads: list[str]) -> str:
+        return ", ".join(
+            f"{road} ({road_evidence[road]})" if road in road_evidence else road for road in roads
+        )
+
     before = {d.service_id: d for d in previous.assignments} if previous else {}
     after = {d.service_id: d for d in plan.assignments}
     earlier_by_incident: dict[str, list[str]] = {}
@@ -134,7 +145,7 @@ def diff_plans(
                 explanation = (
                     f"Same mission, new route: ETA {earlier.estimated_arrival:.1f} -> "
                     f"{dispatch.estimated_arrival:.1f}"
-                    + (f" (avoids closed {', '.join(blocked(service_id))})." if blocked(service_id) else ".")
+                    + (f" (avoids closed {cite(blocked(service_id))})." if blocked(service_id) else ".")
                 )
             else:
                 change, explanation = "unchanged", selection
@@ -143,7 +154,7 @@ def diff_plans(
             roads = blocked(service_id)
             explanation = (
                 f"Moved from {earlier.incident_id} to {incident_id}"
-                + (f"; its earlier route used closed {', '.join(roads)}" if roads else "")
+                + (f"; its earlier route used closed {cite(roads)}" if roads else "")
                 + f". {selection}"
             )
             changes.append(
@@ -152,7 +163,7 @@ def diff_plans(
         else:
             replaced = [s for s in earlier_by_incident.get(incident_id, []) if s not in after or after[s].incident_id != incident_id]
             if replaced:
-                causes = [f"{s}: route used closed {', '.join(blocked(s))}" for s in replaced if blocked(s)]
+                causes = [f"{s}: route used closed {cite(blocked(s))}" for s in replaced if blocked(s)]
                 explanation = (
                     f"Replaces {', '.join(replaced)} on {incident_id}"
                     + (f" ({'; '.join(causes)})" if causes else "")
@@ -167,7 +178,7 @@ def diff_plans(
             continue
         roads = blocked(service_id)
         explanation = (
-            (f"Route to {dispatch.incident_id} used closed {', '.join(roads)}. " if roads else "")
+            (f"Route to {dispatch.incident_id} used closed {cite(roads)}. " if roads else "")
             + outcome(dispatch.incident_id)
         )
         changes.append(AssignmentChange(service_id, None, "dropped", dispatch.incident_id, explanation))

@@ -106,6 +106,8 @@ class CommandService:
             self.current_plan_id: str | None = None
             # Missions released since the last proposal; explained in its diff.
             self._invalidated: list[InvalidatedMission] = []
+            # Road id -> report that last changed it, cited as evidence in plan diffs.
+            self.road_evidence: dict[str, str] = {}
             self._persisted_events = 0
             self.store.start_run(self.run_id, self.scenario.name, _now().isoformat())
             self.world._append_event(
@@ -150,12 +152,14 @@ class CommandService:
             plans = {plan_id: replace(plan) for plan_id, plan in self._plans.items()}
             current = self.current_plan_id
             invalidated = list(self._invalidated)
+            road_evidence = dict(self.road_evidence)
             try:
                 yield
             except Exception:
                 self.world.rollback(checkpoint)
                 self._reports, self._plans, self.current_plan_id = reports, plans, current
                 self._invalidated = invalidated
+                self.road_evidence = road_evidence
                 raise
 
     # ----- intake --------------------------------------------------------
@@ -263,6 +267,7 @@ class CommandService:
             else:
                 self.world.city.set_road_closed(fields.road_id, fields.road_closed, reason)
                 report = replace(report, linked_road_id=fields.road_id)
+                self.road_evidence[fields.road_id] = report.id
                 cause = (
                     f"{fields.road_id} {'closed' if fields.road_closed else 'reopened'} "
                     f"(report {report.id}, {report.source})."
@@ -384,6 +389,7 @@ class CommandService:
                 comparable.plan if comparable else None,
                 self.world.city,
                 tuple(self._invalidated),
+                self.road_evidence,
             ),
             invalidated=tuple(self._invalidated),
             agent_findings=findings,

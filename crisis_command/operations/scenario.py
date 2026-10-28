@@ -29,6 +29,8 @@ class Scenario:
     build_world: Callable[[], World]
     places: dict[str, Coordinate]
     disruptions: dict[str, Disruption] = field(default_factory=dict)
+    # Map-only context lines such as a river: (label, points). Not part of the road graph.
+    annotations: tuple[tuple[str, tuple[Coordinate, ...]], ...] = ()
 
 
 DEMO_SCENARIO = Scenario(
@@ -141,4 +143,7 @@ FLOOD_SCENARIO = Scenario(
             },
         ),
     },
+    annotations=(
+        ("River", (Coordinate(-1, 3.5), Coordinate(10, 3.5))),
+    ),
 )
