@@ -1,0 +1,977 @@
+{
+  "generated_at": "2026-10-28T23:08:41.375103+00:00",
+  "environment": {
+    "python": "3.14.4",
+    "platform": "Windows-11-10.0.26300-SP0"
+  },
+  "scenario": "flood-exercise",
+  "runs_per_variant": 3,
+  "priority_weights": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4
+  },
+  "configurations": {
+    "1_deterministic_planner_structured_input": {
+      "status": "run",
+      "note": "Operator-entered structured fields; specialists ran with model client 'unavailable', so agent analysis is reported as unavailable, not completed."
+    },
+    "2_single_ai_agent": {
+      "status": "blocked",
+      "reason": "No model client configured (META_API_KEY)."
+    },
+    "3_three_specialists": {
+      "status": "blocked",
+      "reason": "No model client configured (META_API_KEY)."
+    }
+  },
+  "extraction_metrics": {
+    "status": "not run",
+    "reason": "Requires model-backed extraction."
+  },
+  "variants": [
+    {
+      "variant": "baseline",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "assignments": 8
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "assignments": 8
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "assignments": 8
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": null
+    },
+    {
+      "variant": "straightforward_intake",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": 32.02,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-7"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "unmet": [
+              "incident-7"
+            ]
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": 34.89,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-7"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "unmet": [
+              "incident-7"
+            ]
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": 31.52,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-7"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "unmet": [
+              "incident-7"
+            ]
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": 32.02
+    },
+    {
+      "variant": "missing_field",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "missing": [
+              "people"
+            ]
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "missing": [
+              "people"
+            ]
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "missing": [
+              "people"
+            ]
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": null
+    },
+    {
+      "variant": "ambiguous_closure",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "warnings": [
+              "Road status is not confirmed by the source; confirming applies it as an authoritative change."
+            ],
+            "bridge_closed": false
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "warnings": [
+              "Road status is not confirmed by the source; confirming applies it as an authoritative change."
+            ],
+            "bridge_closed": false
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "warnings": [
+              "Road status is not confirmed by the source; confirming applies it as an authoritative change."
+            ],
+            "bridge_closed": false
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": null
+    },
+    {
+      "variant": "capability_mismatch",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "errors": [
+              "No resource type provides: hazmat."
+            ]
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "errors": [
+              "No resource type provides: hazmat."
+            ]
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "errors": [
+              "No resource type provides: hazmat."
+            ]
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": null
+    },
+    {
+      "variant": "capacity_shortage",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": 34.2,
+          "priority_weighted_unmet": 4,
+          "unmet_incidents": [
+            "incident-7"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "reasons": [
+              "Incident incident-7 left unassigned; reachable units can carry 11 of 12 people."
+            ]
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": 33.62,
+          "priority_weighted_unmet": 4,
+          "unmet_incidents": [
+            "incident-7"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "reasons": [
+              "Incident incident-7 left unassigned; reachable units can carry 11 of 12 people."
+            ]
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": 37.13,
+          "priority_weighted_unmet": 4,
+          "unmet_incidents": [
+            "incident-7"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "reasons": [
+              "Incident incident-7 left unassigned; reachable units can carry 11 of 12 people."
+            ]
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": 34.2
+    },
+    {
+      "variant": "competing_requests",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": 70.58,
+          "priority_weighted_unmet": 7,
+          "unmet_incidents": [
+            "incident-8",
+            "incident-2"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "tradeoffs": [
+              "Incident incident-8 left unassigned; rescue units that can reach it are committed to higher-priority incident-1, incident-7.",
+              "Incident incident-2 left unassigned; rescue units that can reach it are committed to higher-priority incident-1, incident-7."
+            ]
+          },
+          "proposals": 3,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": 65.76,
+          "priority_weighted_unmet": 7,
+          "unmet_incidents": [
+            "incident-8",
+            "incident-2"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "tradeoffs": [
+              "Incident incident-8 left unassigned; rescue units that can reach it are committed to higher-priority incident-1, incident-7.",
+              "Incident incident-2 left unassigned; rescue units that can reach it are committed to higher-priority incident-1, incident-7."
+            ]
+          },
+          "proposals": 3,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": 65.89,
+          "priority_weighted_unmet": 7,
+          "unmet_incidents": [
+            "incident-8",
+            "incident-2"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "tradeoffs": [
+              "Incident incident-8 left unassigned; rescue units that can reach it are committed to higher-priority incident-1, incident-7.",
+              "Incident incident-2 left unassigned; rescue units that can reach it are committed to higher-priority incident-1, incident-7."
+            ]
+          },
+          "proposals": 3,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": 65.89
+    },
+    {
+      "variant": "unavailable_resource",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-2"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "unmet": [
+              "incident-2"
+            ]
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-2"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "unmet": [
+              "incident-2"
+            ]
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": null,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-2"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "unmet": [
+              "incident-2"
+            ]
+          },
+          "proposals": 1,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": null
+    },
+    {
+      "variant": "confirmed_closure",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": 73.74,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-4",
+            "incident-6"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "changed": [
+              "fire-1",
+              "fire-2",
+              "medic-1"
+            ],
+            "unmet": [
+              "incident-4",
+              "incident-6"
+            ]
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": 64.19,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-4",
+            "incident-6"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "changed": [
+              "fire-1",
+              "fire-2",
+              "medic-1"
+            ],
+            "unmet": [
+              "incident-4",
+              "incident-6"
+            ]
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": 56.17,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-4",
+            "incident-6"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "changed": [
+              "fire-1",
+              "fire-2",
+              "medic-1"
+            ],
+            "unmet": [
+              "incident-4",
+              "incident-6"
+            ]
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": 64.19
+    },
+    {
+      "variant": "update_during_planning",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": 78.99,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-4",
+            "incident-6"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "discarded": 1,
+            "final_version": 2
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": 93.7,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-4",
+            "incident-6"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "discarded": 1,
+            "final_version": 2
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": 89.02,
+          "priority_weighted_unmet": 3,
+          "unmet_incidents": [
+            "incident-4",
+            "incident-6"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "discarded": 1,
+            "final_version": 2
+          },
+          "proposals": 2,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": 89.02
+    },
+    {
+      "variant": "closure_after_approval",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": 42.63,
+          "priority_weighted_unmet": 5,
+          "unmet_incidents": [
+            "incident-3",
+            "incident-4"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "released": [
+              "incident-3",
+              "incident-4"
+            ]
+          },
+          "proposals": 3,
+          "invalid_proposals": 0,
+          "approved_plans": 1,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": 43.91,
+          "priority_weighted_unmet": 5,
+          "unmet_incidents": [
+            "incident-3",
+            "incident-4"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "released": [
+              "incident-3",
+              "incident-4"
+            ]
+          },
+          "proposals": 3,
+          "invalid_proposals": 0,
+          "approved_plans": 1,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": 41.97,
+          "priority_weighted_unmet": 5,
+          "unmet_incidents": [
+            "incident-3",
+            "incident-4"
+          ],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "released": [
+              "incident-3",
+              "incident-4"
+            ]
+          },
+          "proposals": 3,
+          "invalid_proposals": 0,
+          "approved_plans": 1,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": 42.63
+    },
+    {
+      "variant": "reopen_after_closure",
+      "runs": [
+        {
+          "run": 1,
+          "expectation_met": true,
+          "update_to_proposal_ms": 46.61,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "unmet": []
+          },
+          "proposals": 3,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 2,
+          "expectation_met": true,
+          "update_to_proposal_ms": 44.31,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "unmet": []
+          },
+          "proposals": 3,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        },
+        {
+          "run": 3,
+          "expectation_met": true,
+          "update_to_proposal_ms": 44.62,
+          "priority_weighted_unmet": 0,
+          "unmet_incidents": [],
+          "agent_statuses": {
+            "Situation": "unavailable",
+            "Resources": "unavailable",
+            "Routing": "unavailable"
+          },
+          "observations": {
+            "unmet": []
+          },
+          "proposals": 3,
+          "invalid_proposals": 0,
+          "approved_plans": 0,
+          "invalid_committed_plans": 0,
+          "final_plan_checks_pass": true
+        }
+      ],
+      "expectation_met_runs": 3,
+      "median_update_to_proposal_ms": 44.62
+    }
+  ]
+}

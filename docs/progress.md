@@ -99,4 +99,16 @@ Known limitations after Gate C:
 - Replay road geometry comes from the current scenario definition.
 
 ## Gate D — proof
+
+- [x] Focused checks covered by tests: route closure, capability and capacity mismatch,
+  double-booking, stale approval, atomic commit and rollback, reset with an in-flight run,
+  model/tool failure and timeout (66 tests OK)
+- [x] Evaluation harness `python -m evaluation.run_eval`: 12 variants × 3 runs through the real
+  command service; raw results in `docs/evaluation/results.json`, summary in
+  `docs/evaluation.md`. All 36 runs met their authored expectations.
+- [ ] AI configurations (single agent, three specialists) and extraction metrics: **blocked**
+  until a model client is configured.
+- [x] UI smoke test of the canonical scenario (closure, approval, evidence link, reset, replay)
+  performed in the browser during Gates A–C.
+
 ## Gate E — submission package
