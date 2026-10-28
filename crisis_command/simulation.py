@@ -1,13 +1,16 @@
+import json
 from copy import deepcopy
-from dataclasses import dataclass, field
-from _thread import RLock as RLockType
+from dataclasses import dataclass, field, replace
 from threading import RLock
 from typing import Callable, Generic, Iterable, TypeVar, cast, overload
+from _thread import RLock as RLockType
+
+MAX_PLAN_ATTEMPTS = 3
 
 import networkx as nx
 
 from .model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road
-from .planner import Planner, ResponsePlan
+from .planner import Claim, Planner, ResponsePlan
 
 
 T = TypeVar("T")
@@ -294,30 +297,139 @@ class Simulation:
         self,
         snapshot: WorldSnapshot | None = None,
         plan: ResponsePlan | None = None,
+        claims: tuple[Claim, ...] = (),
     ) -> ResponsePlan:
-        snapshot = snapshot or self.world.snapshot()
-        if plan is None:
-            plan = self.planner.plan(
-                list(snapshot.incidents),
-                list(snapshot.services),
-                snapshot.city,
-                world_version=snapshot.version,
-            )
-        with self.world._lock:
-            if (
-                self.world.version != snapshot.version
-                or self.world._state_signature() != snapshot.state_signature
-            ):
-                raise StalePlanError(
-                    f"Plan used world version {snapshot.version}, "
-                    f"but current world is version {self.world.version}."
+        proposal_snapshot = snapshot or self.world.snapshot()
+        proposal = plan
+        last_rejection = "No proposal could be validated."
+
+        for _ in range(MAX_PLAN_ATTEMPTS):
+            if proposal is None:
+                proposal = self.planner.plan(
+                    list(proposal_snapshot.incidents),
+                    list(proposal_snapshot.services),
+                    proposal_snapshot.city,
+                    world_version=proposal_snapshot.version,
+                    claims=claims,
                 )
-            if plan.world_version != snapshot.version:
-                raise StalePlanError("Planner returned a plan for a different world version.")
-            self._validate_plan(plan)
-            return self._advance_world(plan)
+            with self.world._lock:
+                if proposal.world_version != proposal_snapshot.version:
+                    raise StalePlanError(
+                        "Planner returned a plan for a different world version."
+                    )
+                if (
+                    self.world.version == proposal_snapshot.version
+                    and self.world._state_signature() == proposal_snapshot.state_signature
+                ):
+                    self._validate_plan(proposal)
+                    return self._advance_world(proposal)
+
+                rebased_plan, rejection_reason = self._revalidate_stale_plan(proposal)
+                if rebased_plan is not None:
+                    self.world._append_event(
+                        "stale_plan_accepted",
+                        tuple(dispatch.incident_id for dispatch in rebased_plan.assignments),
+                        "Independent validation confirmed the older proposal remains safe and feasible.",
+                        (
+                            ("proposal_version", str(proposal_snapshot.version)),
+                            ("current_version", str(self.world.version)),
+                            ("decision", "execute_before_replanning"),
+                        ),
+                    )
+                    return self._advance_world(rebased_plan)
+
+                last_rejection = rejection_reason
+                self.world._append_event(
+                    "stale_plan_rejected",
+                    (),
+                    rejection_reason,
+                    (
+                        ("proposal_version", str(proposal_snapshot.version)),
+                        ("current_version", str(self.world.version)),
+                        ("decision", "replan"),
+                        (
+                            "proposal_audit",
+                            json.dumps(dict(self._plan_audit_details(proposal))),
+                        ),
+                    ),
+                )
+                proposal_snapshot = self.world.snapshot()
+            proposal = None
+
+        raise StalePlanError(
+            "World state kept changing while planning; no proposal was executed. "
+            f"Last validation result: {last_rejection}"
+        )
+
+    def _revalidate_stale_plan(
+        self,
+        plan: ResponsePlan,
+    ) -> tuple[ResponsePlan | None, str]:
+        try:
+            self._validate_assignments(plan)
+        except ValueError as error:
+            return None, f"Older proposal is no longer valid: {error}"
+
+        incidents_by_id = {incident.id: incident for incident in self.world.incidents}
+        services_by_id = {service.id: service for service in self.world.services}
+        updated_dispatches = []
+        for dispatch in plan.assignments:
+            incident = incidents_by_id[dispatch.incident_id]
+            service = services_by_id[dispatch.service_id]
+            try:
+                route = (
+                    self.world.city.shortest_route(service.location, incident.location)
+                    if self.world.city is not None
+                    else [service.location, incident.location]
+                )
+                distance = (
+                    self.world.city.route_distance(service.location, incident.location)
+                    if self.world.city is not None
+                    else service.location.distance_to(incident.location)
+                )
+            except (nx.NetworkXNoPath, nx.NodeNotFound):
+                return (
+                    None,
+                    f"Older proposal is no longer feasible: service {service.id!r} "
+                    f"cannot reach incident {incident.id!r}.",
+                )
+            updated_dispatches.append(
+                replace(
+                    dispatch,
+                    estimated_arrival=distance / service.speed,
+                    route=tuple(route),
+                )
+            )
+        return replace(plan, assignments=tuple(updated_dispatches)), ""
 
     def _validate_plan(self, plan: ResponsePlan) -> None:
+        self._validate_assignments(plan)
+        effective_city = self.planner.city_with_evidence(
+            self.world.city,
+            plan.claim_resolutions,
+        )
+        incidents_by_id = {incident.id: incident for incident in self.world.incidents}
+        services_by_id = {service.id: service for service in self.world.services}
+        for dispatch in plan.assignments:
+            service = services_by_id[dispatch.service_id]
+            incident = incidents_by_id[dispatch.incident_id]
+            try:
+                expected_route = (
+                    effective_city.shortest_route(service.location, incident.location)
+                    if effective_city is not None
+                    else [service.location, incident.location]
+                )
+            except (nx.NetworkXNoPath, nx.NodeNotFound) as error:
+                raise ValueError(
+                    f"Service {service.id!r} has no route to incident {incident.id!r}."
+                ) from error
+            if dispatch.route != tuple(expected_route):
+                raise ValueError(
+                    f"Dispatch route for service {service.id!r} does not match "
+                    "the current road state."
+                )
+
+    def _validate_assignments(self, plan: ResponsePlan) -> None:
         incidents_by_id = {incident.id: incident for incident in self.world.incidents}
         services_by_id = {service.id: service for service in self.world.services}
         assigned_service_ids: set[str] = set()
@@ -349,9 +461,26 @@ class Simulation:
     def _advance_world(self, plan: ResponsePlan) -> ResponsePlan:
         incidents_by_id = {incident.id: incident for incident in self.world.incidents}
         services_by_id = {service.id: service for service in self.world.services}
+        applicable_resolutions = (
+            plan.claim_resolutions
+            if plan.world_version == self.world.version
+            else ()
+        )
+        effective_city = self.planner.city_with_evidence(
+            self.world.city,
+            applicable_resolutions,
+        )
         pending_events: list[
             tuple[str, tuple[str, ...], str, tuple[tuple[str, str], ...]]
         ] = []
+        pending_events.append(
+            (
+                "plan_decision",
+                tuple(dispatch.incident_id for dispatch in plan.assignments),
+                "Planner decision accepted for execution.",
+                self._plan_audit_details(plan),
+            )
+        )
 
         for dispatch in plan.assignments:
             service = services_by_id[dispatch.service_id]
@@ -385,8 +514,8 @@ class Simulation:
                 route = planned_routes.get(service.id)
                 if route is None:
                     route = (
-                        self.world.city.shortest_route(service.location, incident.location)
-                        if self.world.city is not None
+                        effective_city.shortest_route(service.location, incident.location)
+                        if effective_city is not None
                         else [service.location, incident.location]
                     )
             except (nx.NetworkXNoPath, nx.NodeNotFound):
@@ -471,6 +600,43 @@ class Simulation:
             "Simulation advanced by one time step.",
         )
         return plan
+
+    @staticmethod
+    def _plan_audit_details(plan: ResponsePlan) -> tuple[tuple[str, str], ...]:
+        claims = [
+            {
+                "subject": claim.subject,
+                "attribute": claim.attribute,
+                "value": claim.value,
+                "source": claim.source,
+                "timestamp": claim.timestamp.isoformat(),
+                "world_version": claim.world_version,
+                "verification_status": claim.verification_status.value,
+                "confidence": claim.confidence,
+                "evidence_reference": claim.evidence_reference,
+            }
+            for claim in plan.claims
+        ]
+        resolutions = [
+            {
+                "subject": resolution.subject,
+                "attribute": resolution.attribute,
+                "value": resolution.value,
+                "disputed": resolution.disputed,
+                "selected_evidence_reference": (
+                    resolution.selected_claim.evidence_reference
+                    if resolution.selected_claim is not None
+                    else None
+                ),
+            }
+            for resolution in plan.claim_resolutions
+        ]
+        return (
+            ("proposal_version", str(plan.world_version)),
+            ("rationale", json.dumps(plan.rationale)),
+            ("claims", json.dumps(claims, default=str)),
+            ("claim_resolutions", json.dumps(resolutions)),
+        )
 
     def run(self, max_steps: int = 100) -> int:
         if max_steps < 0:

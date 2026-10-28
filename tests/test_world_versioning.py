@@ -1,8 +1,9 @@
+from dataclasses import replace
 import unittest
 
 from crisis_command.model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road, Severity
-from crisis_command.planner import Planner, ResponsePlan
-from crisis_command.simulation import Simulation, StalePlanError, World
+from crisis_command.planner import Claim, Planner, ResponsePlan
+from crisis_command.simulation import Simulation, World
 
 
 class WorldVersioningTests(unittest.TestCase):
@@ -51,7 +52,7 @@ class WorldVersioningTests(unittest.TestCase):
         self.assertFalse(snapshot.city.roads[0].is_closed)
         self.assertEqual(snapshot.services[0].location, self.start)
 
-    def test_stale_plan_is_rejected_without_committing_assignments(self) -> None:
+    def test_safe_stale_plan_executes_before_replanning_new_incident(self) -> None:
         world = self.world
 
         class ChangingPlanner(Planner):
@@ -61,8 +62,9 @@ class WorldVersioningTests(unittest.TestCase):
                 services: list[EmergencyService],
                 city: City | None = None,
                 world_version: int | None = None,
+                claims: tuple[Claim, ...] = (),
             ) -> ResponsePlan:
-                plan = super().plan(incidents, services, city, world_version)
+                plan = super().plan(incidents, services, city, world_version, claims)
                 world.add_incident(
                     Incident(
                         "new-incident",
@@ -74,12 +76,45 @@ class WorldVersioningTests(unittest.TestCase):
                 return plan
 
         simulation = Simulation(world, ChangingPlanner())
-        with self.assertRaises(StalePlanError):
-            simulation.step()
+        plan = simulation.step()
 
-        self.assertEqual(self.incident.status, IncidentStatus.OPEN)
+        self.assertEqual(plan.assignments[0].incident_id, self.incident.id)
+        self.assertEqual(self.incident.status, IncidentStatus.ASSIGNED)
+        self.assertFalse(self.service.available)
+        self.assertEqual(world.tick_count, 1)
+        self.assertIn("stale_plan_accepted", [event.kind for event in world.event_log])
+
+    def test_stale_plan_recalculates_when_road_closure_makes_it_unsafe(self) -> None:
+        world = self.world
+
+        class ClosingPlanner(Planner):
+            def __init__(self) -> None:
+                super().__init__()
+                self.closed_road = False
+
+            def plan(
+                self,
+                incidents: list[Incident],
+                services: list[EmergencyService],
+                city: City | None = None,
+                world_version: int | None = None,
+                claims: tuple[Claim, ...] = (),
+            ) -> ResponsePlan:
+                plan = super().plan(incidents, services, city, world_version, claims)
+                if not self.closed_road:
+                    self.closed_road = True
+                    world.city.set_road_closed("main-road", True)
+                return plan
+
+        simulation = Simulation(world, ClosingPlanner())
+        plan = simulation.step()
+
+        self.assertFalse(plan.assignments)
+        self.assertEqual(plan.unassigned_incident_ids, (self.incident.id,))
+        self.assertEqual(plan.world_version, world.version - 1)
+        self.assertIn("stale_plan_rejected", [event.kind for event in world.event_log])
+        self.assertEqual(world.tick_count, 1)
         self.assertTrue(self.service.available)
-        self.assertEqual(world.tick_count, 0)
 
     def test_successful_step_advances_version_and_tags_plan(self) -> None:
         initial_version = self.world.version
@@ -89,6 +124,26 @@ class WorldVersioningTests(unittest.TestCase):
         self.assertEqual(plan.world_version, initial_version)
         self.assertEqual(self.world.version, initial_version + 1)
         self.assertEqual(self.world.tick_count, 1)
+
+    def test_invalid_route_is_rejected_before_dispatch(self) -> None:
+        snapshot = self.world.snapshot()
+        plan = Planner().plan(
+            list(snapshot.incidents),
+            list(snapshot.services),
+            snapshot.city,
+            world_version=snapshot.version,
+        )
+        invalid_dispatch = replace(
+            plan.assignments[0],
+            route=(self.start, Coordinate(2, 1), self.end),
+        )
+        invalid_plan = replace(plan, assignments=(invalid_dispatch,))
+
+        with self.assertRaisesRegex(ValueError, "does not match"):
+            Simulation(self.world).step(snapshot=snapshot, plan=invalid_plan)
+
+        self.assertEqual(self.world.tick_count, 0)
+        self.assertTrue(self.service.available)
 
     def test_unversioned_entity_mutation_still_invalidates_plan(self) -> None:
         world = self.world
@@ -100,16 +155,17 @@ class WorldVersioningTests(unittest.TestCase):
                 services: list[EmergencyService],
                 city: City | None = None,
                 world_version: int | None = None,
+                claims: tuple[Claim, ...] = (),
             ) -> ResponsePlan:
-                plan = super().plan(incidents, services, city, world_version)
+                plan = super().plan(incidents, services, city, world_version, claims)
                 world.services[0].location = Coordinate(1, 0)
                 return plan
 
-        with self.assertRaises(StalePlanError):
-            Simulation(world, MutatingPlanner()).step()
+        plan = Simulation(world, MutatingPlanner()).step()
 
-        self.assertEqual(world.tick_count, 0)
-        self.assertTrue(self.service.available)
+        self.assertEqual(plan.assignments[0].route[0], Coordinate(1, 0))
+        self.assertEqual(world.tick_count, 1)
+        self.assertFalse(self.service.available)
 
 
 if __name__ == "__main__":

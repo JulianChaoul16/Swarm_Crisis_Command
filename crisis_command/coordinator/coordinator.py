@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from ..planner import Planner, ResponsePlan
+from ..planner import Claim, Planner, ResponsePlan
 from ..simulation import Simulation, World
 
 
@@ -20,13 +20,14 @@ class Coordinator:
     def __post_init__(self) -> None:
         self._simulation = Simulation(self.world, self.planner)
 
-    def step(self) -> ResponsePlan:
+    def step(self, claims: tuple[Claim, ...] = ()) -> ResponsePlan:
         preview = self.world.snapshot()
         proposed_plan = self.planner.plan(
             list(preview.incidents),
             list(preview.services),
             preview.city,
             world_version=preview.version,
+            claims=claims,
         )
         if (
             proposed_plan.unassigned_incident_ids
@@ -35,4 +36,8 @@ class Coordinator:
         ):
             raise UnserviceableIncidentsError(proposed_plan.unassigned_incident_ids)
 
-        return self._simulation.step(snapshot=preview, plan=proposed_plan)
+        return self._simulation.step(
+            snapshot=preview,
+            plan=proposed_plan,
+            claims=claims,
+        )
