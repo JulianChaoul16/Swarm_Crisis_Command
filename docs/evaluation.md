@@ -18,13 +18,20 @@ Raw results: [`docs/evaluation/results.json`](evaluation/results.json) (generate
 | Configuration | Status |
 | --- | --- |
 | 1. Deterministic planner given correct structured input | **Run** |
-| 2. One AI agent with the same tools | **Blocked**: no model client configured |
-| 3. Three coordinated specialists | **Blocked**: no model client configured |
+| 2. One AI agent (Muse Spark 1.3) on the same decisions | **Run separately**: `findings/` on the `findings` branch |
+| 3. Three coordinated specialists | Live in the app; not yet scored against a key |
 
-Configuration 1 used operator-entered structured fields. The three specialists still ran
-their deterministic tools in every proposal, but with no model configured their analysis is
-recorded as `unavailable`. No AI output was estimated, cached, or simulated. Extraction
-accuracy and missing-information flag metrics need model-backed extraction and were not run.
+Configuration 1 used operator-entered structured fields and pins an offline model client, so
+its numbers are deterministic and cost nothing to rerun.
+
+Configuration 2 is measured in `findings/`, on the same cases as a human tester and the
+algorithms:
+- **Report extraction**: 100% for the model against 73% for the human tester. These are
+  developer-written cases, so treat this as a best case until the holdout set is scored.
+- **Routing and assignment**: the model matched the exact algorithms. It was 29 of 30 on
+  replanning.
+
+No AI output was estimated, cached or simulated.
 
 ## Method
 
@@ -71,7 +78,7 @@ path is exercised by deliberately constructed invalid plans in the unit tests
 - `competing_requests`: adding two critical rescues moved the north boat away from the
   high-severity incident-2. Both the new unmet critical incident and incident-2 show their
   reasons in the plan.
-- `closure_after_approval`: the greedy planner does not preempt committed missions, so
+- `closure_after_approval`: the planner does not preempt committed missions, so
   incident-3 stays unmet while Fire Engine 1 completes a lower-priority committed mission.
   This tradeoff is shown to the operator rather than resolved automatically.
 
@@ -79,7 +86,7 @@ path is exercised by deliberately constructed invalid plans in the unit tests
 
 - One synthetic scenario; variants are authored by the developer and were not held out from
   tuning.
-- Planner is greedy in priority order, not a global optimizer; results are not described as
-  optimal.
+- The planner is exact only over available units. It does not preempt committed missions,
+  so a plan can be worse than one that reassigned committed units.
 - Latency figures are local, single-process, and exclude model latency because no model ran.
 - No practitioner review has been obtained.

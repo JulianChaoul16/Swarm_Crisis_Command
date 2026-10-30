@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T23:08:41.375103+00:00",
+  "generated_at": "2026-10-30T18:52:03.466295+00:00",
   "environment": {
     "python": "3.14.4",
     "platform": "Windows-11-10.0.26300-SP0"
@@ -104,7 +104,7 @@
         {
           "run": 1,
           "expectation_met": true,
-          "update_to_proposal_ms": 32.02,
+          "update_to_proposal_ms": 39.89,
           "priority_weighted_unmet": 3,
           "unmet_incidents": [
             "incident-7"
@@ -128,7 +128,7 @@
         {
           "run": 2,
           "expectation_met": true,
-          "update_to_proposal_ms": 34.89,
+          "update_to_proposal_ms": 37.71,
           "priority_weighted_unmet": 3,
           "unmet_incidents": [
             "incident-7"
@@ -152,7 +152,7 @@
         {
           "run": 3,
           "expectation_met": true,
-          "update_to_proposal_ms": 31.52,
+          "update_to_proposal_ms": 36.17,
           "priority_weighted_unmet": 3,
           "unmet_incidents": [
             "incident-7"
@@ -175,7 +175,7 @@
         }
       ],
       "expectation_met_runs": 3,
-      "median_update_to_proposal_ms": 32.02
+      "median_update_to_proposal_ms": 37.71
     },
     {
       "variant": "missing_field",
@@ -405,7 +405,7 @@
         {
           "run": 1,
           "expectation_met": true,
-          "update_to_proposal_ms": 34.2,
+          "update_to_proposal_ms": 42.47,
           "priority_weighted_unmet": 4,
           "unmet_incidents": [
             "incident-7"
@@ -429,7 +429,7 @@
         {
           "run": 2,
           "expectation_met": true,
-          "update_to_proposal_ms": 33.62,
+          "update_to_proposal_ms": 39.65,
           "priority_weighted_unmet": 4,
           "unmet_incidents": [
             "incident-7"
@@ -453,7 +453,7 @@
         {
           "run": 3,
           "expectation_met": true,
-          "update_to_proposal_ms": 37.13,
+          "update_to_proposal_ms": 39.64,
           "priority_weighted_unmet": 4,
           "unmet_incidents": [
             "incident-7"
@@ -476,7 +476,7 @@
         }
       ],
       "expectation_met_runs": 3,
-      "median_update_to_proposal_ms": 34.2
+      "median_update_to_proposal_ms": 39.65
     },
     {
       "variant": "competing_requests",
@@ -484,7 +484,7 @@
         {
           "run": 1,
           "expectation_met": true,
-          "update_to_proposal_ms": 70.58,
+          "update_to_proposal_ms": 83.22,
           "priority_weighted_unmet": 7,
           "unmet_incidents": [
             "incident-8",
@@ -510,7 +510,7 @@
         {
           "run": 2,
           "expectation_met": true,
-          "update_to_proposal_ms": 65.76,
+          "update_to_proposal_ms": 78.46,
           "priority_weighted_unmet": 7,
           "unmet_incidents": [
             "incident-8",
@@ -536,7 +536,7 @@
         {
           "run": 3,
           "expectation_met": true,
-          "update_to_proposal_ms": 65.89,
+          "update_to_proposal_ms": 84.54,
           "priority_weighted_unmet": 7,
           "unmet_incidents": [
             "incident-8",
@@ -561,7 +561,7 @@
         }
       ],
       "expectation_met_runs": 3,
-      "median_update_to_proposal_ms": 65.89
+      "median_update_to_proposal_ms": 83.22
     },
     {
       "variant": "unavailable_resource",
@@ -648,7 +648,7 @@
         {
           "run": 1,
           "expectation_met": true,
-          "update_to_proposal_ms": 73.74,
+          "update_to_proposal_ms": 97.77,
           "priority_weighted_unmet": 3,
           "unmet_incidents": [
             "incident-4",
@@ -679,7 +679,7 @@
         {
           "run": 2,
           "expectation_met": true,
-          "update_to_proposal_ms": 64.19,
+          "update_to_proposal_ms": 73.49,
           "priority_weighted_unmet": 3,
           "unmet_incidents": [
             "incident-4",
@@ -710,7 +710,7 @@
         {
           "run": 3,
           "expectation_met": true,
-          "update_to_proposal_ms": 56.17,
+          "update_to_proposal_ms": 75.07,
           "priority_weighted_unmet": 3,
           "unmet_incidents": [
             "incident-4",
@@ -740,7 +740,7 @@
         }
       ],
       "expectation_met_runs": 3,
-      "median_update_to_proposal_ms": 64.19
+      "median_update_to_proposal_ms": 75.07
     },
     {
       "variant": "update_during_planning",
@@ -748,7 +748,7 @@
         {
           "run": 1,
           "expectation_met": true,
-          "update_to_proposal_ms": 78.99,
+          "update_to_proposal_ms": 112.85,
           "priority_weighted_unmet": 3,
           "unmet_incidents": [
             "incident-4",
@@ -772,7 +772,7 @@
         {
           "run": 2,
           "expectation_met": true,
-          "update_to_proposal_ms": 93.7,
+          "update_to_proposal_ms": 102.03,
           "priority_weighted_unmet": 3,
           "unmet_incidents": [
             "incident-4",
@@ -796,7 +796,7 @@
         {
           "run": 3,
           "expectation_met": true,
-          "update_to_proposal_ms": 89.02,
+          "update_to_proposal_ms": 100.49,
           "priority_weighted_unmet": 3,
           "unmet_incidents": [
             "incident-4",
@@ -819,7 +819,7 @@
         }
       ],
       "expectation_met_runs": 3,
-      "median_update_to_proposal_ms": 89.02
+      "median_update_to_proposal_ms": 102.03
     },
     {
       "variant": "closure_after_approval",
@@ -827,7 +827,7 @@
         {
           "run": 1,
           "expectation_met": true,
-          "update_to_proposal_ms": 42.63,
+          "update_to_proposal_ms": 55.51,
           "priority_weighted_unmet": 5,
           "unmet_incidents": [
             "incident-3",
@@ -853,7 +853,7 @@
         {
           "run": 2,
           "expectation_met": true,
-          "update_to_proposal_ms": 43.91,
+          "update_to_proposal_ms": 41.9,
           "priority_weighted_unmet": 5,
           "unmet_incidents": [
             "incident-3",
@@ -879,7 +879,7 @@
         {
           "run": 3,
           "expectation_met": true,
-          "update_to_proposal_ms": 41.97,
+          "update_to_proposal_ms": 45.74,
           "priority_weighted_unmet": 5,
           "unmet_incidents": [
             "incident-3",
@@ -904,7 +904,7 @@
         }
       ],
       "expectation_met_runs": 3,
-      "median_update_to_proposal_ms": 42.63
+      "median_update_to_proposal_ms": 45.74
     },
     {
       "variant": "reopen_after_closure",
@@ -912,7 +912,7 @@
         {
           "run": 1,
           "expectation_met": true,
-          "update_to_proposal_ms": 46.61,
+          "update_to_proposal_ms": 54.23,
           "priority_weighted_unmet": 0,
           "unmet_incidents": [],
           "agent_statuses": {
@@ -932,7 +932,7 @@
         {
           "run": 2,
           "expectation_met": true,
-          "update_to_proposal_ms": 44.31,
+          "update_to_proposal_ms": 67.24,
           "priority_weighted_unmet": 0,
           "unmet_incidents": [],
           "agent_statuses": {
@@ -952,7 +952,7 @@
         {
           "run": 3,
           "expectation_met": true,
-          "update_to_proposal_ms": 44.62,
+          "update_to_proposal_ms": 64.43,
           "priority_weighted_unmet": 0,
           "unmet_incidents": [],
           "agent_statuses": {
@@ -971,7 +971,7 @@
         }
       ],
       "expectation_met_runs": 3,
-      "median_update_to_proposal_ms": 44.62
+      "median_update_to_proposal_ms": 64.43
     }
   ]
 }

@@ -17,6 +17,7 @@ from typing import Any
 import networkx as nx
 
 from ..model import IncidentStatus
+from ..planner import DEFAULT_PRIORITY_RULE, default_priority
 from .model_client import ModelClient, ModelUnavailableError
 
 DEFAULT_AGENT_TIMEOUT_SECONDS = 20.0
@@ -31,6 +32,7 @@ FINDINGS_SCHEMA: dict[str, Any] = {
         "missing_information": {"type": "array", "items": {"type": "string"}},
     },
     "required": ["summary", "findings", "missing_information"],
+    "additionalProperties": False,
 }
 
 
@@ -64,7 +66,7 @@ class AgentFinding:
 def _open_incidents(snapshot) -> list:
     return sorted(
         (incident for incident in snapshot.incidents if incident.status != IncidentStatus.RESOLVED),
-        key=lambda incident: (-incident.severity, incident.id),
+        key=default_priority,
     )
 
 
@@ -74,7 +76,7 @@ def situation_tools(snapshot) -> tuple[ToolResult, ...]:
             "incident_overview",
             {
                 "world_version": snapshot.version,
-                "priority_rule": "severity descending, then incident id",
+                "priority_rule": DEFAULT_PRIORITY_RULE,
                 "incidents": [
                     {
                         "id": incident.id,
@@ -82,6 +84,7 @@ def situation_tools(snapshot) -> tuple[ToolResult, ...]:
                         "severity": incident.severity.name.lower(),
                         "status": incident.status.value,
                         "required_services": sorted(incident.required_services),
+                        "people": incident.people,
                     }
                     for incident in _open_incidents(snapshot)
                 ],
@@ -101,7 +104,15 @@ def resources_tools(snapshot) -> tuple[ToolResult, ...]:
             for capability in incident.required_services
             if not any(capability in service.capabilities for service in available)
         )
-        coverage.append({"incident_id": incident.id, "uncovered_capabilities": missing})
+        # Seats matter as much as capabilities: an incident is only served if everyone fits.
+        seats = sum(service.capacity for service in available)
+        coverage.append({
+            "incident_id": incident.id,
+            "uncovered_capabilities": missing,
+            "people": incident.people,
+            "available_seats_all_units": seats,
+            "seat_shortfall": max(0, incident.people - seats),
+        })
     return (
         ToolResult(
             "resource_inventory",
@@ -110,6 +121,7 @@ def resources_tools(snapshot) -> tuple[ToolResult, ...]:
                     {
                         "id": service.id,
                         "capabilities": sorted(service.capabilities),
+                        "capacity": service.capacity,
                         "available": service.available,
                         "assigned_incident_id": service.assigned_incident_id,
                     }

@@ -38,21 +38,61 @@ from .store import OperationsStore
 
 MAX_PROPOSAL_ATTEMPTS = 3
 
-EXTRACTION_SCHEMA: dict[str, Any] = {
-    "type": "object",
-    "properties": {
-        "report_type": {"type": ["string", "null"], "enum": [*REPORT_TYPES, None]},
+def _nullable_enum(values) -> dict[str, Any]:
+    return {"type": ["string", "null"], "enum": [*sorted(values), None]}
+
+
+def extraction_schema(context: IntakeContext) -> dict[str, Any]:
+    """Strict schema whose enums come from the live scenario, so the model can only name
+    places, roads and capabilities that exist. Validation still runs on every result."""
+    properties = {
+        "report_type": _nullable_enum(REPORT_TYPES),
         "kind": {"type": ["string", "null"]},
-        "severity": {"type": ["string", "null"], "enum": [*SEVERITIES, None]},
-        "required_services": {"type": ["array", "null"], "items": {"type": "string"}},
-        "location": {"type": ["string", "null"]},
-        "road_id": {"type": ["string", "null"]},
+        "severity": _nullable_enum(SEVERITIES),
+        "required_services": {"type": ["array", "null"],
+                              "items": {"type": "string", "enum": sorted(context.capabilities)}},
+        "location": _nullable_enum(context.places),
+        "road_id": _nullable_enum(context.road_ids),
         "road_closed": {"type": ["boolean", "null"]},
-        "certainty": {"type": ["string", "null"], "enum": ["confirmed", "possible", None]},
+        "certainty": _nullable_enum(("confirmed", "possible")),
         "people": {"type": ["integer", "null"]},
-    },
-    "required": ["report_type"],
+    }
+    return {"type": "object", "properties": properties, "required": list(properties),
+            "additionalProperties": False}
+
+
+CAPABILITY_GUIDE = {
+    "rescue": "people trapped by or in water, or stranded",
+    "medical": "an injury or medical condition, including vulnerable people at risk",
+    "fire": "fire or smoke",
+    "utility": "power lines, gas, transformers or other infrastructure hazards",
+    "police": "traffic control, security or road hazards needing a cordon",
 }
+
+EXTRACTION_RULES = """\
+Extract structured fields from one emergency report in a simulated flood exercise. Reports
+may be informal, misspelled, in any language, or contain irrelevant numbers.
+
+- report_type: "incident" if people or property need a response; "road_status" if the report
+  only says whether a road is open or closed.
+- location: the known place the report is about, matching nicknames and misspellings; null if
+  no known place matches. Never pick a place the report does not refer to.
+- kind: a short lowercase description, e.g. "residents trapped by rising water".
+- severity: critical = someone trapped, in water, or in immediate danger to life; high =
+  injury, fire, a vulnerable person whose condition is unknown, or water about to reach
+  people; medium = displaced or inconvenienced, no immediate danger; low = observations or
+  property only.
+- required_services: every capability the response needs (guide below).
+- people: how many people need rescue, treatment or moving. Add counts ("me and my 2 kids" =
+  3); one described person = 1; null if no count is possible ("a family"). House numbers,
+  years, distances and times are not people.
+- road_id and road_closed: for road_status reports. Closed, blocked, out or under water =
+  true; open, passable, reopened or clear = false.
+- certainty: "confirmed" if the source states it as fact, "possible" if hedged ("I think",
+  "maybe", a question).
+
+Use null for anything the report does not state. Do not guess.
+"""
 
 
 class CommandError(RuntimeError):
@@ -198,18 +238,20 @@ class CommandService:
         return report
 
     def _extract(self, report: Report) -> Report:
+        context = self.intake_context()
+        guide = "\n".join(
+            f"- {capability}: {CAPABILITY_GUIDE.get(capability, 'as named')}"
+            for capability in sorted(context.capabilities)
+        )
         try:
             output = self.client.complete_json(
                 system=(
-                    "Extract structured fields from an emergency report in a simulated exercise. "
-                    "Use null for anything the report does not state. Known places: "
-                    + ", ".join(sorted(self.scenario.places))
-                    + ". Known roads: "
-                    + ", ".join(sorted(self.intake_context().road_ids))
-                    + "."
+                    f"{EXTRACTION_RULES}\nCapabilities:\n{guide}\n\n"
+                    f"Known places: {', '.join(sorted(context.places))}.\n"
+                    f"Known roads: {', '.join(sorted(context.road_ids))}."
                 ),
-                user=report.content,
-                schema=EXTRACTION_SCHEMA,
+                user=f"Source: {report.source}\nReport: {report.content}",
+                schema=extraction_schema(context),
                 timeout=self.agent_timeout,
             )
         except ModelUnavailableError as error:

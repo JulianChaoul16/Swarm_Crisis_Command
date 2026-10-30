@@ -10,6 +10,11 @@ from crisis_command.operations.feasibility import closed_roads_on_route
 from crisis_command.operations.scenario import FLOOD_SCENARIO, build_flood_world
 from crisis_command.planner import Planner
 
+from crisis_command.agents.model_client import UnavailableModelClient
+
+# Tests never call a live model, even when .env holds a key.
+OFFLINE = UnavailableModelClient("No model configured (tests run offline).")
+
 
 def assignments(plan) -> dict[str, str]:
     return {dispatch.service_id: dispatch.incident_id for dispatch in plan.plan.assignments}
@@ -24,7 +29,7 @@ class FloodScenarioTestCase(unittest.TestCase):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.path_patcher = patch.object(connection, "DB_PATH", Path(self.temp_dir.name) / "test.db")
         self.path_patcher.start()
-        self.service = CommandService(scenario=FLOOD_SCENARIO, agent_timeout=2)
+        self.service = CommandService(scenario=FLOOD_SCENARIO, client=OFFLINE, agent_timeout=2)
 
     def tearDown(self) -> None:
         self.path_patcher.stop()

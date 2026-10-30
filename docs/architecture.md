@@ -64,12 +64,23 @@ unmet). If no complete solution exists, the plan is partial and lists unmet need
 
 ## Allocation objective
 
-Incidents are served in priority order (default: severity, then people affected, then
-incident ID). For each incident, the planner repeatedly picks the reachable available unit
-covering the most remaining required capabilities, breaking ties by estimated arrival and
-then unit ID. It then adds carriers until capacity covers the people to move. Incidents that
-cannot be fully served receive no partial assignment and are reported as unmet. This greedy
-procedure is deterministic but not globally optimal.
+Assignment is solved exactly as a small integer program (scipy's HiGHS solver):
+
+1. **Served set**: incidents are taken in priority order (default: severity, then people
+   affected, then incident ID). Each one is served if that is still feasible alongside every
+   higher-priority choice.
+2. **Units**: for that set, units are chosen to minimize severity-weighted ETA.
+
+An incident counts as served only when its units cover every required capability and can
+carry all its people. Each unit serves at most one incident. Incidents that cannot be fully
+served receive no partial assignment and are reported as unmet, with the reason.
+
+`tests/test_planner_optimal.py` checks the result against an exhaustive search. The earlier
+greedy pass was compared on 500 random instances:
+- In 46 it served a worse set by priority.
+- In 58 it served the same set with a higher weighted ETA.
+
+See also `findings/` on the `findings` branch.
 
 ## Failure handling
 

@@ -46,10 +46,26 @@ feasibility, and commits state. Humans approve dispatch-like transitions. See
 
 ## Model status
 
-No Meta model client is implemented yet. Report extraction and specialist analysis report
-`unavailable` in the UI and in every plan record; no canned or simulated AI output is shown.
-Operators enter report fields directly in the meantime. To prepare for the model, copy
-[`.env.example`](.env.example) and set `META_API_KEY` and `META_MODEL` in your shell.
+The app calls Meta's **Muse Spark 1.3** through the Responses API
+(`crisis_command/agents/model_client.py`). Every call uses a strict JSON schema and
+`store: false`.
+
+- **Report intake**: the model turns free-text reports, in any language, into structured
+  fields. Its schema only allows places, roads and capabilities that exist in the scenario.
+  Software validation and operator confirmation still gate every world change.
+- **Specialists** (Situation, Resources, Routing): each runs deterministic tools first. The
+  model then interprets those results and flags missing information. The agents never write
+  world state.
+- **Planning** stays deterministic. Assignment is solved exactly; the model never chooses
+  units.
+
+The evidence for this split is the measured comparison of a person, algorithms and the model
+on the `findings` branch (`findings/README.md`).
+
+To configure, copy [`.env.example`](.env.example) to `.env` and set `META_API_KEY`,
+`META_MODEL` and `META_BASE_URL`. Without them, model steps report `unavailable`, and no
+canned or simulated AI output is shown. Tests and `evaluation/run_eval.py` never call the
+model.
 
 ## Quickstart
 
@@ -116,8 +132,8 @@ configurations are blocked until a model client exists.
 
 ## Known limitations
 
-- No model integration yet (see Model status).
-- Greedy planner, not a global optimizer; committed missions are not preempted.
+- Assignment is solved exactly for the served set and its units, but committed missions are
+  not preempted for later, higher-priority needs.
 - One active mission per resource; transport to shelters and destination capacity are not
   modeled.
 - One scenario; evaluation variants were authored by the developer.

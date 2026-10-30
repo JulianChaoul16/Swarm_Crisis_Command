@@ -73,7 +73,7 @@ Known limitations after Gate A:
   with tradeoffs → P-002 approved → P-003 shows the remaining unmet needs.
 
 Known limitations after Gate B:
-- Greedy priority-order assignment, not a global optimizer; committed missions are not
+- (Updated) Assignment is now solved exactly over available units; committed missions are still not
   preempted for higher-priority needs (shown as "already on incident-N").
 - One active mission per resource; units return to available on arrival (no transport to
   a destination is simulated).
