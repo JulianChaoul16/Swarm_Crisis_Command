@@ -80,6 +80,35 @@ Algorithm arm only. Full table: `results/summary.md`.
   The same author wrote the reports, the answer keys and the rules, so the rules fit these cases.
   A fair score needs reports the rules have never seen (see "Next steps").
 
+### Human session (project author, 2026-10-30)
+
+Scored on the quiz subset; the algorithms are scored on the same subset in `results/summary.md`.
+
+| Task | Human | Time |
+|---|---|---|
+| Reports | 73% of fields; severity 40%, severity within one level 85% | 16 min (47 s per report) |
+| Conflicts | 4 of 6 | 1 min |
+| Routing | 4 of 6 shortest; the other 2 averaged 3% longer | 4 min |
+| Triage | 3 of 6 exact; 14% of pairs out of order | 2 min |
+
+- **Severity misses:** most applied the rubric differently rather than misreading the report.
+  For example, road updates were rated medium or high where the rubric says low.
+- **Spanish report (R10):** place, people and urgency were all missed.
+- **Kind misses:** trapped people (R17, R18) were labelled evacuation, and a welfare check
+  (R16) was labelled other.
+
+**Assignment and replanning human results are not valid measurements.**
+
+- **What happened:**
+  - The first assignment scenario took 140 s and produced a reasonable plan with one unit used
+    twice.
+  - The remaining five scenarios took 3–6 s each, and mostly entered the same unit for every
+    slot.
+- **Likely cause:** the quiz's cost-table input or fatigue, not the person's assignment
+  ability.
+- **What this means:** the raw scores stay in `results/`, but they are not a human-versus-
+  algorithm comparison. Measuring human assignment properly needs a clearer interface.
+
 ## Changes made after seeing results
 
 - **Scenario generator, version 2.**

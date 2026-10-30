@@ -10,11 +10,25 @@ seconds there are shown for the human only, since other arms ran the full set.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | algorithms / rules | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 0 | 20 | 0.0044 |
 
+## Reports (human subset)
+
+| Arm / variant | Overall | Kind | Place | People | Severity | Severity ±1 | Needs | Road claims | Invented values | n | Seconds |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| algorithms / rules | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 0 | 20 | — |
+| human / you | 73% | 75% | 70% | 90% | 40% | 85% | 80% | 85% | 7 | 20 | 946.6000 |
+
 ## Conflicting road reports
 
 | Arm / variant | Accuracy | n | Seconds |
 |---|---|---|---|
 | algorithms / rules | 100% | 6 | 0.0001 |
+
+## Conflicting road reports (human subset)
+
+| Arm / variant | Accuracy | n | Seconds |
+|---|---|---|---|
+| algorithms / rules | 100% | 6 | — |
+| human / you | 67% | 6 | 67.0000 |
 
 ## Routing
 
@@ -24,11 +38,27 @@ seconds there are shown for the human only, since other arms ran the full set.
 | algorithms / dijkstra | 100% | 0% | 0% | 60 | 0.0006 |
 | algorithms / astar | 100% | 0% | 0% | 60 | 0.0006 |
 
+## Routing (human subset)
+
+| Arm / variant | Optimal | Invalid | Mean extra distance | n | Seconds |
+|---|---|---|---|---|---|
+| algorithms / fewest_hops | 83% | 0% | 0% | 6 | — |
+| algorithms / dijkstra | 100% | 0% | 0% | 6 | — |
+| algorithms / astar | 100% | 0% | 0% | 6 | — |
+| human / you | 67% | 0% | 3% | 6 | 254.7000 |
+
 ## Triage
 
 | Arm / variant | Exact order | Pairs out of order | n | Seconds |
 |---|---|---|---|---|
 | algorithms / rule | 100% | 0% | 20 | 0.0000 |
+
+## Triage (human subset)
+
+| Arm / variant | Exact order | Pairs out of order | n | Seconds |
+|---|---|---|---|---|
+| algorithms / rule | 100% | 0% | 6 | — |
+| human / you | 50% | 14% | 6 | 100.3000 |
 
 ## Assignment
 
@@ -38,6 +68,15 @@ seconds there are shown for the human only, since other arms ran the full set.
 | algorithms / greedy_global | 40% | 68% | 449% | 0 | 20 | 0.0011 |
 | algorithms / hungarian | 100% | 0% | 0% | 0 | 20 | 0.0014 |
 
+## Assignment (human subset)
+
+| Arm / variant | Optimal | Mean cost above optimal | Worst | Rule violations | n | Seconds |
+|---|---|---|---|---|---|---|
+| algorithms / greedy_priority | 50% | 61% | 224% | 0 | 4 | — |
+| algorithms / greedy_global | 25% | 82% | 224% | 0 | 4 | — |
+| algorithms / hungarian | 100% | 0% | 0% | 0 | 4 | — |
+| human / you | 0% | 547% | 1720% | 10 | 4 | 170.5000 |
+
 ## Replanning
 
 | Arm / variant | Optimal | Mean cost above optimal | Worst | Rule violations | Mean churn (optimal plan's churn) | n | Seconds |
@@ -46,3 +85,13 @@ seconds there are shown for the human only, since other arms ran the full set.
 | algorithms / greedy_global | 40% | 47% | 147% | 0 | 1.80 (0.30) | 10 | 0.0005 |
 | algorithms / hungarian | 100% | 0% | 0% | 0 | 0.30 (0.30) | 10 | 0.0006 |
 | algorithms / hungarian_sticky | 100% | 0% | 0% | 0 | 0.10 (0.30) | 10 | 0.0007 |
+
+## Replanning (human subset)
+
+| Arm / variant | Optimal | Mean cost above optimal | Worst | Rule violations | Mean churn (optimal plan's churn) | n | Seconds |
+|---|---|---|---|---|---|---|---|
+| algorithms / greedy_priority | 100% | 0% | 0% | 0 | 0.00 (0.00) | 2 | — |
+| algorithms / greedy_global | 50% | 74% | 147% | 0 | 2.00 (0.00) | 2 | — |
+| algorithms / hungarian | 100% | 0% | 0% | 0 | 0.00 (0.00) | 2 | — |
+| algorithms / hungarian_sticky | 100% | 0% | 0% | 0 | 0.00 (0.00) | 2 | — |
+| human / you | 0% | 252% | 379% | 8 | 4.00 (0.00) | 2 | 9.4000 |

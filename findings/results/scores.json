@@ -16,11 +16,55 @@
       "seconds": 0.004431799985468388
     }
   },
+  "reports (human subset)": {
+    "algorithms / rules": {
+      "n": 20,
+      "overall": 1.0,
+      "fields": {
+        "kind": 1.0,
+        "place": 1.0,
+        "people": 1.0,
+        "severity": 1.0,
+        "needs": 1.0,
+        "road_claims": 1.0
+      },
+      "severity_within_one": 1.0,
+      "invented_values": 0,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 20,
+      "overall": 0.7333333333333334,
+      "fields": {
+        "kind": 0.75,
+        "place": 0.7,
+        "people": 0.9,
+        "severity": 0.4,
+        "needs": 0.85,
+        "road_claims": 0.8
+      },
+      "severity_within_one": 0.85,
+      "invented_values": 7,
+      "seconds": 946.6
+    }
+  },
   "conflicts": {
     "algorithms / rules": {
       "n": 6,
       "accuracy": 1.0,
       "seconds": 6.109988316893578e-05
+    }
+  },
+  "conflicts (human subset)": {
+    "algorithms / rules": {
+      "n": 6,
+      "accuracy": 1.0,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 6,
+      "accuracy": 0.6666666666666666,
+      "seconds": 67.0
     }
   },
   "routing": {
@@ -46,12 +90,56 @@
       "seconds": 0.0006138000171631575
     }
   },
+  "routing (human subset)": {
+    "algorithms / fewest_hops": {
+      "n": 6,
+      "optimal": 0.8333333333333334,
+      "invalid": 0.0,
+      "mean_extra_distance": 0.0021929824561403763,
+      "seconds": null
+    },
+    "algorithms / dijkstra": {
+      "n": 6,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 3.700743415417188e-17,
+      "seconds": null
+    },
+    "algorithms / astar": {
+      "n": 6,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 3.700743415417188e-17,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 6,
+      "optimal": 0.6666666666666666,
+      "invalid": 0.0,
+      "mean_extra_distance": 0.026448110469315982,
+      "seconds": 254.7
+    }
+  },
   "triage": {
     "algorithms / rule": {
       "n": 20,
       "exact": 1,
       "pair_disagreement": 0.0,
       "seconds": 2.9899878427386284e-05
+    }
+  },
+  "triage (human subset)": {
+    "algorithms / rule": {
+      "n": 6,
+      "exact": 1,
+      "pair_disagreement": 0.0,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 6,
+      "exact": 0.5,
+      "pair_disagreement": 0.1388888888888889,
+      "seconds": 100.3
     }
   },
   "assignment": {
@@ -78,6 +166,40 @@
       "worst_gap": 2.220446049250313e-16,
       "rule_violations": 0,
       "seconds": 0.0013667999301105738
+    }
+  },
+  "assignment (human subset)": {
+    "algorithms / greedy_priority": {
+      "n": 4,
+      "optimal": 0.5,
+      "mean_gap": 0.6067169555046785,
+      "worst_gap": 2.2432302446739816,
+      "rule_violations": 0,
+      "seconds": null
+    },
+    "algorithms / greedy_global": {
+      "n": 4,
+      "optimal": 0.25,
+      "mean_gap": 0.8174705527028663,
+      "worst_gap": 2.2432302446739816,
+      "rule_violations": 0,
+      "seconds": null
+    },
+    "algorithms / hungarian": {
+      "n": 4,
+      "optimal": 1.0,
+      "mean_gap": -2.7755575615628914e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 4,
+      "optimal": 0.0,
+      "mean_gap": 5.471807692881415,
+      "worst_gap": 17.201365888726283,
+      "rule_violations": 10,
+      "seconds": 170.5
     }
   },
   "replanning": {
@@ -120,6 +242,58 @@
       "mean_churn": 0.1,
       "optimal_churn": 0.3,
       "seconds": 0.0006641000509262085
+    }
+  },
+  "replanning (human subset)": {
+    "algorithms / greedy_priority": {
+      "n": 2,
+      "optimal": 1.0,
+      "mean_gap": -5.551115123125783e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "mean_churn": 0,
+      "optimal_churn": 0,
+      "seconds": null
+    },
+    "algorithms / greedy_global": {
+      "n": 2,
+      "optimal": 0.5,
+      "mean_gap": 0.7373185270106739,
+      "worst_gap": 1.4746370540213478,
+      "rule_violations": 0,
+      "mean_churn": 2,
+      "optimal_churn": 0,
+      "seconds": null
+    },
+    "algorithms / hungarian": {
+      "n": 2,
+      "optimal": 1.0,
+      "mean_gap": -5.551115123125783e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "mean_churn": 0,
+      "optimal_churn": 0,
+      "seconds": null
+    },
+    "algorithms / hungarian_sticky": {
+      "n": 2,
+      "optimal": 1.0,
+      "mean_gap": -5.551115123125783e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "mean_churn": 0,
+      "optimal_churn": 0,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 2,
+      "optimal": 0.0,
+      "mean_gap": 2.520151260240581,
+      "worst_gap": 3.794371199604366,
+      "rule_violations": 8,
+      "mean_churn": 4,
+      "optimal_churn": 0,
+      "seconds": 9.4
     }
   }
 }
