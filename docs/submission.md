@@ -58,7 +58,7 @@ a single agent under the same tools (see docs/evaluation.md).
 
 ## Known limitations
 
-No model integration yet; greedy (not optimal) planner; one synthetic scenario; one mission
+No model integration yet; planner exact over available units but never preempts committed missions; one synthetic scenario; one mission
 per resource; no destination or shelter capacity; no authentication; no practitioner review
 obtained.
 

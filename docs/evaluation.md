@@ -71,7 +71,7 @@ path is exercised by deliberately constructed invalid plans in the unit tests
 - `competing_requests`: adding two critical rescues moved the north boat away from the
   high-severity incident-2. Both the new unmet critical incident and incident-2 show their
   reasons in the plan.
-- `closure_after_approval`: the greedy planner does not preempt committed missions, so
+- `closure_after_approval`: the planner does not preempt committed missions, so
   incident-3 stays unmet while Fire Engine 1 completes a lower-priority committed mission.
   This tradeoff is shown to the operator rather than resolved automatically.
 
@@ -79,7 +79,7 @@ path is exercised by deliberately constructed invalid plans in the unit tests
 
 - One synthetic scenario; variants are authored by the developer and were not held out from
   tuning.
-- Planner is greedy in priority order, not a global optimizer; results are not described as
-  optimal.
+- The planner is exact only over available units. It does not preempt committed missions,
+  so a plan can be worse than one that reassigned committed units.
 - Latency figures are local, single-process, and exclude model latency because no model ran.
 - No practitioner review has been obtained.

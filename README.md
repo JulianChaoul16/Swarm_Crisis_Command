@@ -117,7 +117,8 @@ configurations are blocked until a model client exists.
 ## Known limitations
 
 - No model integration yet (see Model status).
-- Greedy planner, not a global optimizer; committed missions are not preempted.
+- Assignment is solved exactly for the served set and its units, but committed missions are
+  not preempted for later, higher-priority needs.
 - One active mission per resource; transport to shelters and destination capacity are not
   modeled.
 - One scenario; evaluation variants were authored by the developer.
