@@ -1,0 +1,3067 @@
+{
+  "arm": "algorithms",
+  "generated_at": "2026-10-30T17:37:57+00:00",
+  "outputs": {
+    "reports": {
+      "rules": {
+        "R01": {
+          "kind": "flood_rescue",
+          "place": "riverside_apts",
+          "people": 3,
+          "severity": "critical",
+          "needs": [
+            "boat"
+          ],
+          "road_claims": []
+        },
+        "R02": {
+          "kind": "medical",
+          "place": "elm_and_5th",
+          "people": 1,
+          "severity": "high",
+          "needs": [
+            "medic"
+          ],
+          "road_claims": []
+        },
+        "R03": {
+          "kind": "road_status",
+          "place": null,
+          "people": null,
+          "severity": "low",
+          "needs": [],
+          "road_claims": [
+            {
+              "road_id": "main-st-bridge",
+              "status": "open"
+            }
+          ]
+        },
+        "R04": {
+          "kind": "fire",
+          "place": "old_mill",
+          "people": null,
+          "severity": "high",
+          "needs": [
+            "fire"
+          ],
+          "road_claims": []
+        },
+        "R05": {
+          "kind": "evacuation",
+          "place": "cedar_lane_park",
+          "people": 12,
+          "severity": "high",
+          "needs": [
+            "transport"
+          ],
+          "road_claims": []
+        },
+        "R06": {
+          "kind": "property_damage",
+          "place": "pine_market",
+          "people": null,
+          "severity": "low",
+          "needs": [],
+          "road_claims": []
+        },
+        "R07": {
+          "kind": "road_status",
+          "place": null,
+          "people": null,
+          "severity": "low",
+          "needs": [],
+          "road_claims": [
+            {
+              "road_id": "upriver-bridge",
+              "status": "closed"
+            }
+          ]
+        },
+        "R08": {
+          "kind": "flood_rescue",
+          "place": "north_school",
+          "people": 34,
+          "severity": "critical",
+          "needs": [
+            "boat",
+            "transport"
+          ],
+          "road_claims": []
+        },
+        "R09": {
+          "kind": "medical",
+          "place": "southgate_shelter",
+          "people": 3,
+          "severity": "high",
+          "needs": [
+            "medic"
+          ],
+          "road_claims": []
+        },
+        "R10": {
+          "kind": "flood_rescue",
+          "place": "elm_and_5th",
+          "people": 1,
+          "severity": "critical",
+          "needs": [
+            "boat"
+          ],
+          "road_claims": []
+        },
+        "R11": {
+          "kind": "road_status",
+          "place": null,
+          "people": null,
+          "severity": "low",
+          "needs": [],
+          "road_claims": []
+        },
+        "R12": {
+          "kind": "medical",
+          "place": "county_hospital",
+          "people": 2,
+          "severity": "high",
+          "needs": [
+            "medic"
+          ],
+          "road_claims": []
+        },
+        "R13": {
+          "kind": "other",
+          "place": "oak_and_3rd",
+          "people": null,
+          "severity": "low",
+          "needs": [],
+          "road_claims": []
+        },
+        "R14": {
+          "kind": "flood_rescue",
+          "place": "pine_market",
+          "people": 2,
+          "severity": "critical",
+          "needs": [
+            "boat"
+          ],
+          "road_claims": []
+        },
+        "R15": {
+          "kind": "road_status",
+          "place": null,
+          "people": null,
+          "severity": "low",
+          "needs": [],
+          "road_claims": [
+            {
+              "road_id": "river-rd-north",
+              "status": "closed"
+            },
+            {
+              "road_id": "mill-rd",
+              "status": "open"
+            }
+          ]
+        },
+        "R16": {
+          "kind": "medical",
+          "place": "cedar_lane_park",
+          "people": 1,
+          "severity": "high",
+          "needs": [
+            "medic"
+          ],
+          "road_claims": []
+        },
+        "R17": {
+          "kind": "flood_rescue",
+          "place": "riverside_apts",
+          "people": null,
+          "severity": "critical",
+          "needs": [
+            "boat"
+          ],
+          "road_claims": []
+        },
+        "R18": {
+          "kind": "flood_rescue",
+          "place": "north_school",
+          "people": 1,
+          "severity": "critical",
+          "needs": [
+            "boat"
+          ],
+          "road_claims": [
+            {
+              "road_id": "low-water-crossing",
+              "status": "closed"
+            }
+          ]
+        },
+        "R19": {
+          "kind": "road_status",
+          "place": null,
+          "people": null,
+          "severity": "low",
+          "needs": [],
+          "road_claims": [
+            {
+              "road_id": "main-st-bridge",
+              "status": "open"
+            },
+            {
+              "road_id": "upriver-bridge",
+              "status": "closed"
+            }
+          ]
+        },
+        "R20": {
+          "kind": "other",
+          "place": "southgate_shelter",
+          "people": 50,
+          "severity": "medium",
+          "needs": [],
+          "road_claims": []
+        }
+      }
+    },
+    "conflicts": {
+      "rules": {
+        "C1": "open",
+        "C2": "closed",
+        "C3": "open",
+        "C4": "unknown",
+        "C5": "closed",
+        "C6": "closed"
+      }
+    },
+    "routing": {
+      "fewest_hops": {
+        "S01": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q3": [
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S02": {
+          "q1": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q2": [
+            "fire_station_1",
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S03": {
+          "q1": null,
+          "q2": null,
+          "q3": [
+            "main_st_south",
+            "elm_and_5th",
+            "north_school",
+            "fire_station_1"
+          ]
+        },
+        "S04": {
+          "q1": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "north_school",
+            "fire_station_1",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ]
+        },
+        "S05": {
+          "q1": [
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "main_st_south",
+            "riverside_apts"
+          ],
+          "q3": [
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S06": {
+          "q1": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "old_mill",
+            "county_hospital",
+            "main_st_north",
+            "main_st_south",
+            "elm_and_5th",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ]
+        },
+        "S07": {
+          "q1": [
+            "oak_and_3rd",
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "fire_station_1",
+            "oak_and_3rd"
+          ]
+        },
+        "S08": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "main_st_north",
+            "county_hospital",
+            "old_mill",
+            "upriver_north",
+            "upriver_south"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "elm_and_5th",
+            "north_school",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S09": {
+          "q1": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ]
+        },
+        "S10": {
+          "q1": [
+            "riverside_apts",
+            "pine_market"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q3": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ]
+        },
+        "S11": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q2": [
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "north_school",
+            "main_st_north"
+          ]
+        },
+        "S12": {
+          "q1": [
+            "old_mill",
+            "county_hospital"
+          ],
+          "q2": [
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S13": {
+          "q1": [
+            "north_school",
+            "fire_station_1"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S14": {
+          "q1": [
+            "pine_market",
+            "upriver_south"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ]
+        },
+        "S15": {
+          "q1": [
+            "main_st_south",
+            "elm_and_5th",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S16": {
+          "q1": [
+            "north_school",
+            "main_st_north"
+          ],
+          "q2": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "main_st_north",
+            "north_school"
+          ]
+        },
+        "S17": {
+          "q1": [
+            "main_st_north",
+            "north_school",
+            "fire_station_1"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "upriver_south",
+            "upriver_north",
+            "old_mill",
+            "county_hospital"
+          ]
+        },
+        "S18": {
+          "q1": [
+            "old_mill",
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "old_mill",
+            "county_hospital",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S19": {
+          "q1": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "southgate_shelter",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south"
+          ]
+        },
+        "S20": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts"
+          ]
+        }
+      },
+      "dijkstra": {
+        "S01": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q3": [
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S02": {
+          "q1": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q2": [
+            "fire_station_1",
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S03": {
+          "q1": null,
+          "q2": null,
+          "q3": [
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd",
+            "fire_station_1"
+          ]
+        },
+        "S04": {
+          "q1": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "north_school",
+            "fire_station_1",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ]
+        },
+        "S05": {
+          "q1": [
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "main_st_south",
+            "riverside_apts"
+          ],
+          "q3": [
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S06": {
+          "q1": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ]
+        },
+        "S07": {
+          "q1": [
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "fire_station_1",
+            "oak_and_3rd"
+          ]
+        },
+        "S08": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S09": {
+          "q1": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ]
+        },
+        "S10": {
+          "q1": [
+            "riverside_apts",
+            "pine_market"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q3": [
+            "fire_station_1",
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ]
+        },
+        "S11": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q2": [
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "north_school",
+            "main_st_north"
+          ]
+        },
+        "S12": {
+          "q1": [
+            "old_mill",
+            "county_hospital"
+          ],
+          "q2": [
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S13": {
+          "q1": [
+            "north_school",
+            "fire_station_1"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S14": {
+          "q1": [
+            "pine_market",
+            "upriver_south"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ]
+        },
+        "S15": {
+          "q1": [
+            "main_st_south",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S16": {
+          "q1": [
+            "north_school",
+            "main_st_north"
+          ],
+          "q2": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "main_st_north",
+            "north_school"
+          ]
+        },
+        "S17": {
+          "q1": [
+            "main_st_north",
+            "oak_and_3rd",
+            "fire_station_1"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "upriver_south",
+            "upriver_north",
+            "old_mill",
+            "county_hospital"
+          ]
+        },
+        "S18": {
+          "q1": [
+            "old_mill",
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "pine_market",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S19": {
+          "q1": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "southgate_shelter",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south"
+          ]
+        },
+        "S20": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts"
+          ]
+        }
+      },
+      "astar": {
+        "S01": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q3": [
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S02": {
+          "q1": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q2": [
+            "fire_station_1",
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S03": {
+          "q1": null,
+          "q2": null,
+          "q3": [
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd",
+            "fire_station_1"
+          ]
+        },
+        "S04": {
+          "q1": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "north_school",
+            "fire_station_1",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ]
+        },
+        "S05": {
+          "q1": [
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "main_st_south",
+            "riverside_apts"
+          ],
+          "q3": [
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S06": {
+          "q1": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ]
+        },
+        "S07": {
+          "q1": [
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "fire_station_1",
+            "oak_and_3rd"
+          ]
+        },
+        "S08": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S09": {
+          "q1": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ]
+        },
+        "S10": {
+          "q1": [
+            "riverside_apts",
+            "pine_market"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q3": [
+            "fire_station_1",
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ]
+        },
+        "S11": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q2": [
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "north_school",
+            "main_st_north"
+          ]
+        },
+        "S12": {
+          "q1": [
+            "old_mill",
+            "county_hospital"
+          ],
+          "q2": [
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S13": {
+          "q1": [
+            "north_school",
+            "fire_station_1"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S14": {
+          "q1": [
+            "pine_market",
+            "upriver_south"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ]
+        },
+        "S15": {
+          "q1": [
+            "main_st_south",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S16": {
+          "q1": [
+            "north_school",
+            "main_st_north"
+          ],
+          "q2": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "main_st_north",
+            "north_school"
+          ]
+        },
+        "S17": {
+          "q1": [
+            "main_st_north",
+            "oak_and_3rd",
+            "fire_station_1"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "upriver_south",
+            "upriver_north",
+            "old_mill",
+            "county_hospital"
+          ]
+        },
+        "S18": {
+          "q1": [
+            "old_mill",
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "pine_market",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S19": {
+          "q1": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "southgate_shelter",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south"
+          ]
+        },
+        "S20": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts"
+          ]
+        }
+      }
+    },
+    "triage": {
+      "rule": {
+        "S01": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S02": [
+          "inc-1",
+          "inc-2",
+          "inc-3"
+        ],
+        "S03": [
+          "inc-3",
+          "inc-1",
+          "inc-2",
+          "inc-4"
+        ],
+        "S04": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S05": [
+          "inc-3",
+          "inc-2",
+          "inc-1"
+        ],
+        "S06": [
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S07": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S08": [
+          "inc-3",
+          "inc-1",
+          "inc-4",
+          "inc-2"
+        ],
+        "S09": [
+          "inc-2",
+          "inc-3",
+          "inc-1",
+          "inc-4"
+        ],
+        "S10": [
+          "inc-2",
+          "inc-1",
+          "inc-3",
+          "inc-4"
+        ],
+        "S11": [
+          "inc-2",
+          "inc-1",
+          "inc-4",
+          "inc-3"
+        ],
+        "S12": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S13": [
+          "inc-1",
+          "inc-3",
+          "inc-4",
+          "inc-2"
+        ],
+        "S14": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S15": [
+          "inc-4",
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S16": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S17": [
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S18": [
+          "inc-3",
+          "inc-4",
+          "inc-1",
+          "inc-2"
+        ],
+        "S19": [
+          "inc-4",
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S20": [
+          "inc-2",
+          "inc-1",
+          "inc-4",
+          "inc-3"
+        ]
+      }
+    },
+    "assignment": {
+      "greedy_priority": {
+        "S01": [
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          }
+        ],
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S03": [
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "bus-3"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          }
+        ],
+        "S05": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S07": [
+          {
+            "slot": "inc-3#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          }
+        ],
+        "S09": [
+          {
+            "slot": "inc-2#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-3"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S11": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S13": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S15": [
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-2"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ],
+        "S17": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "bus-2"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          }
+        ],
+        "S19": [
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-4#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          }
+        ]
+      },
+      "greedy_global": {
+        "S01": [
+          {
+            "slot": "inc-2#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S02": [
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S03": [
+          {
+            "slot": "inc-2#1",
+            "unit": "bus-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          }
+        ],
+        "S05": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S07": [
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "bus-1"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S09": [
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          }
+        ],
+        "S11": [
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          }
+        ],
+        "S13": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          }
+        ],
+        "S15": [
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "bus-1"
+          }
+        ],
+        "S17": [
+          {
+            "slot": "inc-3#1",
+            "unit": "bus-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S19": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-4#1",
+            "unit": "bus-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          }
+        ]
+      },
+      "hungarian": {
+        "S01": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-1"
+          }
+        ],
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S03": [
+          {
+            "slot": "inc-2#1",
+            "unit": "bus-3"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S05": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S07": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "bus-1"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S09": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S11": [
+          {
+            "slot": "inc-1#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S13": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "medic-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S15": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ],
+        "S17": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "bus-2"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S19": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-4#1",
+            "unit": "bus-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ]
+      }
+    },
+    "replanning": {
+      "greedy_priority": {
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-3"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          }
+        ]
+      },
+      "greedy_global": {
+        "S02": [
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-3"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "bus-1"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          }
+        ]
+      },
+      "hungarian": {
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-3"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-2"
+          }
+        ]
+      },
+      "hungarian_sticky": {
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-3"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ]
+      }
+    }
+  },
+  "seconds": {
+    "reports": {
+      "rules": 0.004431799985468388
+    },
+    "conflicts": {
+      "rules": 6.109988316893578e-05
+    },
+    "routing": {
+      "fewest_hops": 0.0005482998676598072,
+      "dijkstra": 0.0005556000396609306,
+      "astar": 0.0006138000171631575
+    },
+    "triage": {
+      "rule": 2.9899878427386284e-05
+    },
+    "assignment": {
+      "greedy_priority": 0.0014125998131930828,
+      "greedy_global": 0.00113769993185997,
+      "hungarian": 0.0013667999301105738
+    },
+    "replanning": {
+      "greedy_priority": 0.0006295999046415091,
+      "greedy_global": 0.0005406998097896576,
+      "hungarian": 0.0006140000186860561,
+      "hungarian_sticky": 0.0006641000509262085
+    }
+  }
+}

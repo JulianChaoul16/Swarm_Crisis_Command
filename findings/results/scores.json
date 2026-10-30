@@ -1,0 +1,125 @@
+{
+  "reports": {
+    "algorithms / rules": {
+      "n": 20,
+      "overall": 1.0,
+      "fields": {
+        "kind": 1.0,
+        "place": 1.0,
+        "people": 1.0,
+        "severity": 1.0,
+        "needs": 1.0,
+        "road_claims": 1.0
+      },
+      "severity_within_one": 1.0,
+      "invented_values": 0,
+      "seconds": 0.004431799985468388
+    }
+  },
+  "conflicts": {
+    "algorithms / rules": {
+      "n": 6,
+      "accuracy": 1.0,
+      "seconds": 6.109988316893578e-05
+    }
+  },
+  "routing": {
+    "algorithms / fewest_hops": {
+      "n": 60,
+      "optimal": 0.8333333333333334,
+      "invalid": 0.0,
+      "mean_extra_distance": 0.03886708160839358,
+      "seconds": 0.0005482998676598072
+    },
+    "algorithms / dijkstra": {
+      "n": 60,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 5.742532885992189e-18,
+      "seconds": 0.0005556000396609306
+    },
+    "algorithms / astar": {
+      "n": 60,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 5.742532885992189e-18,
+      "seconds": 0.0006138000171631575
+    }
+  },
+  "triage": {
+    "algorithms / rule": {
+      "n": 20,
+      "exact": 1,
+      "pair_disagreement": 0.0,
+      "seconds": 2.9899878427386284e-05
+    }
+  },
+  "assignment": {
+    "algorithms / greedy_priority": {
+      "n": 20,
+      "optimal": 0.8,
+      "mean_gap": 0.16044892353132337,
+      "worst_gap": 2.2432302446739816,
+      "rule_violations": 0,
+      "seconds": 0.0014125998131930828
+    },
+    "algorithms / greedy_global": {
+      "n": 20,
+      "optimal": 0.4,
+      "mean_gap": 0.6819316976491463,
+      "worst_gap": 4.494487615690563,
+      "rule_violations": 0,
+      "seconds": 0.00113769993185997
+    },
+    "algorithms / hungarian": {
+      "n": 20,
+      "optimal": 1.0,
+      "mean_gap": 2.7755575615628914e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "seconds": 0.0013667999301105738
+    }
+  },
+  "replanning": {
+    "algorithms / greedy_priority": {
+      "n": 10,
+      "optimal": 1.0,
+      "mean_gap": -4.4408920985006264e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "mean_churn": 0.3,
+      "optimal_churn": 0.3,
+      "seconds": 0.0006295999046415091
+    },
+    "algorithms / greedy_global": {
+      "n": 10,
+      "optimal": 0.4,
+      "mean_gap": 0.46658879490626237,
+      "worst_gap": 1.4746370540213478,
+      "rule_violations": 0,
+      "mean_churn": 1.8,
+      "optimal_churn": 0.3,
+      "seconds": 0.0005406998097896576
+    },
+    "algorithms / hungarian": {
+      "n": 10,
+      "optimal": 1.0,
+      "mean_gap": -4.4408920985006264e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "mean_churn": 0.3,
+      "optimal_churn": 0.3,
+      "seconds": 0.0006140000186860561
+    },
+    "algorithms / hungarian_sticky": {
+      "n": 10,
+      "optimal": 1.0,
+      "mean_gap": -4.4408920985006264e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "mean_churn": 0.1,
+      "optimal_churn": 0.3,
+      "seconds": 0.0006641000509262085
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "R01": {"kind": "flood_rescue", "place": "riverside_apts", "people": 3, "severity": "critical", "needs": ["boat"], "road_claims": []},
+  "R02": {"kind": "medical", "place": "elm_and_5th", "people": 1, "severity": "high", "needs": ["medic"], "road_claims": []},
+  "R03": {"kind": "road_status", "place": null, "people": null, "severity": "low", "needs": [], "road_claims": [{"road_id": "main-st-bridge", "status": "open"}]},
+  "R04": {"kind": "fire", "place": "old_mill", "people": null, "severity": "high", "needs": ["fire"], "road_claims": []},
+  "R05": {"kind": "evacuation", "place": "cedar_lane_park", "people": 12, "severity": "high", "needs": ["transport"], "road_claims": []},
+  "R06": {"kind": "property_damage", "place": "pine_market", "people": null, "severity": "low", "needs": [], "road_claims": []},
+  "R07": {"kind": "road_status", "place": null, "people": null, "severity": "low", "needs": [], "road_claims": [{"road_id": "upriver-bridge", "status": "closed"}]},
+  "R08": {"kind": "flood_rescue", "place": "north_school", "people": 34, "severity": "critical", "needs": ["boat", "transport"], "road_claims": []},
+  "R09": {"kind": "medical", "place": "southgate_shelter", "people": 3, "severity": "high", "needs": ["medic"], "road_claims": []},
+  "R10": {"kind": "flood_rescue", "place": "elm_and_5th", "people": 1, "severity": "critical", "needs": ["boat"], "road_claims": []},
+  "R11": {"kind": "road_status", "place": null, "people": null, "severity": "low", "needs": [], "road_claims": []},
+  "R12": {"kind": "medical", "place": "county_hospital", "people": 2, "severity": "high", "needs": ["medic"], "road_claims": []},
+  "R13": {"kind": "other", "place": "oak_and_3rd", "people": null, "severity": "low", "needs": [], "road_claims": []},
+  "R14": {"kind": "flood_rescue", "place": "pine_market", "people": 2, "severity": "critical", "needs": ["boat"], "road_claims": []},
+  "R15": {"kind": "road_status", "place": null, "people": null, "severity": "low", "needs": [], "road_claims": [{"road_id": "river-rd-north", "status": "closed"}, {"road_id": "mill-rd", "status": "open"}]},
+  "R16": {"kind": "medical", "place": "cedar_lane_park", "people": 1, "severity": "high", "needs": ["medic"], "road_claims": []},
+  "R17": {"kind": "flood_rescue", "place": "riverside_apts", "people": null, "severity": "critical", "needs": ["boat"], "road_claims": []},
+  "R18": {"kind": "flood_rescue", "place": "north_school", "people": 1, "severity": "critical", "needs": ["boat"], "road_claims": [{"road_id": "low-water-crossing", "status": "closed"}]},
+  "R19": {"kind": "road_status", "place": null, "people": null, "severity": "low", "needs": [], "road_claims": [{"road_id": "main-st-bridge", "status": "open"}, {"road_id": "upriver-bridge", "status": "closed"}]},
+  "R20": {"kind": "other", "place": "southgate_shelter", "people": 50, "severity": "medium", "needs": [], "road_claims": []}
+}

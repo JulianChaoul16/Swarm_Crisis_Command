@@ -1,0 +1,1264 @@
+{
+  "S01": {
+    "routing": {
+      "q1": {
+        "distance": 7.194,
+        "path": [
+          "fire_station_1",
+          "north_school",
+          "elm_and_5th",
+          "lowtown_depot"
+        ]
+      },
+      "q2": {
+        "distance": 6.679,
+        "path": [
+          "upriver_south",
+          "pine_market",
+          "riverside_apts",
+          "main_st_south",
+          "main_st_north"
+        ]
+      },
+      "q3": {
+        "distance": 1.0,
+        "path": [
+          "main_st_north",
+          "main_st_south"
+        ]
+      }
+    },
+    "triage": [
+      "inc-3",
+      "inc-1",
+      "inc-2"
+    ],
+    "assignment": {
+      "objective": 715.0240000000001,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-1#1",
+          "unit": "bus-1"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "engine-1"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "rescue-1"
+        }
+      ]
+    }
+  },
+  "S02": {
+    "routing": {
+      "q1": {
+        "distance": 8.247,
+        "path": [
+          "lowtown_depot",
+          "elm_and_5th",
+          "main_st_south",
+          "main_st_north",
+          "north_school"
+        ]
+      },
+      "q2": {
+        "distance": 11.628,
+        "path": [
+          "fire_station_1",
+          "oak_and_3rd",
+          "main_st_north",
+          "main_st_south",
+          "riverside_apts",
+          "pine_market",
+          "cedar_lane_park"
+        ]
+      },
+      "q3": {
+        "distance": 6.954,
+        "path": [
+          "county_hospital",
+          "main_st_north",
+          "main_st_south",
+          "riverside_apts",
+          "pine_market"
+        ]
+      }
+    },
+    "triage": [
+      "inc-1",
+      "inc-2",
+      "inc-3"
+    ],
+    "assignment": {
+      "objective": 360.7142857142857,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "engine-1"
+        },
+        {
+          "slot": "inc-1#1",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-2#1",
+          "unit": "medic-1"
+        }
+      ]
+    },
+    "replanning": {
+      "objective": 381.3042857142857,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "engine-1"
+        },
+        {
+          "slot": "inc-1#1",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-2#1",
+          "unit": "medic-1"
+        }
+      ]
+    }
+  },
+  "S03": {
+    "routing": {
+      "q1": {
+        "distance": null,
+        "path": null
+      },
+      "q2": {
+        "distance": null,
+        "path": null
+      },
+      "q3": {
+        "distance": 5.548,
+        "path": [
+          "main_st_south",
+          "main_st_north",
+          "oak_and_3rd",
+          "fire_station_1"
+        ]
+      }
+    },
+    "triage": [
+      "inc-3",
+      "inc-1",
+      "inc-2",
+      "inc-4"
+    ],
+    "assignment": {
+      "objective": 457.15,
+      "plan": [
+        {
+          "slot": "inc-2#1",
+          "unit": "bus-3"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "boat-1"
+        }
+      ]
+    }
+  },
+  "S04": {
+    "routing": {
+      "q1": {
+        "distance": 8.139,
+        "path": [
+          "upriver_south",
+          "pine_market",
+          "riverside_apts",
+          "main_st_south",
+          "elm_and_5th"
+        ]
+      },
+      "q2": {
+        "distance": 4.097,
+        "path": [
+          "north_school",
+          "fire_station_1",
+          "oak_and_3rd"
+        ]
+      },
+      "q3": {
+        "distance": 3.073,
+        "path": [
+          "upriver_north",
+          "upriver_south",
+          "pine_market"
+        ]
+      }
+    },
+    "triage": [
+      "inc-2",
+      "inc-3",
+      "inc-1"
+    ],
+    "assignment": {
+      "objective": 469.42342857142853,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-1#1",
+          "unit": "bus-1"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "medic-1"
+        }
+      ]
+    },
+    "replanning": {
+      "objective": 475.1454285714286,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-1#1",
+          "unit": "bus-1"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "medic-1"
+        }
+      ]
+    }
+  },
+  "S05": {
+    "routing": {
+      "q1": {
+        "distance": 3.348,
+        "path": [
+          "oak_and_3rd",
+          "main_st_north",
+          "main_st_south"
+        ]
+      },
+      "q2": {
+        "distance": 1.785,
+        "path": [
+          "main_st_south",
+          "riverside_apts"
+        ]
+      },
+      "q3": {
+        "distance": 2.494,
+        "path": [
+          "riverside_apts",
+          "southgate_shelter"
+        ]
+      }
+    },
+    "triage": [
+      "inc-3",
+      "inc-2",
+      "inc-1"
+    ],
+    "assignment": {
+      "objective": 132.9222619047619,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "engine-3"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "boat-1"
+        }
+      ]
+    }
+  },
+  "S06": {
+    "routing": {
+      "q1": {
+        "distance": 6.066,
+        "path": [
+          "pine_market",
+          "riverside_apts",
+          "main_st_south",
+          "elm_and_5th"
+        ]
+      },
+      "q2": {
+        "distance": 9.106,
+        "path": [
+          "old_mill",
+          "upriver_north",
+          "upriver_south",
+          "pine_market",
+          "riverside_apts",
+          "southgate_shelter"
+        ]
+      },
+      "q3": {
+        "distance": 8.54,
+        "path": [
+          "cedar_lane_park",
+          "pine_market",
+          "riverside_apts",
+          "main_st_south",
+          "elm_and_5th"
+        ]
+      }
+    },
+    "triage": [
+      "inc-2",
+      "inc-1",
+      "inc-3"
+    ],
+    "assignment": {
+      "objective": 655.8693333333333,
+      "plan": [
+        {
+          "slot": "inc-1#1",
+          "unit": "medic-1"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "boat-2"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "boat-1"
+        }
+      ]
+    },
+    "replanning": {
+      "objective": 666.9093333333333,
+      "plan": [
+        {
+          "slot": "inc-1#1",
+          "unit": "medic-1"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "boat-2"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "boat-3"
+        }
+      ]
+    }
+  },
+  "S07": {
+    "routing": {
+      "q1": {
+        "distance": 7.791,
+        "path": [
+          "oak_and_3rd",
+          "main_st_north",
+          "main_st_south",
+          "elm_and_5th",
+          "lowtown_depot"
+        ]
+      },
+      "q2": {
+        "distance": 5.178,
+        "path": [
+          "old_mill",
+          "upriver_north",
+          "upriver_south",
+          "cedar_lane_park"
+        ]
+      },
+      "q3": {
+        "distance": 2.2,
+        "path": [
+          "fire_station_1",
+          "oak_and_3rd"
+        ]
+      }
+    },
+    "triage": [
+      "inc-3",
+      "inc-1",
+      "inc-2"
+    ],
+    "assignment": {
+      "objective": 44.51314285714286,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-2#1",
+          "unit": "medic-1"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "bus-1"
+        }
+      ]
+    }
+  },
+  "S08": {
+    "routing": {
+      "q1": {
+        "distance": 8.211,
+        "path": [
+          "fire_station_1",
+          "north_school",
+          "elm_and_5th",
+          "southgate_shelter"
+        ]
+      },
+      "q2": {
+        "distance": 6.679,
+        "path": [
+          "main_st_north",
+          "main_st_south",
+          "riverside_apts",
+          "pine_market",
+          "upriver_south"
+        ]
+      },
+      "q3": {
+        "distance": 7.627,
+        "path": [
+          "southgate_shelter",
+          "riverside_apts",
+          "main_st_south",
+          "main_st_north",
+          "county_hospital"
+        ]
+      }
+    },
+    "triage": [
+      "inc-3",
+      "inc-1",
+      "inc-4",
+      "inc-2"
+    ],
+    "assignment": {
+      "objective": 731.8728571428571,
+      "plan": [
+        {
+          "slot": "inc-1#1",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "engine-1"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "rescue-2"
+        }
+      ]
+    },
+    "replanning": {
+      "objective": 750.267142857143,
+      "plan": [
+        {
+          "slot": "inc-1#1",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "engine-1"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "rescue-2"
+        }
+      ]
+    }
+  },
+  "S09": {
+    "routing": {
+      "q1": {
+        "distance": 3.073,
+        "path": [
+          "upriver_north",
+          "upriver_south",
+          "pine_market"
+        ]
+      },
+      "q2": {
+        "distance": 9.428,
+        "path": [
+          "cedar_lane_park",
+          "pine_market",
+          "riverside_apts",
+          "main_st_south",
+          "main_st_north",
+          "oak_and_3rd"
+        ]
+      },
+      "q3": {
+        "distance": 4.606,
+        "path": [
+          "pine_market",
+          "riverside_apts",
+          "main_st_south",
+          "main_st_north"
+        ]
+      }
+    },
+    "triage": [
+      "inc-2",
+      "inc-3",
+      "inc-1",
+      "inc-4"
+    ],
+    "assignment": {
+      "objective": 846.6771428571429,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "rescue-3"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "engine-1"
+        },
+        {
+          "slot": "inc-4#0",
+          "unit": "rescue-1"
+        }
+      ]
+    }
+  },
+  "S10": {
+    "routing": {
+      "q1": {
+        "distance": 1.821,
+        "path": [
+          "riverside_apts",
+          "pine_market"
+        ]
+      },
+      "q2": {
+        "distance": 7.41,
+        "path": [
+          "pine_market",
+          "riverside_apts",
+          "main_st_south",
+          "main_st_north",
+          "north_school"
+        ]
+      },
+      "q3": {
+        "distance": 12.227,
+        "path": [
+          "fire_station_1",
+          "oak_and_3rd",
+          "main_st_north",
+          "main_st_south",
+          "riverside_apts",
+          "pine_market",
+          "upriver_south",
+          "upriver_north"
+        ]
+      }
+    },
+    "triage": [
+      "inc-2",
+      "inc-1",
+      "inc-3",
+      "inc-4"
+    ],
+    "assignment": {
+      "objective": 1114.234,
+      "plan": [
+        {
+          "slot": "inc-3#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "medic-1"
+        }
+      ]
+    },
+    "replanning": {
+      "objective": 1117.3211428571428,
+      "plan": [
+        {
+          "slot": "inc-3#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "medic-1"
+        }
+      ]
+    }
+  },
+  "S11": {
+    "routing": {
+      "q1": {
+        "distance": 9.789,
+        "path": [
+          "lowtown_depot",
+          "southgate_shelter",
+          "riverside_apts",
+          "pine_market",
+          "cedar_lane_park"
+        ]
+      },
+      "q2": {
+        "distance": 1.983,
+        "path": [
+          "elm_and_5th",
+          "lowtown_depot"
+        ]
+      },
+      "q3": {
+        "distance": 2.804,
+        "path": [
+          "north_school",
+          "main_st_north"
+        ]
+      }
+    },
+    "triage": [
+      "inc-2",
+      "inc-1",
+      "inc-4",
+      "inc-3"
+    ],
+    "assignment": {
+      "objective": 143.5575714285714,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "boat-1"
+        },
+        {
+          "slot": "inc-1#1",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "medic-1"
+        },
+        {
+          "slot": "inc-4#0",
+          "unit": "engine-1"
+        }
+      ]
+    }
+  },
+  "S12": {
+    "routing": {
+      "q1": {
+        "distance": 2.585,
+        "path": [
+          "old_mill",
+          "county_hospital"
+        ]
+      },
+      "q2": {
+        "distance": 3.073,
+        "path": [
+          "pine_market",
+          "upriver_south",
+          "upriver_north"
+        ]
+      },
+      "q3": {
+        "distance": 3.348,
+        "path": [
+          "county_hospital",
+          "main_st_north",
+          "main_st_south"
+        ]
+      }
+    },
+    "triage": [
+      "inc-3",
+      "inc-1",
+      "inc-2"
+    ],
+    "assignment": {
+      "objective": 543.4091428571428,
+      "plan": [
+        {
+          "slot": "inc-3#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "medic-1"
+        }
+      ]
+    },
+    "replanning": {
+      "objective": 552.0531428571428,
+      "plan": [
+        {
+          "slot": "inc-3#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "medic-1"
+        }
+      ]
+    }
+  },
+  "S13": {
+    "routing": {
+      "q1": {
+        "distance": 1.897,
+        "path": [
+          "north_school",
+          "fire_station_1"
+        ]
+      },
+      "q2": {
+        "distance": 3.894,
+        "path": [
+          "upriver_south",
+          "pine_market",
+          "riverside_apts"
+        ]
+      },
+      "q3": {
+        "distance": 4.315,
+        "path": [
+          "pine_market",
+          "riverside_apts",
+          "southgate_shelter"
+        ]
+      }
+    },
+    "triage": [
+      "inc-1",
+      "inc-3",
+      "inc-4",
+      "inc-2"
+    ],
+    "assignment": {
+      "objective": 1636.434857142857,
+      "plan": [
+        {
+          "slot": "inc-1#1",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-4#0",
+          "unit": "medic-1"
+        }
+      ]
+    }
+  },
+  "S14": {
+    "routing": {
+      "q1": {
+        "distance": 2.073,
+        "path": [
+          "pine_market",
+          "upriver_south"
+        ]
+      },
+      "q2": {
+        "distance": 4.315,
+        "path": [
+          "pine_market",
+          "riverside_apts",
+          "southgate_shelter"
+        ]
+      },
+      "q3": {
+        "distance": 7.194,
+        "path": [
+          "fire_station_1",
+          "north_school",
+          "elm_and_5th",
+          "lowtown_depot"
+        ]
+      }
+    },
+    "triage": [
+      "inc-2",
+      "inc-3",
+      "inc-1"
+    ],
+    "assignment": {
+      "objective": 117.75,
+      "plan": [
+        {
+          "slot": "inc-2#0",
+          "unit": "medic-1"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "boat-1"
+        }
+      ]
+    },
+    "replanning": {
+      "objective": 142.42600000000002,
+      "plan": [
+        {
+          "slot": "inc-2#0",
+          "unit": "medic-1"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "boat-1"
+        }
+      ]
+    }
+  },
+  "S15": {
+    "routing": {
+      "q1": {
+        "distance": 4.279,
+        "path": [
+          "main_st_south",
+          "riverside_apts",
+          "southgate_shelter"
+        ]
+      },
+      "q2": {
+        "distance": 9.884,
+        "path": [
+          "north_school",
+          "main_st_north",
+          "main_st_south",
+          "riverside_apts",
+          "pine_market",
+          "cedar_lane_park"
+        ]
+      },
+      "q3": {
+        "distance": 4.315,
+        "path": [
+          "southgate_shelter",
+          "riverside_apts",
+          "pine_market"
+        ]
+      }
+    },
+    "triage": [
+      "inc-4",
+      "inc-2",
+      "inc-3",
+      "inc-1"
+    ],
+    "assignment": {
+      "objective": 151.5742857142857,
+      "plan": [
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "boat-2"
+        },
+        {
+          "slot": "inc-4#0",
+          "unit": "engine-1"
+        }
+      ]
+    }
+  },
+  "S16": {
+    "routing": {
+      "q1": {
+        "distance": 2.804,
+        "path": [
+          "north_school",
+          "main_st_north"
+        ]
+      },
+      "q2": {
+        "distance": 7.791,
+        "path": [
+          "lowtown_depot",
+          "elm_and_5th",
+          "main_st_south",
+          "main_st_north",
+          "oak_and_3rd"
+        ]
+      },
+      "q3": {
+        "distance": 2.804,
+        "path": [
+          "main_st_north",
+          "north_school"
+        ]
+      }
+    },
+    "triage": [
+      "inc-2",
+      "inc-3",
+      "inc-1"
+    ],
+    "assignment": {
+      "objective": 113.27600000000001,
+      "plan": [
+        {
+          "slot": "inc-2#0",
+          "unit": "bus-1"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "medic-2"
+        }
+      ]
+    },
+    "replanning": {
+      "objective": 121.624,
+      "plan": [
+        {
+          "slot": "inc-2#0",
+          "unit": "bus-1"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "medic-2"
+        }
+      ]
+    }
+  },
+  "S17": {
+    "routing": {
+      "q1": {
+        "distance": 4.548,
+        "path": [
+          "main_st_north",
+          "oak_and_3rd",
+          "fire_station_1"
+        ]
+      },
+      "q2": {
+        "distance": 3.46,
+        "path": [
+          "cedar_lane_park",
+          "upriver_south",
+          "upriver_north"
+        ]
+      },
+      "q3": {
+        "distance": 5.303,
+        "path": [
+          "upriver_south",
+          "upriver_north",
+          "old_mill",
+          "county_hospital"
+        ]
+      }
+    },
+    "triage": [
+      "inc-2",
+      "inc-1",
+      "inc-3"
+    ],
+    "assignment": {
+      "objective": 68.74238095238096,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "engine-1"
+        },
+        {
+          "slot": "inc-1#1",
+          "unit": "medic-1"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "boat-1"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "bus-2"
+        }
+      ]
+    }
+  },
+  "S18": {
+    "routing": {
+      "q1": {
+        "distance": 5.933,
+        "path": [
+          "old_mill",
+          "county_hospital",
+          "main_st_north",
+          "main_st_south"
+        ]
+      },
+      "q2": {
+        "distance": 6.612,
+        "path": [
+          "old_mill",
+          "upriver_north",
+          "upriver_south",
+          "pine_market",
+          "riverside_apts"
+        ]
+      },
+      "q3": {
+        "distance": 6.954,
+        "path": [
+          "pine_market",
+          "riverside_apts",
+          "main_st_south",
+          "main_st_north",
+          "county_hospital"
+        ]
+      }
+    },
+    "triage": [
+      "inc-3",
+      "inc-4",
+      "inc-1",
+      "inc-2"
+    ],
+    "assignment": {
+      "objective": 498.3548571428571,
+      "plan": [
+        {
+          "slot": "inc-1#1",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-2#1",
+          "unit": "medic-2"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "rescue-3"
+        },
+        {
+          "slot": "inc-4#0",
+          "unit": "engine-1"
+        }
+      ]
+    },
+    "replanning": {
+      "objective": 508.5908571428571,
+      "plan": [
+        {
+          "slot": "inc-1#1",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-2#1",
+          "unit": "medic-2"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "rescue-3"
+        },
+        {
+          "slot": "inc-4#0",
+          "unit": "engine-1"
+        }
+      ]
+    }
+  },
+  "S19": {
+    "routing": {
+      "q1": {
+        "distance": 5.279,
+        "path": [
+          "southgate_shelter",
+          "riverside_apts",
+          "main_st_south",
+          "main_st_north"
+        ]
+      },
+      "q2": {
+        "distance": 11.083,
+        "path": [
+          "north_school",
+          "main_st_north",
+          "main_st_south",
+          "riverside_apts",
+          "southgate_shelter",
+          "lowtown_depot"
+        ]
+      },
+      "q3": {
+        "distance": 4.279,
+        "path": [
+          "southgate_shelter",
+          "riverside_apts",
+          "main_st_south"
+        ]
+      }
+    },
+    "triage": [
+      "inc-4",
+      "inc-2",
+      "inc-1",
+      "inc-3"
+    ],
+    "assignment": {
+      "objective": 341.4335238095238,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "engine-1"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "boat-1"
+        },
+        {
+          "slot": "inc-4#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-4#1",
+          "unit": "bus-1"
+        }
+      ]
+    }
+  },
+  "S20": {
+    "routing": {
+      "q1": {
+        "distance": 10.388,
+        "path": [
+          "lowtown_depot",
+          "southgate_shelter",
+          "riverside_apts",
+          "pine_market",
+          "upriver_south",
+          "upriver_north"
+        ]
+      },
+      "q2": {
+        "distance": 6.954,
+        "path": [
+          "pine_market",
+          "riverside_apts",
+          "main_st_south",
+          "main_st_north",
+          "oak_and_3rd"
+        ]
+      },
+      "q3": {
+        "distance": 4.295,
+        "path": [
+          "cedar_lane_park",
+          "pine_market",
+          "riverside_apts"
+        ]
+      }
+    },
+    "triage": [
+      "inc-2",
+      "inc-1",
+      "inc-4",
+      "inc-3"
+    ],
+    "assignment": {
+      "objective": 70.18150000000001,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "engine-3"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-2"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "engine-1"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "medic-2"
+        },
+        {
+          "slot": "inc-4#0",
+          "unit": "rescue-1"
+        }
+      ]
+    },
+    "replanning": {
+      "objective": 84.45578571428572,
+      "plan": [
+        {
+          "slot": "inc-1#0",
+          "unit": "engine-3"
+        },
+        {
+          "slot": "inc-2#0",
+          "unit": "rescue-1"
+        },
+        {
+          "slot": "inc-3#0",
+          "unit": "engine-1"
+        },
+        {
+          "slot": "inc-3#1",
+          "unit": "medic-2"
+        },
+        {
+          "slot": "inc-4#0",
+          "unit": "rescue-2"
+        }
+      ]
+    }
+  }
+}

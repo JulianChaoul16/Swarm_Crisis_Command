@@ -1,0 +1,2433 @@
+{
+  "seed": 2026,
+  "scenarios": [
+    {
+      "id": "S01",
+      "closed_roads": [],
+      "units": [
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "elm_and_5th"
+        },
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "north_school"
+        },
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "county_hospital"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "north_school"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "cedar_lane_park",
+          "severity": "high",
+          "people": 4,
+          "needs": [
+            "boat",
+            "transport"
+          ],
+          "reported_minute": 25
+        },
+        {
+          "id": "inc-2",
+          "place": "elm_and_5th",
+          "severity": "high",
+          "people": 4,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 47
+        },
+        {
+          "id": "inc-3",
+          "place": "cedar_lane_park",
+          "severity": "critical",
+          "people": 6,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 21
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "fire_station_1",
+          "to": "lowtown_depot"
+        },
+        {
+          "id": "q2",
+          "from": "upriver_south",
+          "to": "main_st_north"
+        },
+        {
+          "id": "q3",
+          "from": "main_st_north",
+          "to": "main_st_south"
+        }
+      ],
+      "disruption": null
+    },
+    {
+      "id": "S02",
+      "closed_roads": [
+        "low-water-crossing"
+      ],
+      "units": [
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "upriver_north"
+        },
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "elm_and_5th"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "upriver_south"
+        },
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "southgate_shelter"
+        },
+        {
+          "id": "bus-2",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "upriver_north"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "north_school"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "cedar_lane_park",
+          "severity": "critical",
+          "people": 6,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 39
+        },
+        {
+          "id": "inc-2",
+          "place": "pine_market",
+          "severity": "high",
+          "people": 4,
+          "needs": [
+            "boat",
+            "medic"
+          ],
+          "reported_minute": 56
+        },
+        {
+          "id": "inc-3",
+          "place": "oak_and_3rd",
+          "severity": "medium",
+          "people": 6,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 30
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "lowtown_depot",
+          "to": "north_school"
+        },
+        {
+          "id": "q2",
+          "from": "fire_station_1",
+          "to": "cedar_lane_park"
+        },
+        {
+          "id": "q3",
+          "from": "county_hospital",
+          "to": "pine_market"
+        }
+      ],
+      "disruption": {
+        "closes": "cedar-ln",
+        "at_minute": 60,
+        "prior_plan": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S03",
+      "closed_roads": [
+        "pine-st",
+        "river-rd-north"
+      ],
+      "units": [
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "lowtown_depot"
+        },
+        {
+          "id": "bus-2",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "oak_and_3rd"
+        },
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "cedar_lane_park"
+        },
+        {
+          "id": "bus-3",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "main_st_north"
+        },
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "old_mill"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "north_school",
+          "severity": "medium",
+          "people": 4,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 32
+        },
+        {
+          "id": "inc-2",
+          "place": "riverside_apts",
+          "severity": "low",
+          "people": 11,
+          "needs": [
+            "boat",
+            "transport"
+          ],
+          "reported_minute": 58
+        },
+        {
+          "id": "inc-3",
+          "place": "north_school",
+          "severity": "high",
+          "people": 4,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 58
+        },
+        {
+          "id": "inc-4",
+          "place": "pine_market",
+          "severity": "low",
+          "people": 3,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 28
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "upriver_south",
+          "to": "lowtown_depot"
+        },
+        {
+          "id": "q2",
+          "from": "upriver_north",
+          "to": "county_hospital"
+        },
+        {
+          "id": "q3",
+          "from": "main_st_south",
+          "to": "fire_station_1"
+        }
+      ],
+      "disruption": null
+    },
+    {
+      "id": "S04",
+      "closed_roads": [],
+      "units": [
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "riverside_apts"
+        },
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "upriver_south"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "elm_and_5th"
+        },
+        {
+          "id": "medic-2",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "main_st_south"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "county_hospital"
+        },
+        {
+          "id": "rescue-3",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "cedar_lane_park"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "lowtown_depot",
+          "severity": "low",
+          "people": 14,
+          "needs": [
+            "boat",
+            "transport"
+          ],
+          "reported_minute": 5
+        },
+        {
+          "id": "inc-2",
+          "place": "old_mill",
+          "severity": "critical",
+          "people": 5,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 2
+        },
+        {
+          "id": "inc-3",
+          "place": "north_school",
+          "severity": "high",
+          "people": 2,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 0
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "upriver_south",
+          "to": "elm_and_5th"
+        },
+        {
+          "id": "q2",
+          "from": "north_school",
+          "to": "oak_and_3rd"
+        },
+        {
+          "id": "q3",
+          "from": "upriver_north",
+          "to": "pine_market"
+        }
+      ],
+      "disruption": {
+        "closes": "river-rd-south",
+        "at_minute": 60,
+        "prior_plan": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S05",
+      "closed_roads": [],
+      "units": [
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "cedar_lane_park"
+        },
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "fire_station_1"
+        },
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "main_st_south"
+        },
+        {
+          "id": "engine-2",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "pine_market"
+        },
+        {
+          "id": "engine-3",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "main_st_south"
+        },
+        {
+          "id": "engine-4",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "cedar_lane_park"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "southgate_shelter",
+          "severity": "medium",
+          "people": 4,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 51
+        },
+        {
+          "id": "inc-2",
+          "place": "southgate_shelter",
+          "severity": "high",
+          "people": 4,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 0
+        },
+        {
+          "id": "inc-3",
+          "place": "riverside_apts",
+          "severity": "critical",
+          "people": 1,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 53
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "oak_and_3rd",
+          "to": "main_st_south"
+        },
+        {
+          "id": "q2",
+          "from": "main_st_south",
+          "to": "riverside_apts"
+        },
+        {
+          "id": "q3",
+          "from": "riverside_apts",
+          "to": "southgate_shelter"
+        }
+      ],
+      "disruption": null
+    },
+    {
+      "id": "S06",
+      "closed_roads": [],
+      "units": [
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "pine_market"
+        },
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "cedar_lane_park"
+        },
+        {
+          "id": "boat-2",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "main_st_south"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "main_st_south"
+        },
+        {
+          "id": "boat-3",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "county_hospital"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "old_mill",
+          "severity": "medium",
+          "people": 5,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 21
+        },
+        {
+          "id": "inc-2",
+          "place": "lowtown_depot",
+          "severity": "high",
+          "people": 11,
+          "needs": [
+            "boat",
+            "transport"
+          ],
+          "reported_minute": 45
+        },
+        {
+          "id": "inc-3",
+          "place": "southgate_shelter",
+          "severity": "medium",
+          "people": 1,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 12
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "pine_market",
+          "to": "elm_and_5th"
+        },
+        {
+          "id": "q2",
+          "from": "old_mill",
+          "to": "southgate_shelter"
+        },
+        {
+          "id": "q3",
+          "from": "cedar_lane_park",
+          "to": "elm_and_5th"
+        }
+      ],
+      "disruption": {
+        "closes": "pine-st",
+        "at_minute": 60,
+        "prior_plan": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S07",
+      "closed_roads": [],
+      "units": [
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "main_st_south"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "main_st_north"
+        },
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "main_st_south"
+        },
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "oak_and_3rd"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "southgate_shelter"
+        },
+        {
+          "id": "rescue-3",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "southgate_shelter"
+        },
+        {
+          "id": "engine-2",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "lowtown_depot"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "riverside_apts",
+          "severity": "high",
+          "people": 4,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 34
+        },
+        {
+          "id": "inc-2",
+          "place": "oak_and_3rd",
+          "severity": "medium",
+          "people": 3,
+          "needs": [
+            "boat",
+            "medic"
+          ],
+          "reported_minute": 11
+        },
+        {
+          "id": "inc-3",
+          "place": "county_hospital",
+          "severity": "high",
+          "people": 8,
+          "needs": [
+            "transport"
+          ],
+          "reported_minute": 31
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "oak_and_3rd",
+          "to": "lowtown_depot"
+        },
+        {
+          "id": "q2",
+          "from": "old_mill",
+          "to": "cedar_lane_park"
+        },
+        {
+          "id": "q3",
+          "from": "fire_station_1",
+          "to": "oak_and_3rd"
+        }
+      ],
+      "disruption": null
+    },
+    {
+      "id": "S08",
+      "closed_roads": [
+        "elm-st"
+      ],
+      "units": [
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "north_school"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "county_hospital"
+        },
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "southgate_shelter"
+        },
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "oak_and_3rd"
+        },
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "county_hospital"
+        },
+        {
+          "id": "boat-2",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "pine_market"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "cedar_lane_park",
+          "severity": "high",
+          "people": 1,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 22
+        },
+        {
+          "id": "inc-2",
+          "place": "elm_and_5th",
+          "severity": "low",
+          "people": 6,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 36
+        },
+        {
+          "id": "inc-3",
+          "place": "old_mill",
+          "severity": "critical",
+          "people": 5,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 45
+        },
+        {
+          "id": "inc-4",
+          "place": "southgate_shelter",
+          "severity": "low",
+          "people": 6,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 13
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "fire_station_1",
+          "to": "southgate_shelter"
+        },
+        {
+          "id": "q2",
+          "from": "main_st_north",
+          "to": "upriver_south"
+        },
+        {
+          "id": "q3",
+          "from": "southgate_shelter",
+          "to": "county_hospital"
+        }
+      ],
+      "disruption": {
+        "closes": "school-connector",
+        "at_minute": 60,
+        "prior_plan": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S09",
+      "closed_roads": [
+        "elm-st",
+        "low-water-crossing"
+      ],
+      "units": [
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "southgate_shelter"
+        },
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "riverside_apts"
+        },
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "fire_station_1"
+        },
+        {
+          "id": "bus-2",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "main_st_north"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "old_mill"
+        },
+        {
+          "id": "rescue-3",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "main_st_south"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "north_school",
+          "severity": "high",
+          "people": 2,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 16
+        },
+        {
+          "id": "inc-2",
+          "place": "oak_and_3rd",
+          "severity": "critical",
+          "people": 4,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 55
+        },
+        {
+          "id": "inc-3",
+          "place": "riverside_apts",
+          "severity": "critical",
+          "people": 1,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 6
+        },
+        {
+          "id": "inc-4",
+          "place": "fire_station_1",
+          "severity": "high",
+          "people": 1,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 6
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "upriver_north",
+          "to": "pine_market"
+        },
+        {
+          "id": "q2",
+          "from": "cedar_lane_park",
+          "to": "oak_and_3rd"
+        },
+        {
+          "id": "q3",
+          "from": "pine_market",
+          "to": "main_st_north"
+        }
+      ],
+      "disruption": null
+    },
+    {
+      "id": "S10",
+      "closed_roads": [
+        "elm-st",
+        "river-rd-north"
+      ],
+      "units": [
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "riverside_apts"
+        },
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "oak_and_3rd"
+        },
+        {
+          "id": "boat-2",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "county_hospital"
+        },
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "main_st_north"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "fire_station_1",
+          "severity": "medium",
+          "people": 1,
+          "needs": [
+            "transport"
+          ],
+          "reported_minute": 18
+        },
+        {
+          "id": "inc-2",
+          "place": "north_school",
+          "severity": "critical",
+          "people": 5,
+          "needs": [
+            "transport"
+          ],
+          "reported_minute": 49
+        },
+        {
+          "id": "inc-3",
+          "place": "elm_and_5th",
+          "severity": "low",
+          "people": 1,
+          "needs": [
+            "boat",
+            "medic"
+          ],
+          "reported_minute": 34
+        },
+        {
+          "id": "inc-4",
+          "place": "old_mill",
+          "severity": "low",
+          "people": 1,
+          "needs": [
+            "transport"
+          ],
+          "reported_minute": 46
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "riverside_apts",
+          "to": "pine_market"
+        },
+        {
+          "id": "q2",
+          "from": "pine_market",
+          "to": "north_school"
+        },
+        {
+          "id": "q3",
+          "from": "fire_station_1",
+          "to": "upriver_north"
+        }
+      ],
+      "disruption": {
+        "closes": "school-connector",
+        "at_minute": 60,
+        "prior_plan": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S11",
+      "closed_roads": [
+        "elm-st",
+        "upriver-bridge"
+      ],
+      "units": [
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "main_st_south"
+        },
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "north_school"
+        },
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "county_hospital"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "oak_and_3rd"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "elm_and_5th"
+        },
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "pine_market"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "riverside_apts",
+          "severity": "high",
+          "people": 4,
+          "needs": [
+            "boat",
+            "medic"
+          ],
+          "reported_minute": 42
+        },
+        {
+          "id": "inc-2",
+          "place": "county_hospital",
+          "severity": "high",
+          "people": 5,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 1
+        },
+        {
+          "id": "inc-3",
+          "place": "cedar_lane_park",
+          "severity": "low",
+          "people": 4,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 56
+        },
+        {
+          "id": "inc-4",
+          "place": "county_hospital",
+          "severity": "high",
+          "people": 1,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 1
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "lowtown_depot",
+          "to": "cedar_lane_park"
+        },
+        {
+          "id": "q2",
+          "from": "elm_and_5th",
+          "to": "lowtown_depot"
+        },
+        {
+          "id": "q3",
+          "from": "north_school",
+          "to": "main_st_north"
+        }
+      ],
+      "disruption": null
+    },
+    {
+      "id": "S12",
+      "closed_roads": [
+        "elm-st",
+        "pine-st"
+      ],
+      "units": [
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "lowtown_depot"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "main_st_north"
+        },
+        {
+          "id": "engine-2",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "main_st_south"
+        },
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "elm_and_5th"
+        },
+        {
+          "id": "bus-2",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "cedar_lane_park"
+        },
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "north_school"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "cedar_lane_park",
+          "severity": "high",
+          "people": 4,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 3
+        },
+        {
+          "id": "inc-2",
+          "place": "cedar_lane_park",
+          "severity": "low",
+          "people": 2,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 59
+        },
+        {
+          "id": "inc-3",
+          "place": "elm_and_5th",
+          "severity": "high",
+          "people": 5,
+          "needs": [
+            "boat",
+            "medic"
+          ],
+          "reported_minute": 53
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "old_mill",
+          "to": "county_hospital"
+        },
+        {
+          "id": "q2",
+          "from": "pine_market",
+          "to": "upriver_north"
+        },
+        {
+          "id": "q3",
+          "from": "county_hospital",
+          "to": "main_st_south"
+        }
+      ],
+      "disruption": {
+        "closes": "school-connector",
+        "at_minute": 60,
+        "prior_plan": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S13",
+      "closed_roads": [],
+      "units": [
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "elm_and_5th"
+        },
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "southgate_shelter"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "elm_and_5th"
+        },
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "oak_and_3rd"
+        },
+        {
+          "id": "medic-2",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "upriver_south"
+        },
+        {
+          "id": "bus-2",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "main_st_north"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "north_school"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "riverside_apts",
+          "severity": "critical",
+          "people": 6,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 11
+        },
+        {
+          "id": "inc-2",
+          "place": "north_school",
+          "severity": "high",
+          "people": 5,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 46
+        },
+        {
+          "id": "inc-3",
+          "place": "county_hospital",
+          "severity": "critical",
+          "people": 1,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 34
+        },
+        {
+          "id": "inc-4",
+          "place": "lowtown_depot",
+          "severity": "high",
+          "people": 5,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 2
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "north_school",
+          "to": "fire_station_1"
+        },
+        {
+          "id": "q2",
+          "from": "upriver_south",
+          "to": "riverside_apts"
+        },
+        {
+          "id": "q3",
+          "from": "pine_market",
+          "to": "southgate_shelter"
+        }
+      ],
+      "disruption": null
+    },
+    {
+      "id": "S14",
+      "closed_roads": [],
+      "units": [
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "fire_station_1"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "main_st_north"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "county_hospital"
+        },
+        {
+          "id": "medic-2",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "fire_station_1"
+        },
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "elm_and_5th"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "north_school",
+          "severity": "low",
+          "people": 3,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 22
+        },
+        {
+          "id": "inc-2",
+          "place": "riverside_apts",
+          "severity": "high",
+          "people": 6,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 40
+        },
+        {
+          "id": "inc-3",
+          "place": "lowtown_depot",
+          "severity": "medium",
+          "people": 4,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 22
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "pine_market",
+          "to": "upriver_south"
+        },
+        {
+          "id": "q2",
+          "from": "pine_market",
+          "to": "southgate_shelter"
+        },
+        {
+          "id": "q3",
+          "from": "fire_station_1",
+          "to": "lowtown_depot"
+        }
+      ],
+      "disruption": {
+        "closes": "main-st-south",
+        "at_minute": 60,
+        "prior_plan": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S15",
+      "closed_roads": [
+        "low-water-crossing"
+      ],
+      "units": [
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "elm_and_5th"
+        },
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "old_mill"
+        },
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "pine_market"
+        },
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "cedar_lane_park"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "main_st_north"
+        },
+        {
+          "id": "boat-2",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "oak_and_3rd"
+        },
+        {
+          "id": "boat-3",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "southgate_shelter"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "old_mill",
+          "severity": "low",
+          "people": 2,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 38
+        },
+        {
+          "id": "inc-2",
+          "place": "county_hospital",
+          "severity": "critical",
+          "people": 3,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 31
+        },
+        {
+          "id": "inc-3",
+          "place": "oak_and_3rd",
+          "severity": "medium",
+          "people": 3,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 39
+        },
+        {
+          "id": "inc-4",
+          "place": "cedar_lane_park",
+          "severity": "critical",
+          "people": 3,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 30
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "main_st_south",
+          "to": "southgate_shelter"
+        },
+        {
+          "id": "q2",
+          "from": "north_school",
+          "to": "cedar_lane_park"
+        },
+        {
+          "id": "q3",
+          "from": "southgate_shelter",
+          "to": "pine_market"
+        }
+      ],
+      "disruption": null
+    },
+    {
+      "id": "S16",
+      "closed_roads": [],
+      "units": [
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "upriver_north"
+        },
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "upriver_north"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "county_hospital"
+        },
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "upriver_south"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "pine_market"
+        },
+        {
+          "id": "medic-2",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "upriver_north"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "riverside_apts",
+          "severity": "low",
+          "people": 9,
+          "needs": [
+            "transport"
+          ],
+          "reported_minute": 21
+        },
+        {
+          "id": "inc-2",
+          "place": "cedar_lane_park",
+          "severity": "medium",
+          "people": 7,
+          "needs": [
+            "transport"
+          ],
+          "reported_minute": 20
+        },
+        {
+          "id": "inc-3",
+          "place": "old_mill",
+          "severity": "medium",
+          "people": 2,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 55
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "north_school",
+          "to": "main_st_north"
+        },
+        {
+          "id": "q2",
+          "from": "lowtown_depot",
+          "to": "oak_and_3rd"
+        },
+        {
+          "id": "q3",
+          "from": "main_st_north",
+          "to": "north_school"
+        }
+      ],
+      "disruption": {
+        "closes": "river-rd-east",
+        "at_minute": 60,
+        "prior_plan": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S17",
+      "closed_roads": [
+        "elm-st"
+      ],
+      "units": [
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "main_st_north"
+        },
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "pine_market"
+        },
+        {
+          "id": "bus-2",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "cedar_lane_park"
+        },
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "elm_and_5th"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "upriver_north"
+        },
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "pine_market"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "cedar_lane_park",
+          "severity": "high",
+          "people": 2,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 21
+        },
+        {
+          "id": "inc-2",
+          "place": "southgate_shelter",
+          "severity": "critical",
+          "people": 3,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 18
+        },
+        {
+          "id": "inc-3",
+          "place": "cedar_lane_park",
+          "severity": "medium",
+          "people": 7,
+          "needs": [
+            "boat",
+            "transport"
+          ],
+          "reported_minute": 1
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "main_st_north",
+          "to": "fire_station_1"
+        },
+        {
+          "id": "q2",
+          "from": "cedar_lane_park",
+          "to": "upriver_north"
+        },
+        {
+          "id": "q3",
+          "from": "upriver_south",
+          "to": "county_hospital"
+        }
+      ],
+      "disruption": null
+    },
+    {
+      "id": "S18",
+      "closed_roads": [],
+      "units": [
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "north_school"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "pine_market"
+        },
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "oak_and_3rd"
+        },
+        {
+          "id": "rescue-3",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "upriver_south"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "elm_and_5th"
+        },
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "oak_and_3rd"
+        },
+        {
+          "id": "medic-2",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "main_st_north"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "north_school",
+          "severity": "high",
+          "people": 3,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 37
+        },
+        {
+          "id": "inc-2",
+          "place": "pine_market",
+          "severity": "medium",
+          "people": 3,
+          "needs": [
+            "boat",
+            "medic"
+          ],
+          "reported_minute": 0
+        },
+        {
+          "id": "inc-3",
+          "place": "old_mill",
+          "severity": "critical",
+          "people": 6,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 54
+        },
+        {
+          "id": "inc-4",
+          "place": "elm_and_5th",
+          "severity": "critical",
+          "people": 2,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 50
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "old_mill",
+          "to": "main_st_south"
+        },
+        {
+          "id": "q2",
+          "from": "old_mill",
+          "to": "riverside_apts"
+        },
+        {
+          "id": "q3",
+          "from": "pine_market",
+          "to": "county_hospital"
+        }
+      ],
+      "disruption": {
+        "closes": "pine-st",
+        "at_minute": 60,
+        "prior_plan": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S19",
+      "closed_roads": [
+        "elm-st",
+        "low-water-crossing"
+      ],
+      "units": [
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "main_st_south"
+        },
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "main_st_south"
+        },
+        {
+          "id": "engine-2",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "lowtown_depot"
+        },
+        {
+          "id": "engine-3",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "fire_station_1"
+        },
+        {
+          "id": "bus-1",
+          "capabilities": [
+            "transport"
+          ],
+          "speed": 0.5,
+          "location": "county_hospital"
+        },
+        {
+          "id": "boat-1",
+          "capabilities": [
+            "boat"
+          ],
+          "speed": 0.6,
+          "location": "main_st_south"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "cedar_lane_park",
+          "severity": "low",
+          "people": 5,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 8
+        },
+        {
+          "id": "inc-2",
+          "place": "fire_station_1",
+          "severity": "high",
+          "people": 4,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 2
+        },
+        {
+          "id": "inc-3",
+          "place": "southgate_shelter",
+          "severity": "low",
+          "people": 2,
+          "needs": [
+            "medic"
+          ],
+          "reported_minute": 60
+        },
+        {
+          "id": "inc-4",
+          "place": "cedar_lane_park",
+          "severity": "high",
+          "people": 6,
+          "needs": [
+            "boat",
+            "transport"
+          ],
+          "reported_minute": 22
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "southgate_shelter",
+          "to": "main_st_north"
+        },
+        {
+          "id": "q2",
+          "from": "north_school",
+          "to": "lowtown_depot"
+        },
+        {
+          "id": "q3",
+          "from": "southgate_shelter",
+          "to": "main_st_south"
+        }
+      ],
+      "disruption": null
+    },
+    {
+      "id": "S20",
+      "closed_roads": [],
+      "units": [
+        {
+          "id": "engine-1",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "pine_market"
+        },
+        {
+          "id": "engine-2",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "main_st_north"
+        },
+        {
+          "id": "medic-1",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "oak_and_3rd"
+        },
+        {
+          "id": "rescue-1",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "lowtown_depot"
+        },
+        {
+          "id": "medic-2",
+          "capabilities": [
+            "medic"
+          ],
+          "speed": 1.0,
+          "location": "southgate_shelter"
+        },
+        {
+          "id": "engine-3",
+          "capabilities": [
+            "fire"
+          ],
+          "speed": 0.8,
+          "location": "lowtown_depot"
+        },
+        {
+          "id": "rescue-2",
+          "capabilities": [
+            "boat",
+            "medic"
+          ],
+          "speed": 0.7,
+          "location": "elm_and_5th"
+        }
+      ],
+      "incidents": [
+        {
+          "id": "inc-1",
+          "place": "southgate_shelter",
+          "severity": "medium",
+          "people": 3,
+          "needs": [
+            "fire"
+          ],
+          "reported_minute": 13
+        },
+        {
+          "id": "inc-2",
+          "place": "riverside_apts",
+          "severity": "critical",
+          "people": 6,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 46
+        },
+        {
+          "id": "inc-3",
+          "place": "cedar_lane_park",
+          "severity": "low",
+          "people": 3,
+          "needs": [
+            "fire",
+            "medic"
+          ],
+          "reported_minute": 30
+        },
+        {
+          "id": "inc-4",
+          "place": "southgate_shelter",
+          "severity": "low",
+          "people": 5,
+          "needs": [
+            "boat"
+          ],
+          "reported_minute": 20
+        }
+      ],
+      "routing_queries": [
+        {
+          "id": "q1",
+          "from": "lowtown_depot",
+          "to": "upriver_north"
+        },
+        {
+          "id": "q2",
+          "from": "pine_market",
+          "to": "oak_and_3rd"
+        },
+        {
+          "id": "q3",
+          "from": "cedar_lane_park",
+          "to": "riverside_apts"
+        }
+      ],
+      "disruption": {
+        "closes": "elm-st",
+        "at_minute": 60,
+        "prior_plan": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ]
+      }
+    }
+  ]
+}
