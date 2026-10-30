@@ -19,7 +19,7 @@ from time import perf_counter
 from typing import Callable
 from unittest.mock import patch
 
-from crisis_command.agents.model_client import model_client_from_env
+from crisis_command.agents.model_client import UnavailableModelClient
 from crisis_command.database import connection
 from crisis_command.operations import CommandService, PlanStatus, ReportStatus
 from crisis_command.operations.feasibility import all_passed, check_plan
@@ -235,7 +235,9 @@ def _invariants(service: CommandService) -> dict:
 
 
 def run() -> dict:
-    client = model_client_from_env()
+    # Configuration 1 is the deterministic pipeline; it never calls a model, even when one
+    # is configured. Model configurations are measured separately (findings/ branch).
+    client = UnavailableModelClient("configuration 1 runs without a model")
     results = []
     for name, variant, scenario in VARIANTS:
         runs = []

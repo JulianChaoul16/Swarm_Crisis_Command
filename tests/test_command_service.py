@@ -20,6 +20,9 @@ from crisis_command.operations import (
 )
 from crisis_command.operations.feasibility import check_plan
 
+# Tests never call a live model, even when .env holds a key.
+OFFLINE = UnavailableModelClient("No model configured (tests run offline).")
+
 INCIDENT_FIELDS = {
     "report_type": "incident",
     "kind": "flooded basement",
@@ -35,7 +38,7 @@ class CommandServiceTestCase(unittest.TestCase):
         self.database_path = Path(self.temp_dir.name) / "test.db"
         self.path_patcher = patch.object(connection, "DB_PATH", self.database_path)
         self.path_patcher.start()
-        self.service = CommandService(scenario=DEMO_SCENARIO, agent_timeout=2)
+        self.service = CommandService(scenario=DEMO_SCENARIO, client=OFFLINE, agent_timeout=2)
 
     def tearDown(self) -> None:
         self.path_patcher.stop()

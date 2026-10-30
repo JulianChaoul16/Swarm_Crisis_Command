@@ -29,12 +29,19 @@ system performs no real dispatch.
 
 ## Use of Meta AI tooling
 
-**Current status: not yet integrated.** The model client interface, structured-output
-schemas (report extraction and specialist findings), concurrent specialist execution with
-timeouts, and honest `unavailable` / `failed` / `timed_out` states are implemented and tested.
-No Meta model call is made yet because credentials were not available at the time of writing.
-Do not describe Muse/Llama usage in the submission until the client is implemented and the
-evaluation's AI configurations have actually been run.
+**Current status: integrated (Muse Spark 1.3, Responses API, strict JSON schemas).**
+
+- **Report extraction**: live in the app. The model's output is checked by validation and
+  operator confirmation.
+- **Specialist analysis**: the Situation, Resources and Routing specialists interpret
+  deterministic tool results. They run concurrently with a shared deadline and report honest
+  `unavailable`, `failed` or `timed_out` states.
+- **Measured evidence** (`findings` branch): on the same cases, the model scored 100% on
+  report extraction against 73% for a human tester, and gave identical answers across 3 runs.
+  It matched the exact algorithms on routing and assignment but added cost and latency, so the
+  planner stays deterministic.
+- **Caveats** (see `findings/README.md`): the reports were written by the developer, and an
+  unseen holdout set is still pending.
 
 Planned once credentials exist: schema-constrained report extraction, and the Situation,
 Resources, and Routing specialists interpreting deterministic tool results, compared against
@@ -58,7 +65,7 @@ a single agent under the same tools (see docs/evaluation.md).
 
 ## Known limitations
 
-No model integration yet; planner exact over available units but never preempts committed missions; one synthetic scenario; one mission
+Planner exact over available units but never preempts committed missions; one synthetic scenario; one mission
 per resource; no destination or shelter capacity; no authentication; no practitioner review
 obtained.
 
