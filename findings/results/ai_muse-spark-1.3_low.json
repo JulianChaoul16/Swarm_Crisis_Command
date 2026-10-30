@@ -1,0 +1,6501 @@
+{
+  "arm": "ai muse-spark-1.3 (low)",
+  "model": "muse-spark-1.3",
+  "reasoning_effort": "low",
+  "tools": "none",
+  "runs": 3,
+  "limit": null,
+  "generated_at": "2026-10-30T18:38:06+00:00",
+  "outputs": {
+    "reports": {
+      "run1": {
+        "R01": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 3,
+          "place": "riverside_apts",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R02": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 1,
+          "place": "elm_and_5th",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R03": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "main-st-bridge",
+              "status": "open"
+            }
+          ],
+          "severity": "low"
+        },
+        "R04": {
+          "kind": "fire",
+          "needs": [
+            "fire"
+          ],
+          "people": null,
+          "place": "old_mill",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R05": {
+          "kind": "evacuation",
+          "needs": [
+            "transport"
+          ],
+          "people": 12,
+          "place": "cedar_lane_park",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R06": {
+          "kind": "property_damage",
+          "needs": [],
+          "people": null,
+          "place": "pine_market",
+          "road_claims": [],
+          "severity": "low"
+        },
+        "R07": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "upriver-bridge",
+              "status": "closed"
+            }
+          ],
+          "severity": "low"
+        },
+        "R08": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat",
+            "transport"
+          ],
+          "people": 34,
+          "place": "north_school",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R09": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 3,
+          "place": "southgate_shelter",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R10": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 1,
+          "place": "elm_and_5th",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R11": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [],
+          "severity": "low"
+        },
+        "R12": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 2,
+          "place": "county_hospital",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R13": {
+          "kind": "other",
+          "needs": [],
+          "people": null,
+          "place": "oak_and_3rd",
+          "road_claims": [],
+          "severity": "low"
+        },
+        "R14": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 2,
+          "place": "pine_market",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R15": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "river-rd-north",
+              "status": "closed"
+            },
+            {
+              "road_id": "mill-rd",
+              "status": "open"
+            }
+          ],
+          "severity": "low"
+        },
+        "R16": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 1,
+          "place": "cedar_lane_park",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R17": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": null,
+          "place": "riverside_apts",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R18": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 1,
+          "place": "north_school",
+          "road_claims": [
+            {
+              "road_id": "low-water-crossing",
+              "status": "closed"
+            }
+          ],
+          "severity": "critical"
+        },
+        "R19": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "main-st-bridge",
+              "status": "open"
+            },
+            {
+              "road_id": "upriver-bridge",
+              "status": "closed"
+            }
+          ],
+          "severity": "low"
+        },
+        "R20": {
+          "kind": "other",
+          "needs": [],
+          "people": 50,
+          "place": "southgate_shelter",
+          "road_claims": [],
+          "severity": "medium"
+        }
+      },
+      "run2": {
+        "R01": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 3,
+          "place": "riverside_apts",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R02": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 1,
+          "place": "elm_and_5th",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R03": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "main-st-bridge",
+              "status": "open"
+            }
+          ],
+          "severity": "low"
+        },
+        "R04": {
+          "kind": "fire",
+          "needs": [
+            "fire"
+          ],
+          "people": null,
+          "place": "old_mill",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R05": {
+          "kind": "evacuation",
+          "needs": [
+            "transport"
+          ],
+          "people": 12,
+          "place": "cedar_lane_park",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R06": {
+          "kind": "property_damage",
+          "needs": [],
+          "people": null,
+          "place": "pine_market",
+          "road_claims": [],
+          "severity": "low"
+        },
+        "R07": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "upriver-bridge",
+              "status": "closed"
+            }
+          ],
+          "severity": "low"
+        },
+        "R08": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat",
+            "transport"
+          ],
+          "people": 34,
+          "place": "north_school",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R09": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 3,
+          "place": "southgate_shelter",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R10": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 1,
+          "place": "elm_and_5th",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R11": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [],
+          "severity": "low"
+        },
+        "R12": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 2,
+          "place": "county_hospital",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R13": {
+          "kind": "other",
+          "needs": [],
+          "people": null,
+          "place": "oak_and_3rd",
+          "road_claims": [],
+          "severity": "low"
+        },
+        "R14": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 2,
+          "place": "pine_market",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R15": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "river-rd-north",
+              "status": "closed"
+            },
+            {
+              "road_id": "mill-rd",
+              "status": "open"
+            }
+          ],
+          "severity": "low"
+        },
+        "R16": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 1,
+          "place": "cedar_lane_park",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R17": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": null,
+          "place": "riverside_apts",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R18": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 1,
+          "place": "north_school",
+          "road_claims": [
+            {
+              "road_id": "low-water-crossing",
+              "status": "closed"
+            }
+          ],
+          "severity": "critical"
+        },
+        "R19": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "main-st-bridge",
+              "status": "open"
+            },
+            {
+              "road_id": "upriver-bridge",
+              "status": "closed"
+            }
+          ],
+          "severity": "low"
+        },
+        "R20": {
+          "kind": "other",
+          "needs": [],
+          "people": 50,
+          "place": "southgate_shelter",
+          "road_claims": [],
+          "severity": "medium"
+        }
+      },
+      "run3": {
+        "R01": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 3,
+          "place": "riverside_apts",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R02": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 1,
+          "place": "elm_and_5th",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R03": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "main-st-bridge",
+              "status": "open"
+            }
+          ],
+          "severity": "low"
+        },
+        "R04": {
+          "kind": "fire",
+          "needs": [
+            "fire"
+          ],
+          "people": null,
+          "place": "old_mill",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R05": {
+          "kind": "evacuation",
+          "needs": [
+            "transport"
+          ],
+          "people": 12,
+          "place": "cedar_lane_park",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R06": {
+          "kind": "property_damage",
+          "needs": [],
+          "people": null,
+          "place": "pine_market",
+          "road_claims": [],
+          "severity": "low"
+        },
+        "R07": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "upriver-bridge",
+              "status": "closed"
+            }
+          ],
+          "severity": "low"
+        },
+        "R08": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat",
+            "transport"
+          ],
+          "people": 34,
+          "place": "north_school",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R09": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 3,
+          "place": "southgate_shelter",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R10": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 1,
+          "place": "elm_and_5th",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R11": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [],
+          "severity": "low"
+        },
+        "R12": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 2,
+          "place": "county_hospital",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R13": {
+          "kind": "other",
+          "needs": [],
+          "people": null,
+          "place": "oak_and_3rd",
+          "road_claims": [],
+          "severity": "low"
+        },
+        "R14": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 2,
+          "place": "pine_market",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R15": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "river-rd-north",
+              "status": "closed"
+            },
+            {
+              "road_id": "mill-rd",
+              "status": "open"
+            }
+          ],
+          "severity": "low"
+        },
+        "R16": {
+          "kind": "medical",
+          "needs": [
+            "medic"
+          ],
+          "people": 1,
+          "place": "cedar_lane_park",
+          "road_claims": [],
+          "severity": "high"
+        },
+        "R17": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": null,
+          "place": "riverside_apts",
+          "road_claims": [],
+          "severity": "critical"
+        },
+        "R18": {
+          "kind": "flood_rescue",
+          "needs": [
+            "boat"
+          ],
+          "people": 1,
+          "place": "north_school",
+          "road_claims": [
+            {
+              "road_id": "low-water-crossing",
+              "status": "closed"
+            }
+          ],
+          "severity": "critical"
+        },
+        "R19": {
+          "kind": "road_status",
+          "needs": [],
+          "people": null,
+          "place": null,
+          "road_claims": [
+            {
+              "road_id": "main-st-bridge",
+              "status": "open"
+            },
+            {
+              "road_id": "upriver-bridge",
+              "status": "closed"
+            }
+          ],
+          "severity": "low"
+        },
+        "R20": {
+          "kind": "other",
+          "needs": [],
+          "people": 50,
+          "place": "southgate_shelter",
+          "road_claims": [],
+          "severity": "medium"
+        }
+      }
+    },
+    "conflicts": {
+      "run1": {
+        "C1": "open",
+        "C2": "closed",
+        "C3": "open",
+        "C4": "unknown",
+        "C5": "closed",
+        "C6": "closed"
+      },
+      "run2": {
+        "C1": "open",
+        "C2": "closed",
+        "C3": "open",
+        "C4": "unknown",
+        "C5": "closed",
+        "C6": "closed"
+      },
+      "run3": {
+        "C1": "open",
+        "C2": "closed",
+        "C3": "open",
+        "C4": "unknown",
+        "C5": "closed",
+        "C6": "closed"
+      }
+    },
+    "routing": {
+      "run1": {
+        "S01": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q3": [
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S02": {
+          "q1": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q2": [
+            "fire_station_1",
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S03": {
+          "q1": null,
+          "q2": null,
+          "q3": [
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd",
+            "fire_station_1"
+          ]
+        },
+        "S04": {
+          "q1": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "north_school",
+            "fire_station_1",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ]
+        },
+        "S05": {
+          "q1": [
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "main_st_south",
+            "riverside_apts"
+          ],
+          "q3": [
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S06": {
+          "q1": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ]
+        },
+        "S07": {
+          "q1": [
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "fire_station_1",
+            "oak_and_3rd"
+          ]
+        },
+        "S08": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S09": {
+          "q1": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ]
+        },
+        "S10": {
+          "q1": [
+            "riverside_apts",
+            "pine_market"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q3": [
+            "fire_station_1",
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ]
+        },
+        "S11": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q2": [
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "north_school",
+            "main_st_north"
+          ]
+        },
+        "S12": {
+          "q1": [
+            "old_mill",
+            "county_hospital"
+          ],
+          "q2": [
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S13": {
+          "q1": [
+            "north_school",
+            "fire_station_1"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S14": {
+          "q1": [
+            "pine_market",
+            "upriver_south"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ]
+        },
+        "S15": {
+          "q1": [
+            "main_st_south",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S16": {
+          "q1": [
+            "north_school",
+            "main_st_north"
+          ],
+          "q2": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "main_st_north",
+            "north_school"
+          ]
+        },
+        "S17": {
+          "q1": [
+            "main_st_north",
+            "oak_and_3rd",
+            "fire_station_1"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "upriver_south",
+            "upriver_north",
+            "old_mill",
+            "county_hospital"
+          ]
+        },
+        "S18": {
+          "q1": [
+            "old_mill",
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "pine_market",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S19": {
+          "q1": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "southgate_shelter",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south"
+          ]
+        },
+        "S20": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts"
+          ]
+        }
+      },
+      "run2": {
+        "S01": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q3": [
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S02": {
+          "q1": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q2": [
+            "fire_station_1",
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S03": {
+          "q1": null,
+          "q2": null,
+          "q3": [
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd",
+            "fire_station_1"
+          ]
+        },
+        "S04": {
+          "q1": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "north_school",
+            "fire_station_1",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ]
+        },
+        "S05": {
+          "q1": [
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "main_st_south",
+            "riverside_apts"
+          ],
+          "q3": [
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S06": {
+          "q1": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ]
+        },
+        "S07": {
+          "q1": [
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "fire_station_1",
+            "oak_and_3rd"
+          ]
+        },
+        "S08": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S09": {
+          "q1": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ]
+        },
+        "S10": {
+          "q1": [
+            "riverside_apts",
+            "pine_market"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q3": [
+            "fire_station_1",
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ]
+        },
+        "S11": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q2": [
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "north_school",
+            "main_st_north"
+          ]
+        },
+        "S12": {
+          "q1": [
+            "old_mill",
+            "county_hospital"
+          ],
+          "q2": [
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S13": {
+          "q1": [
+            "north_school",
+            "fire_station_1"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S14": {
+          "q1": [
+            "pine_market",
+            "upriver_south"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ]
+        },
+        "S15": {
+          "q1": [
+            "main_st_south",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S16": {
+          "q1": [
+            "north_school",
+            "main_st_north"
+          ],
+          "q2": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "main_st_north",
+            "north_school"
+          ]
+        },
+        "S17": {
+          "q1": [
+            "main_st_north",
+            "oak_and_3rd",
+            "fire_station_1"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "upriver_south",
+            "upriver_north",
+            "old_mill",
+            "county_hospital"
+          ]
+        },
+        "S18": {
+          "q1": [
+            "old_mill",
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "pine_market",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S19": {
+          "q1": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "southgate_shelter",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south"
+          ]
+        },
+        "S20": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts"
+          ]
+        }
+      },
+      "run3": {
+        "S01": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q3": [
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S02": {
+          "q1": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q2": [
+            "fire_station_1",
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S03": {
+          "q1": null,
+          "q2": null,
+          "q3": [
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd",
+            "fire_station_1"
+          ]
+        },
+        "S04": {
+          "q1": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "north_school",
+            "fire_station_1",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ]
+        },
+        "S05": {
+          "q1": [
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "main_st_south",
+            "riverside_apts"
+          ],
+          "q3": [
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S06": {
+          "q1": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "elm_and_5th"
+          ]
+        },
+        "S07": {
+          "q1": [
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "fire_station_1",
+            "oak_and_3rd"
+          ]
+        },
+        "S08": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S09": {
+          "q1": [
+            "upriver_north",
+            "upriver_south",
+            "pine_market"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ]
+        },
+        "S10": {
+          "q1": [
+            "riverside_apts",
+            "pine_market"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q3": [
+            "fire_station_1",
+            "oak_and_3rd",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ]
+        },
+        "S11": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q2": [
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "north_school",
+            "main_st_north"
+          ]
+        },
+        "S12": {
+          "q1": [
+            "old_mill",
+            "county_hospital"
+          ],
+          "q2": [
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S13": {
+          "q1": [
+            "north_school",
+            "fire_station_1"
+          ],
+          "q2": [
+            "upriver_south",
+            "pine_market",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ]
+        },
+        "S14": {
+          "q1": [
+            "pine_market",
+            "upriver_south"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q3": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ]
+        },
+        "S15": {
+          "q1": [
+            "main_st_south",
+            "riverside_apts",
+            "southgate_shelter"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market"
+          ]
+        },
+        "S16": {
+          "q1": [
+            "north_school",
+            "main_st_north"
+          ],
+          "q2": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "main_st_north",
+            "north_school"
+          ]
+        },
+        "S17": {
+          "q1": [
+            "main_st_north",
+            "oak_and_3rd",
+            "fire_station_1"
+          ],
+          "q2": [
+            "cedar_lane_park",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q3": [
+            "upriver_south",
+            "upriver_north",
+            "old_mill",
+            "county_hospital"
+          ]
+        },
+        "S18": {
+          "q1": [
+            "old_mill",
+            "county_hospital",
+            "main_st_north",
+            "main_st_south"
+          ],
+          "q2": [
+            "old_mill",
+            "upriver_north",
+            "upriver_south",
+            "pine_market",
+            "riverside_apts"
+          ],
+          "q3": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "county_hospital"
+          ]
+        },
+        "S19": {
+          "q1": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north"
+          ],
+          "q2": [
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "southgate_shelter",
+            "lowtown_depot"
+          ],
+          "q3": [
+            "southgate_shelter",
+            "riverside_apts",
+            "main_st_south"
+          ]
+        },
+        "S20": {
+          "q1": [
+            "lowtown_depot",
+            "southgate_shelter",
+            "riverside_apts",
+            "pine_market",
+            "upriver_south",
+            "upriver_north"
+          ],
+          "q2": [
+            "pine_market",
+            "riverside_apts",
+            "main_st_south",
+            "main_st_north",
+            "oak_and_3rd"
+          ],
+          "q3": [
+            "cedar_lane_park",
+            "pine_market",
+            "riverside_apts"
+          ]
+        }
+      }
+    },
+    "triage": {
+      "run1": {
+        "S01": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S02": [
+          "inc-1",
+          "inc-2",
+          "inc-3"
+        ],
+        "S03": [
+          "inc-3",
+          "inc-1",
+          "inc-2",
+          "inc-4"
+        ],
+        "S04": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S05": [
+          "inc-3",
+          "inc-2",
+          "inc-1"
+        ],
+        "S06": [
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S07": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S08": [
+          "inc-3",
+          "inc-1",
+          "inc-4",
+          "inc-2"
+        ],
+        "S09": [
+          "inc-2",
+          "inc-3",
+          "inc-1",
+          "inc-4"
+        ],
+        "S10": [
+          "inc-2",
+          "inc-1",
+          "inc-3",
+          "inc-4"
+        ],
+        "S11": [
+          "inc-2",
+          "inc-1",
+          "inc-4",
+          "inc-3"
+        ],
+        "S12": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S13": [
+          "inc-1",
+          "inc-3",
+          "inc-4",
+          "inc-2"
+        ],
+        "S14": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S15": [
+          "inc-4",
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S16": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S17": [
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S18": [
+          "inc-3",
+          "inc-4",
+          "inc-1",
+          "inc-2"
+        ],
+        "S19": [
+          "inc-4",
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S20": [
+          "inc-2",
+          "inc-1",
+          "inc-4",
+          "inc-3"
+        ]
+      },
+      "run2": {
+        "S01": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S02": [
+          "inc-1",
+          "inc-2",
+          "inc-3"
+        ],
+        "S03": [
+          "inc-3",
+          "inc-1",
+          "inc-2",
+          "inc-4"
+        ],
+        "S04": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S05": [
+          "inc-3",
+          "inc-2",
+          "inc-1"
+        ],
+        "S06": [
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S07": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S08": [
+          "inc-3",
+          "inc-1",
+          "inc-4",
+          "inc-2"
+        ],
+        "S09": [
+          "inc-2",
+          "inc-3",
+          "inc-1",
+          "inc-4"
+        ],
+        "S10": [
+          "inc-2",
+          "inc-1",
+          "inc-3",
+          "inc-4"
+        ],
+        "S11": [
+          "inc-2",
+          "inc-1",
+          "inc-4",
+          "inc-3"
+        ],
+        "S12": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S13": [
+          "inc-1",
+          "inc-3",
+          "inc-4",
+          "inc-2"
+        ],
+        "S14": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S15": [
+          "inc-4",
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S16": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S17": [
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S18": [
+          "inc-3",
+          "inc-4",
+          "inc-1",
+          "inc-2"
+        ],
+        "S19": [
+          "inc-4",
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S20": [
+          "inc-2",
+          "inc-1",
+          "inc-4",
+          "inc-3"
+        ]
+      },
+      "run3": {
+        "S01": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S02": [
+          "inc-1",
+          "inc-2",
+          "inc-3"
+        ],
+        "S03": [
+          "inc-3",
+          "inc-1",
+          "inc-2",
+          "inc-4"
+        ],
+        "S04": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S05": [
+          "inc-3",
+          "inc-2",
+          "inc-1"
+        ],
+        "S06": [
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S07": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S08": [
+          "inc-3",
+          "inc-1",
+          "inc-4",
+          "inc-2"
+        ],
+        "S09": [
+          "inc-2",
+          "inc-3",
+          "inc-1",
+          "inc-4"
+        ],
+        "S10": [
+          "inc-2",
+          "inc-1",
+          "inc-3",
+          "inc-4"
+        ],
+        "S11": [
+          "inc-2",
+          "inc-1",
+          "inc-4",
+          "inc-3"
+        ],
+        "S12": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S13": [
+          "inc-1",
+          "inc-3",
+          "inc-4",
+          "inc-2"
+        ],
+        "S14": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S15": [
+          "inc-4",
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S16": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S17": [
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S18": [
+          "inc-3",
+          "inc-4",
+          "inc-1",
+          "inc-2"
+        ],
+        "S19": [
+          "inc-4",
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ],
+        "S20": [
+          "inc-2",
+          "inc-1",
+          "inc-4",
+          "inc-3"
+        ]
+      }
+    },
+    "assignment": {
+      "run1": {
+        "S01": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-1"
+          }
+        ],
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S03": [
+          {
+            "slot": "inc-2#1",
+            "unit": "bus-3"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S05": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S07": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "bus-1"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S09": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S11": [
+          {
+            "slot": "inc-1#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S13": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "medic-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S15": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ],
+        "S17": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "bus-2"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S19": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-4#1",
+            "unit": "bus-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ]
+      },
+      "run2": {
+        "S01": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-1"
+          }
+        ],
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S03": [
+          {
+            "slot": "inc-2#1",
+            "unit": "bus-3"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S05": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S07": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "bus-1"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S09": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S11": [
+          {
+            "slot": "inc-1#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S13": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "medic-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S15": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ],
+        "S17": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "bus-2"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S19": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-4#1",
+            "unit": "bus-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ]
+      },
+      "run3": {
+        "S01": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-1"
+          }
+        ],
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S03": [
+          {
+            "slot": "inc-2#1",
+            "unit": "bus-3"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S05": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S07": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "bus-1"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S09": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S11": [
+          {
+            "slot": "inc-1#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S13": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "medic-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S15": [
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ],
+        "S17": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "bus-2"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S19": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-4#1",
+            "unit": "bus-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ]
+      }
+    },
+    "replanning": {
+      "run1": {
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-3"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ]
+      },
+      "run2": {
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-3"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ]
+      },
+      "run3": {
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S06": [
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-3"
+          }
+        ],
+        "S08": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "rescue-2"
+          }
+        ],
+        "S10": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S12": [
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ],
+        "S14": [
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S16": [
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-2"
+          }
+        ],
+        "S18": [
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "engine-1"
+          }
+        ],
+        "S20": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-3"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-2"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "rescue-1"
+          }
+        ]
+      }
+    }
+  },
+  "seconds": {
+    "reports": {
+      "run1": 43.48642690037377,
+      "run2": 40.38262779987417,
+      "run3": 41.25932589941658
+    },
+    "conflicts": {
+      "run1": 8.009288900298998,
+      "run2": 8.634576600044966,
+      "run3": 6.8157264003530145
+    },
+    "routing": {
+      "run1": 75.61761309951544,
+      "run2": 74.39161710022017,
+      "run3": 74.11352490028366
+    },
+    "triage": {
+      "run1": 23.213449499569833,
+      "run2": 23.73470940021798,
+      "run3": 23.06037350045517
+    },
+    "assignment": {
+      "run1": 80.25518739968538,
+      "run2": 76.88264480046928,
+      "run3": 81.19443689938635
+    },
+    "replanning": {
+      "run1": 42.536168799968436,
+      "run2": 38.44220400019549,
+      "run3": 44.14657110022381
+    }
+  },
+  "calls": [
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R01",
+      "seconds": 1.34,
+      "input_tokens": 3092,
+      "output_tokens": 292,
+      "reasoning_tokens": 240,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R01",
+      "seconds": 1.11,
+      "input_tokens": 3092,
+      "output_tokens": 271,
+      "reasoning_tokens": 230,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R01",
+      "seconds": 1.24,
+      "input_tokens": 3092,
+      "output_tokens": 271,
+      "reasoning_tokens": 230,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R02",
+      "seconds": 1.88,
+      "input_tokens": 3092,
+      "output_tokens": 396,
+      "reasoning_tokens": 347,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R02",
+      "seconds": 1.15,
+      "input_tokens": 3092,
+      "output_tokens": 302,
+      "reasoning_tokens": 253,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R02",
+      "seconds": 2.22,
+      "input_tokens": 3092,
+      "output_tokens": 361,
+      "reasoning_tokens": 323,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R03",
+      "seconds": 1.43,
+      "input_tokens": 3082,
+      "output_tokens": 311,
+      "reasoning_tokens": 254,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R03",
+      "seconds": 1.81,
+      "input_tokens": 3082,
+      "output_tokens": 427,
+      "reasoning_tokens": 382,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R03",
+      "seconds": 1.66,
+      "input_tokens": 3082,
+      "output_tokens": 367,
+      "reasoning_tokens": 322,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R04",
+      "seconds": 1.21,
+      "input_tokens": 3078,
+      "output_tokens": 263,
+      "reasoning_tokens": 227,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R04",
+      "seconds": 1.66,
+      "input_tokens": 3078,
+      "output_tokens": 381,
+      "reasoning_tokens": 345,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R04",
+      "seconds": 1.43,
+      "input_tokens": 3078,
+      "output_tokens": 329,
+      "reasoning_tokens": 283,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R05",
+      "seconds": 2.47,
+      "input_tokens": 3098,
+      "output_tokens": 574,
+      "reasoning_tokens": 534,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R05",
+      "seconds": 2.91,
+      "input_tokens": 3098,
+      "output_tokens": 656,
+      "reasoning_tokens": 605,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R05",
+      "seconds": 2.58,
+      "input_tokens": 3098,
+      "output_tokens": 697,
+      "reasoning_tokens": 646,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R06",
+      "seconds": 3.14,
+      "input_tokens": 3079,
+      "output_tokens": 790,
+      "reasoning_tokens": 756,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R06",
+      "seconds": 3.21,
+      "input_tokens": 3079,
+      "output_tokens": 748,
+      "reasoning_tokens": 714,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R06",
+      "seconds": 2.74,
+      "input_tokens": 3079,
+      "output_tokens": 780,
+      "reasoning_tokens": 746,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R07",
+      "seconds": 1.89,
+      "input_tokens": 3085,
+      "output_tokens": 364,
+      "reasoning_tokens": 319,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R07",
+      "seconds": 1.04,
+      "input_tokens": 3085,
+      "output_tokens": 258,
+      "reasoning_tokens": 213,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R07",
+      "seconds": 1.12,
+      "input_tokens": 3085,
+      "output_tokens": 308,
+      "reasoning_tokens": 263,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R08",
+      "seconds": 2.55,
+      "input_tokens": 3090,
+      "output_tokens": 547,
+      "reasoning_tokens": 506,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R08",
+      "seconds": 2.8,
+      "input_tokens": 3090,
+      "output_tokens": 566,
+      "reasoning_tokens": 513,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R08",
+      "seconds": 2.43,
+      "input_tokens": 3090,
+      "output_tokens": 543,
+      "reasoning_tokens": 502,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R09",
+      "seconds": 2.58,
+      "input_tokens": 3086,
+      "output_tokens": 567,
+      "reasoning_tokens": 529,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R09",
+      "seconds": 2.81,
+      "input_tokens": 3086,
+      "output_tokens": 723,
+      "reasoning_tokens": 685,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R09",
+      "seconds": 2.29,
+      "input_tokens": 3086,
+      "output_tokens": 446,
+      "reasoning_tokens": 397,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R10",
+      "seconds": 3.81,
+      "input_tokens": 3092,
+      "output_tokens": 612,
+      "reasoning_tokens": 571,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R10",
+      "seconds": 2.77,
+      "input_tokens": 3092,
+      "output_tokens": 590,
+      "reasoning_tokens": 549,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R10",
+      "seconds": 2.44,
+      "input_tokens": 3092,
+      "output_tokens": 537,
+      "reasoning_tokens": 496,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R11",
+      "seconds": 1.47,
+      "input_tokens": 3070,
+      "output_tokens": 450,
+      "reasoning_tokens": 417,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R11",
+      "seconds": 1.71,
+      "input_tokens": 3070,
+      "output_tokens": 371,
+      "reasoning_tokens": 338,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R11",
+      "seconds": 1.99,
+      "input_tokens": 3070,
+      "output_tokens": 490,
+      "reasoning_tokens": 457,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R12",
+      "seconds": 1.09,
+      "input_tokens": 3083,
+      "output_tokens": 311,
+      "reasoning_tokens": 264,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R12",
+      "seconds": 2.54,
+      "input_tokens": 3083,
+      "output_tokens": 563,
+      "reasoning_tokens": 527,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R12",
+      "seconds": 1.75,
+      "input_tokens": 3083,
+      "output_tokens": 417,
+      "reasoning_tokens": 370,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R13",
+      "seconds": 2.34,
+      "input_tokens": 3124,
+      "output_tokens": 708,
+      "reasoning_tokens": 672,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R13",
+      "seconds": 1.7,
+      "input_tokens": 3124,
+      "output_tokens": 372,
+      "reasoning_tokens": 326,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R13",
+      "seconds": 2.01,
+      "input_tokens": 3124,
+      "output_tokens": 523,
+      "reasoning_tokens": 487,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R14",
+      "seconds": 1.33,
+      "input_tokens": 3081,
+      "output_tokens": 324,
+      "reasoning_tokens": 286,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R14",
+      "seconds": 1.11,
+      "input_tokens": 3081,
+      "output_tokens": 271,
+      "reasoning_tokens": 233,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R14",
+      "seconds": 0.96,
+      "input_tokens": 3081,
+      "output_tokens": 229,
+      "reasoning_tokens": 191,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R15",
+      "seconds": 1.64,
+      "input_tokens": 3085,
+      "output_tokens": 484,
+      "reasoning_tokens": 427,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R15",
+      "seconds": 1.79,
+      "input_tokens": 3085,
+      "output_tokens": 549,
+      "reasoning_tokens": 492,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R15",
+      "seconds": 2.89,
+      "input_tokens": 3085,
+      "output_tokens": 557,
+      "reasoning_tokens": 500,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R16",
+      "seconds": 3.47,
+      "input_tokens": 3086,
+      "output_tokens": 771,
+      "reasoning_tokens": 722,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R16",
+      "seconds": 2.3,
+      "input_tokens": 3086,
+      "output_tokens": 646,
+      "reasoning_tokens": 608,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R16",
+      "seconds": 2.17,
+      "input_tokens": 3086,
+      "output_tokens": 666,
+      "reasoning_tokens": 628,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R17",
+      "seconds": 1.5,
+      "input_tokens": 3083,
+      "output_tokens": 401,
+      "reasoning_tokens": 360,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R17",
+      "seconds": 1.3,
+      "input_tokens": 3083,
+      "output_tokens": 286,
+      "reasoning_tokens": 245,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R17",
+      "seconds": 1.35,
+      "input_tokens": 3083,
+      "output_tokens": 290,
+      "reasoning_tokens": 249,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R18",
+      "seconds": 4.12,
+      "input_tokens": 3092,
+      "output_tokens": 1044,
+      "reasoning_tokens": 993,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R18",
+      "seconds": 2.69,
+      "input_tokens": 3092,
+      "output_tokens": 636,
+      "reasoning_tokens": 585,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R18",
+      "seconds": 2.7,
+      "input_tokens": 3092,
+      "output_tokens": 694,
+      "reasoning_tokens": 629,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R19",
+      "seconds": 1.27,
+      "input_tokens": 3088,
+      "output_tokens": 372,
+      "reasoning_tokens": 299,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R19",
+      "seconds": 1.46,
+      "input_tokens": 3088,
+      "output_tokens": 407,
+      "reasoning_tokens": 334,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R19",
+      "seconds": 1.37,
+      "input_tokens": 3088,
+      "output_tokens": 341,
+      "reasoning_tokens": 284,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 1,
+      "item": "R20",
+      "seconds": 2.96,
+      "input_tokens": 3089,
+      "output_tokens": 833,
+      "reasoning_tokens": 797,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 2,
+      "item": "R20",
+      "seconds": 2.51,
+      "input_tokens": 3089,
+      "output_tokens": 719,
+      "reasoning_tokens": 683,
+      "error": null
+    },
+    {
+      "task": "reports",
+      "run": 3,
+      "item": "R20",
+      "seconds": 3.92,
+      "input_tokens": 3089,
+      "output_tokens": 731,
+      "reasoning_tokens": 695,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 1,
+      "item": "C1",
+      "seconds": 1.13,
+      "input_tokens": 2799,
+      "output_tokens": 251,
+      "reasoning_tokens": 237,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 2,
+      "item": "C1",
+      "seconds": 1.19,
+      "input_tokens": 2799,
+      "output_tokens": 218,
+      "reasoning_tokens": 203,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 3,
+      "item": "C1",
+      "seconds": 1.0,
+      "input_tokens": 2799,
+      "output_tokens": 217,
+      "reasoning_tokens": 202,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 1,
+      "item": "C2",
+      "seconds": 1.48,
+      "input_tokens": 2797,
+      "output_tokens": 329,
+      "reasoning_tokens": 314,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 2,
+      "item": "C2",
+      "seconds": 1.77,
+      "input_tokens": 2797,
+      "output_tokens": 467,
+      "reasoning_tokens": 452,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 3,
+      "item": "C2",
+      "seconds": 1.25,
+      "input_tokens": 2797,
+      "output_tokens": 263,
+      "reasoning_tokens": 248,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 1,
+      "item": "C3",
+      "seconds": 1.44,
+      "input_tokens": 2796,
+      "output_tokens": 295,
+      "reasoning_tokens": 281,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 2,
+      "item": "C3",
+      "seconds": 1.63,
+      "input_tokens": 2796,
+      "output_tokens": 353,
+      "reasoning_tokens": 338,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 3,
+      "item": "C3",
+      "seconds": 1.38,
+      "input_tokens": 2796,
+      "output_tokens": 335,
+      "reasoning_tokens": 321,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 1,
+      "item": "C4",
+      "seconds": 1.37,
+      "input_tokens": 2798,
+      "output_tokens": 244,
+      "reasoning_tokens": 230,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 2,
+      "item": "C4",
+      "seconds": 1.29,
+      "input_tokens": 2798,
+      "output_tokens": 230,
+      "reasoning_tokens": 215,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 3,
+      "item": "C4",
+      "seconds": 0.99,
+      "input_tokens": 2798,
+      "output_tokens": 220,
+      "reasoning_tokens": 205,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 1,
+      "item": "C5",
+      "seconds": 1.35,
+      "input_tokens": 2802,
+      "output_tokens": 368,
+      "reasoning_tokens": 353,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 2,
+      "item": "C5",
+      "seconds": 1.37,
+      "input_tokens": 2802,
+      "output_tokens": 352,
+      "reasoning_tokens": 337,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 3,
+      "item": "C5",
+      "seconds": 1.09,
+      "input_tokens": 2802,
+      "output_tokens": 282,
+      "reasoning_tokens": 267,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 1,
+      "item": "C6",
+      "seconds": 1.25,
+      "input_tokens": 2796,
+      "output_tokens": 314,
+      "reasoning_tokens": 299,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 2,
+      "item": "C6",
+      "seconds": 1.39,
+      "input_tokens": 2796,
+      "output_tokens": 287,
+      "reasoning_tokens": 272,
+      "error": null
+    },
+    {
+      "task": "conflicts",
+      "run": 3,
+      "item": "C6",
+      "seconds": 1.1,
+      "input_tokens": 2796,
+      "output_tokens": 263,
+      "reasoning_tokens": 248,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S01",
+      "seconds": 4.47,
+      "input_tokens": 3559,
+      "output_tokens": 1515,
+      "reasoning_tokens": 1390,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S01",
+      "seconds": 3.78,
+      "input_tokens": 3559,
+      "output_tokens": 1259,
+      "reasoning_tokens": 1134,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S01",
+      "seconds": 2.53,
+      "input_tokens": 3559,
+      "output_tokens": 780,
+      "reasoning_tokens": 655,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S02",
+      "seconds": 8.35,
+      "input_tokens": 3537,
+      "output_tokens": 2680,
+      "reasoning_tokens": 2519,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S02",
+      "seconds": 5.55,
+      "input_tokens": 3537,
+      "output_tokens": 2141,
+      "reasoning_tokens": 1980,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S02",
+      "seconds": 5.37,
+      "input_tokens": 3537,
+      "output_tokens": 1608,
+      "reasoning_tokens": 1447,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S03",
+      "seconds": 3.6,
+      "input_tokens": 3524,
+      "output_tokens": 994,
+      "reasoning_tokens": 907,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S03",
+      "seconds": 3.57,
+      "input_tokens": 3524,
+      "output_tokens": 785,
+      "reasoning_tokens": 698,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S03",
+      "seconds": 3.34,
+      "input_tokens": 3524,
+      "output_tokens": 772,
+      "reasoning_tokens": 685,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S04",
+      "seconds": 2.98,
+      "input_tokens": 3558,
+      "output_tokens": 992,
+      "reasoning_tokens": 868,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S04",
+      "seconds": 3.19,
+      "input_tokens": 3558,
+      "output_tokens": 1072,
+      "reasoning_tokens": 948,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S04",
+      "seconds": 3.51,
+      "input_tokens": 3558,
+      "output_tokens": 976,
+      "reasoning_tokens": 852,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S05",
+      "seconds": 1.68,
+      "input_tokens": 3561,
+      "output_tokens": 455,
+      "reasoning_tokens": 349,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S05",
+      "seconds": 1.75,
+      "input_tokens": 3561,
+      "output_tokens": 466,
+      "reasoning_tokens": 360,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S05",
+      "seconds": 1.74,
+      "input_tokens": 3561,
+      "output_tokens": 449,
+      "reasoning_tokens": 343,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S06",
+      "seconds": 4.48,
+      "input_tokens": 3560,
+      "output_tokens": 1327,
+      "reasoning_tokens": 1177,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S06",
+      "seconds": 5.28,
+      "input_tokens": 3560,
+      "output_tokens": 1217,
+      "reasoning_tokens": 1067,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S06",
+      "seconds": 4.16,
+      "input_tokens": 3560,
+      "output_tokens": 1188,
+      "reasoning_tokens": 1038,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S07",
+      "seconds": 3.5,
+      "input_tokens": 3561,
+      "output_tokens": 812,
+      "reasoning_tokens": 683,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S07",
+      "seconds": 2.87,
+      "input_tokens": 3561,
+      "output_tokens": 620,
+      "reasoning_tokens": 491,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S07",
+      "seconds": 3.15,
+      "input_tokens": 3561,
+      "output_tokens": 953,
+      "reasoning_tokens": 824,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S08",
+      "seconds": 3.25,
+      "input_tokens": 3538,
+      "output_tokens": 1218,
+      "reasoning_tokens": 1073,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S08",
+      "seconds": 7.11,
+      "input_tokens": 3538,
+      "output_tokens": 2316,
+      "reasoning_tokens": 2171,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S08",
+      "seconds": 4.82,
+      "input_tokens": 3538,
+      "output_tokens": 1199,
+      "reasoning_tokens": 1054,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S09",
+      "seconds": 5.2,
+      "input_tokens": 3518,
+      "output_tokens": 1588,
+      "reasoning_tokens": 1452,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S09",
+      "seconds": 3.96,
+      "input_tokens": 3518,
+      "output_tokens": 1209,
+      "reasoning_tokens": 1073,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S09",
+      "seconds": 3.43,
+      "input_tokens": 3518,
+      "output_tokens": 815,
+      "reasoning_tokens": 679,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S10",
+      "seconds": 3.35,
+      "input_tokens": 3517,
+      "output_tokens": 1177,
+      "reasoning_tokens": 1030,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S10",
+      "seconds": 3.51,
+      "input_tokens": 3517,
+      "output_tokens": 1104,
+      "reasoning_tokens": 957,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S10",
+      "seconds": 4.22,
+      "input_tokens": 3517,
+      "output_tokens": 1174,
+      "reasoning_tokens": 1027,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S11",
+      "seconds": 2.89,
+      "input_tokens": 3521,
+      "output_tokens": 673,
+      "reasoning_tokens": 558,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S11",
+      "seconds": 3.43,
+      "input_tokens": 3521,
+      "output_tokens": 870,
+      "reasoning_tokens": 755,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S11",
+      "seconds": 5.08,
+      "input_tokens": 3521,
+      "output_tokens": 1504,
+      "reasoning_tokens": 1389,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S12",
+      "seconds": 1.6,
+      "input_tokens": 3515,
+      "output_tokens": 458,
+      "reasoning_tokens": 355,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S12",
+      "seconds": 1.94,
+      "input_tokens": 3515,
+      "output_tokens": 519,
+      "reasoning_tokens": 416,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S12",
+      "seconds": 2.49,
+      "input_tokens": 3515,
+      "output_tokens": 541,
+      "reasoning_tokens": 438,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S13",
+      "seconds": 2.22,
+      "input_tokens": 3557,
+      "output_tokens": 665,
+      "reasoning_tokens": 559,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S13",
+      "seconds": 2.13,
+      "input_tokens": 3557,
+      "output_tokens": 567,
+      "reasoning_tokens": 461,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S13",
+      "seconds": 2.25,
+      "input_tokens": 3557,
+      "output_tokens": 511,
+      "reasoning_tokens": 405,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S14",
+      "seconds": 4.69,
+      "input_tokens": 3556,
+      "output_tokens": 1375,
+      "reasoning_tokens": 1263,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S14",
+      "seconds": 3.86,
+      "input_tokens": 3556,
+      "output_tokens": 1091,
+      "reasoning_tokens": 979,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S14",
+      "seconds": 5.33,
+      "input_tokens": 3556,
+      "output_tokens": 921,
+      "reasoning_tokens": 809,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S15",
+      "seconds": 3.17,
+      "input_tokens": 3540,
+      "output_tokens": 1034,
+      "reasoning_tokens": 901,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S15",
+      "seconds": 3.73,
+      "input_tokens": 3540,
+      "output_tokens": 1140,
+      "reasoning_tokens": 1007,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S15",
+      "seconds": 4.32,
+      "input_tokens": 3540,
+      "output_tokens": 1098,
+      "reasoning_tokens": 965,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S16",
+      "seconds": 3.85,
+      "input_tokens": 3558,
+      "output_tokens": 1165,
+      "reasoning_tokens": 1051,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S16",
+      "seconds": 2.79,
+      "input_tokens": 3558,
+      "output_tokens": 1042,
+      "reasoning_tokens": 928,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S16",
+      "seconds": 3.6,
+      "input_tokens": 3558,
+      "output_tokens": 985,
+      "reasoning_tokens": 871,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S17",
+      "seconds": 3.02,
+      "input_tokens": 3537,
+      "output_tokens": 768,
+      "reasoning_tokens": 648,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S17",
+      "seconds": 2.45,
+      "input_tokens": 3537,
+      "output_tokens": 736,
+      "reasoning_tokens": 616,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S17",
+      "seconds": 2.71,
+      "input_tokens": 3537,
+      "output_tokens": 922,
+      "reasoning_tokens": 802,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S18",
+      "seconds": 3.14,
+      "input_tokens": 3554,
+      "output_tokens": 988,
+      "reasoning_tokens": 850,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S18",
+      "seconds": 2.44,
+      "input_tokens": 3554,
+      "output_tokens": 840,
+      "reasoning_tokens": 702,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S18",
+      "seconds": 2.82,
+      "input_tokens": 3554,
+      "output_tokens": 976,
+      "reasoning_tokens": 838,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S19",
+      "seconds": 3.76,
+      "input_tokens": 3521,
+      "output_tokens": 978,
+      "reasoning_tokens": 835,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S19",
+      "seconds": 4.21,
+      "input_tokens": 3521,
+      "output_tokens": 1227,
+      "reasoning_tokens": 1084,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S19",
+      "seconds": 4.23,
+      "input_tokens": 3521,
+      "output_tokens": 1199,
+      "reasoning_tokens": 1056,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 1,
+      "item": "S20",
+      "seconds": 6.42,
+      "input_tokens": 3559,
+      "output_tokens": 1642,
+      "reasoning_tokens": 1498,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 2,
+      "item": "S20",
+      "seconds": 6.84,
+      "input_tokens": 3559,
+      "output_tokens": 2194,
+      "reasoning_tokens": 2050,
+      "error": null
+    },
+    {
+      "task": "routing",
+      "run": 3,
+      "item": "S20",
+      "seconds": 5.01,
+      "input_tokens": 3559,
+      "output_tokens": 1824,
+      "reasoning_tokens": 1680,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S01",
+      "seconds": 0.76,
+      "input_tokens": 2813,
+      "output_tokens": 162,
+      "reasoning_tokens": 135,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S01",
+      "seconds": 0.86,
+      "input_tokens": 2813,
+      "output_tokens": 170,
+      "reasoning_tokens": 143,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S01",
+      "seconds": 0.85,
+      "input_tokens": 2813,
+      "output_tokens": 238,
+      "reasoning_tokens": 211,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S02",
+      "seconds": 1.1,
+      "input_tokens": 2813,
+      "output_tokens": 231,
+      "reasoning_tokens": 204,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S02",
+      "seconds": 0.99,
+      "input_tokens": 2813,
+      "output_tokens": 228,
+      "reasoning_tokens": 201,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S02",
+      "seconds": 1.11,
+      "input_tokens": 2813,
+      "output_tokens": 277,
+      "reasoning_tokens": 250,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S03",
+      "seconds": 1.5,
+      "input_tokens": 2834,
+      "output_tokens": 310,
+      "reasoning_tokens": 278,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S03",
+      "seconds": 1.32,
+      "input_tokens": 2834,
+      "output_tokens": 327,
+      "reasoning_tokens": 295,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S03",
+      "seconds": 1.24,
+      "input_tokens": 2834,
+      "output_tokens": 236,
+      "reasoning_tokens": 204,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S04",
+      "seconds": 1.34,
+      "input_tokens": 2813,
+      "output_tokens": 265,
+      "reasoning_tokens": 238,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S04",
+      "seconds": 0.92,
+      "input_tokens": 2813,
+      "output_tokens": 231,
+      "reasoning_tokens": 204,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S04",
+      "seconds": 0.94,
+      "input_tokens": 2813,
+      "output_tokens": 234,
+      "reasoning_tokens": 207,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S05",
+      "seconds": 1.14,
+      "input_tokens": 2813,
+      "output_tokens": 231,
+      "reasoning_tokens": 204,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S05",
+      "seconds": 0.97,
+      "input_tokens": 2813,
+      "output_tokens": 224,
+      "reasoning_tokens": 197,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S05",
+      "seconds": 1.16,
+      "input_tokens": 2813,
+      "output_tokens": 207,
+      "reasoning_tokens": 180,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S06",
+      "seconds": 1.21,
+      "input_tokens": 2813,
+      "output_tokens": 306,
+      "reasoning_tokens": 279,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S06",
+      "seconds": 1.0,
+      "input_tokens": 2813,
+      "output_tokens": 228,
+      "reasoning_tokens": 201,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S06",
+      "seconds": 1.18,
+      "input_tokens": 2813,
+      "output_tokens": 256,
+      "reasoning_tokens": 229,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S07",
+      "seconds": 1.34,
+      "input_tokens": 2813,
+      "output_tokens": 283,
+      "reasoning_tokens": 256,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S07",
+      "seconds": 1.01,
+      "input_tokens": 2813,
+      "output_tokens": 246,
+      "reasoning_tokens": 219,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S07",
+      "seconds": 1.28,
+      "input_tokens": 2813,
+      "output_tokens": 270,
+      "reasoning_tokens": 243,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S08",
+      "seconds": 1.17,
+      "input_tokens": 2834,
+      "output_tokens": 226,
+      "reasoning_tokens": 194,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S08",
+      "seconds": 1.04,
+      "input_tokens": 2834,
+      "output_tokens": 245,
+      "reasoning_tokens": 213,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S08",
+      "seconds": 1.11,
+      "input_tokens": 2834,
+      "output_tokens": 242,
+      "reasoning_tokens": 210,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S09",
+      "seconds": 1.02,
+      "input_tokens": 2834,
+      "output_tokens": 233,
+      "reasoning_tokens": 201,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S09",
+      "seconds": 1.21,
+      "input_tokens": 2834,
+      "output_tokens": 282,
+      "reasoning_tokens": 250,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S09",
+      "seconds": 0.99,
+      "input_tokens": 2834,
+      "output_tokens": 245,
+      "reasoning_tokens": 213,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S10",
+      "seconds": 0.81,
+      "input_tokens": 2834,
+      "output_tokens": 217,
+      "reasoning_tokens": 185,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S10",
+      "seconds": 1.09,
+      "input_tokens": 2834,
+      "output_tokens": 222,
+      "reasoning_tokens": 190,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S10",
+      "seconds": 1.06,
+      "input_tokens": 2834,
+      "output_tokens": 259,
+      "reasoning_tokens": 227,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S11",
+      "seconds": 0.94,
+      "input_tokens": 2834,
+      "output_tokens": 236,
+      "reasoning_tokens": 204,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S11",
+      "seconds": 1.23,
+      "input_tokens": 2834,
+      "output_tokens": 238,
+      "reasoning_tokens": 206,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S11",
+      "seconds": 1.34,
+      "input_tokens": 2834,
+      "output_tokens": 216,
+      "reasoning_tokens": 184,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S12",
+      "seconds": 1.36,
+      "input_tokens": 2813,
+      "output_tokens": 282,
+      "reasoning_tokens": 255,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S12",
+      "seconds": 1.2,
+      "input_tokens": 2813,
+      "output_tokens": 256,
+      "reasoning_tokens": 229,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S12",
+      "seconds": 1.5,
+      "input_tokens": 2813,
+      "output_tokens": 276,
+      "reasoning_tokens": 249,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S13",
+      "seconds": 0.76,
+      "input_tokens": 2834,
+      "output_tokens": 206,
+      "reasoning_tokens": 174,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S13",
+      "seconds": 1.12,
+      "input_tokens": 2834,
+      "output_tokens": 264,
+      "reasoning_tokens": 232,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S13",
+      "seconds": 1.01,
+      "input_tokens": 2834,
+      "output_tokens": 258,
+      "reasoning_tokens": 226,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S14",
+      "seconds": 1.32,
+      "input_tokens": 2813,
+      "output_tokens": 212,
+      "reasoning_tokens": 185,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S14",
+      "seconds": 1.39,
+      "input_tokens": 2813,
+      "output_tokens": 259,
+      "reasoning_tokens": 232,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S14",
+      "seconds": 1.28,
+      "input_tokens": 2813,
+      "output_tokens": 246,
+      "reasoning_tokens": 219,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S15",
+      "seconds": 1.44,
+      "input_tokens": 2834,
+      "output_tokens": 356,
+      "reasoning_tokens": 324,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S15",
+      "seconds": 1.57,
+      "input_tokens": 2834,
+      "output_tokens": 280,
+      "reasoning_tokens": 248,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S15",
+      "seconds": 1.29,
+      "input_tokens": 2834,
+      "output_tokens": 228,
+      "reasoning_tokens": 196,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S16",
+      "seconds": 1.09,
+      "input_tokens": 2813,
+      "output_tokens": 259,
+      "reasoning_tokens": 232,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S16",
+      "seconds": 1.5,
+      "input_tokens": 2813,
+      "output_tokens": 276,
+      "reasoning_tokens": 249,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S16",
+      "seconds": 1.09,
+      "input_tokens": 2813,
+      "output_tokens": 217,
+      "reasoning_tokens": 190,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S17",
+      "seconds": 0.98,
+      "input_tokens": 2813,
+      "output_tokens": 172,
+      "reasoning_tokens": 145,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S17",
+      "seconds": 0.81,
+      "input_tokens": 2813,
+      "output_tokens": 170,
+      "reasoning_tokens": 143,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S17",
+      "seconds": 1.16,
+      "input_tokens": 2813,
+      "output_tokens": 245,
+      "reasoning_tokens": 218,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S18",
+      "seconds": 1.12,
+      "input_tokens": 2834,
+      "output_tokens": 241,
+      "reasoning_tokens": 209,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S18",
+      "seconds": 1.34,
+      "input_tokens": 2834,
+      "output_tokens": 220,
+      "reasoning_tokens": 188,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S18",
+      "seconds": 0.86,
+      "input_tokens": 2834,
+      "output_tokens": 208,
+      "reasoning_tokens": 176,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S19",
+      "seconds": 1.31,
+      "input_tokens": 2834,
+      "output_tokens": 263,
+      "reasoning_tokens": 231,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S19",
+      "seconds": 1.91,
+      "input_tokens": 2834,
+      "output_tokens": 313,
+      "reasoning_tokens": 281,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S19",
+      "seconds": 1.17,
+      "input_tokens": 2834,
+      "output_tokens": 237,
+      "reasoning_tokens": 205,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 1,
+      "item": "S20",
+      "seconds": 1.53,
+      "input_tokens": 2834,
+      "output_tokens": 274,
+      "reasoning_tokens": 242,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 2,
+      "item": "S20",
+      "seconds": 1.26,
+      "input_tokens": 2834,
+      "output_tokens": 278,
+      "reasoning_tokens": 246,
+      "error": null
+    },
+    {
+      "task": "triage",
+      "run": 3,
+      "item": "S20",
+      "seconds": 1.44,
+      "input_tokens": 2834,
+      "output_tokens": 294,
+      "reasoning_tokens": 262,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S01",
+      "seconds": 3.09,
+      "input_tokens": 3060,
+      "output_tokens": 889,
+      "reasoning_tokens": 802,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S01",
+      "seconds": 2.9,
+      "input_tokens": 3060,
+      "output_tokens": 852,
+      "reasoning_tokens": 765,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S01",
+      "seconds": 2.68,
+      "input_tokens": 3060,
+      "output_tokens": 860,
+      "reasoning_tokens": 773,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S02",
+      "seconds": 8.3,
+      "input_tokens": 3117,
+      "output_tokens": 2487,
+      "reasoning_tokens": 2400,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S02",
+      "seconds": 5.72,
+      "input_tokens": 3117,
+      "output_tokens": 1797,
+      "reasoning_tokens": 1710,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S02",
+      "seconds": 8.36,
+      "input_tokens": 3117,
+      "output_tokens": 2431,
+      "reasoning_tokens": 2344,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S03",
+      "seconds": 1.53,
+      "input_tokens": 3071,
+      "output_tokens": 464,
+      "reasoning_tokens": 415,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S03",
+      "seconds": 2.0,
+      "input_tokens": 3071,
+      "output_tokens": 610,
+      "reasoning_tokens": 561,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S03",
+      "seconds": 1.87,
+      "input_tokens": 3071,
+      "output_tokens": 644,
+      "reasoning_tokens": 595,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S04",
+      "seconds": 5.47,
+      "input_tokens": 3125,
+      "output_tokens": 1465,
+      "reasoning_tokens": 1378,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S04",
+      "seconds": 4.12,
+      "input_tokens": 3125,
+      "output_tokens": 1102,
+      "reasoning_tokens": 1015,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S04",
+      "seconds": 4.44,
+      "input_tokens": 3125,
+      "output_tokens": 1410,
+      "reasoning_tokens": 1323,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S05",
+      "seconds": 2.84,
+      "input_tokens": 3036,
+      "output_tokens": 776,
+      "reasoning_tokens": 708,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S05",
+      "seconds": 2.93,
+      "input_tokens": 3036,
+      "output_tokens": 772,
+      "reasoning_tokens": 704,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S05",
+      "seconds": 3.35,
+      "input_tokens": 3036,
+      "output_tokens": 883,
+      "reasoning_tokens": 815,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S06",
+      "seconds": 2.98,
+      "input_tokens": 3088,
+      "output_tokens": 929,
+      "reasoning_tokens": 862,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S06",
+      "seconds": 4.31,
+      "input_tokens": 3088,
+      "output_tokens": 1194,
+      "reasoning_tokens": 1127,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S06",
+      "seconds": 4.05,
+      "input_tokens": 3088,
+      "output_tokens": 1155,
+      "reasoning_tokens": 1088,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S07",
+      "seconds": 3.97,
+      "input_tokens": 3107,
+      "output_tokens": 1184,
+      "reasoning_tokens": 1097,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S07",
+      "seconds": 6.68,
+      "input_tokens": 3107,
+      "output_tokens": 1587,
+      "reasoning_tokens": 1500,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S07",
+      "seconds": 4.61,
+      "input_tokens": 3107,
+      "output_tokens": 1191,
+      "reasoning_tokens": 1104,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S08",
+      "seconds": 4.89,
+      "input_tokens": 3140,
+      "output_tokens": 1299,
+      "reasoning_tokens": 1230,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S08",
+      "seconds": 4.79,
+      "input_tokens": 3140,
+      "output_tokens": 1228,
+      "reasoning_tokens": 1159,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S08",
+      "seconds": 5.46,
+      "input_tokens": 3140,
+      "output_tokens": 1217,
+      "reasoning_tokens": 1148,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S09",
+      "seconds": 3.77,
+      "input_tokens": 3075,
+      "output_tokens": 882,
+      "reasoning_tokens": 813,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S09",
+      "seconds": 2.85,
+      "input_tokens": 3075,
+      "output_tokens": 718,
+      "reasoning_tokens": 649,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S09",
+      "seconds": 3.05,
+      "input_tokens": 3075,
+      "output_tokens": 862,
+      "reasoning_tokens": 793,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S10",
+      "seconds": 2.3,
+      "input_tokens": 3052,
+      "output_tokens": 673,
+      "reasoning_tokens": 623,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S10",
+      "seconds": 2.51,
+      "input_tokens": 3052,
+      "output_tokens": 697,
+      "reasoning_tokens": 647,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S10",
+      "seconds": 2.6,
+      "input_tokens": 3052,
+      "output_tokens": 697,
+      "reasoning_tokens": 647,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S11",
+      "seconds": 5.95,
+      "input_tokens": 3155,
+      "output_tokens": 1734,
+      "reasoning_tokens": 1629,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S11",
+      "seconds": 4.63,
+      "input_tokens": 3155,
+      "output_tokens": 1312,
+      "reasoning_tokens": 1207,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S11",
+      "seconds": 6.89,
+      "input_tokens": 3155,
+      "output_tokens": 1955,
+      "reasoning_tokens": 1850,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S12",
+      "seconds": 3.16,
+      "input_tokens": 3065,
+      "output_tokens": 1060,
+      "reasoning_tokens": 1010,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S12",
+      "seconds": 3.55,
+      "input_tokens": 3065,
+      "output_tokens": 1049,
+      "reasoning_tokens": 999,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S12",
+      "seconds": 5.67,
+      "input_tokens": 3065,
+      "output_tokens": 1352,
+      "reasoning_tokens": 1302,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S13",
+      "seconds": 4.27,
+      "input_tokens": 3136,
+      "output_tokens": 1240,
+      "reasoning_tokens": 1171,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S13",
+      "seconds": 4.11,
+      "input_tokens": 3136,
+      "output_tokens": 1229,
+      "reasoning_tokens": 1160,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S13",
+      "seconds": 3.62,
+      "input_tokens": 3136,
+      "output_tokens": 1102,
+      "reasoning_tokens": 1033,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S14",
+      "seconds": 1.8,
+      "input_tokens": 3021,
+      "output_tokens": 456,
+      "reasoning_tokens": 407,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S14",
+      "seconds": 1.88,
+      "input_tokens": 3021,
+      "output_tokens": 466,
+      "reasoning_tokens": 417,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S14",
+      "seconds": 2.53,
+      "input_tokens": 3021,
+      "output_tokens": 558,
+      "reasoning_tokens": 509,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S15",
+      "seconds": 2.48,
+      "input_tokens": 3096,
+      "output_tokens": 748,
+      "reasoning_tokens": 680,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S15",
+      "seconds": 3.3,
+      "input_tokens": 3096,
+      "output_tokens": 903,
+      "reasoning_tokens": 835,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S15",
+      "seconds": 2.79,
+      "input_tokens": 3096,
+      "output_tokens": 794,
+      "reasoning_tokens": 726,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S16",
+      "seconds": 3.02,
+      "input_tokens": 3035,
+      "output_tokens": 708,
+      "reasoning_tokens": 659,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S16",
+      "seconds": 2.47,
+      "input_tokens": 3035,
+      "output_tokens": 626,
+      "reasoning_tokens": 577,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S16",
+      "seconds": 2.57,
+      "input_tokens": 3035,
+      "output_tokens": 635,
+      "reasoning_tokens": 586,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S17",
+      "seconds": 3.22,
+      "input_tokens": 3106,
+      "output_tokens": 906,
+      "reasoning_tokens": 802,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S17",
+      "seconds": 3.65,
+      "input_tokens": 3106,
+      "output_tokens": 775,
+      "reasoning_tokens": 671,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S17",
+      "seconds": 2.33,
+      "input_tokens": 3106,
+      "output_tokens": 730,
+      "reasoning_tokens": 626,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S18",
+      "seconds": 5.61,
+      "input_tokens": 3199,
+      "output_tokens": 1430,
+      "reasoning_tokens": 1324,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S18",
+      "seconds": 5.37,
+      "input_tokens": 3199,
+      "output_tokens": 1698,
+      "reasoning_tokens": 1592,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S18",
+      "seconds": 6.43,
+      "input_tokens": 3199,
+      "output_tokens": 1956,
+      "reasoning_tokens": 1850,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S19",
+      "seconds": 5.41,
+      "input_tokens": 3141,
+      "output_tokens": 1465,
+      "reasoning_tokens": 1379,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S19",
+      "seconds": 3.94,
+      "input_tokens": 3141,
+      "output_tokens": 1056,
+      "reasoning_tokens": 970,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S19",
+      "seconds": 3.49,
+      "input_tokens": 3141,
+      "output_tokens": 1143,
+      "reasoning_tokens": 1057,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 1,
+      "item": "S20",
+      "seconds": 6.19,
+      "input_tokens": 3145,
+      "output_tokens": 1488,
+      "reasoning_tokens": 1383,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 2,
+      "item": "S20",
+      "seconds": 5.17,
+      "input_tokens": 3145,
+      "output_tokens": 1314,
+      "reasoning_tokens": 1209,
+      "error": null
+    },
+    {
+      "task": "assignment",
+      "run": 3,
+      "item": "S20",
+      "seconds": 4.4,
+      "input_tokens": 3145,
+      "output_tokens": 1089,
+      "reasoning_tokens": 984,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 1,
+      "item": "S02",
+      "seconds": 7.21,
+      "input_tokens": 3160,
+      "output_tokens": 2136,
+      "reasoning_tokens": 2049,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 2,
+      "item": "S02",
+      "seconds": 5.42,
+      "input_tokens": 3160,
+      "output_tokens": 1647,
+      "reasoning_tokens": 1560,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 3,
+      "item": "S02",
+      "seconds": 6.75,
+      "input_tokens": 3160,
+      "output_tokens": 2021,
+      "reasoning_tokens": 1934,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 1,
+      "item": "S04",
+      "seconds": 4.2,
+      "input_tokens": 3168,
+      "output_tokens": 1356,
+      "reasoning_tokens": 1269,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 2,
+      "item": "S04",
+      "seconds": 5.02,
+      "input_tokens": 3168,
+      "output_tokens": 1493,
+      "reasoning_tokens": 1406,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 3,
+      "item": "S04",
+      "seconds": 4.9,
+      "input_tokens": 3168,
+      "output_tokens": 1417,
+      "reasoning_tokens": 1330,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 1,
+      "item": "S06",
+      "seconds": 5.04,
+      "input_tokens": 3119,
+      "output_tokens": 1602,
+      "reasoning_tokens": 1535,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 2,
+      "item": "S06",
+      "seconds": 4.15,
+      "input_tokens": 3119,
+      "output_tokens": 1249,
+      "reasoning_tokens": 1182,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 3,
+      "item": "S06",
+      "seconds": 4.32,
+      "input_tokens": 3119,
+      "output_tokens": 1394,
+      "reasoning_tokens": 1327,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 1,
+      "item": "S08",
+      "seconds": 4.29,
+      "input_tokens": 3173,
+      "output_tokens": 1261,
+      "reasoning_tokens": 1192,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 2,
+      "item": "S08",
+      "seconds": 3.6,
+      "input_tokens": 3173,
+      "output_tokens": 1188,
+      "reasoning_tokens": 1119,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 3,
+      "item": "S08",
+      "seconds": 3.89,
+      "input_tokens": 3173,
+      "output_tokens": 1156,
+      "reasoning_tokens": 1087,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 1,
+      "item": "S10",
+      "seconds": 3.12,
+      "input_tokens": 3075,
+      "output_tokens": 767,
+      "reasoning_tokens": 717,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 2,
+      "item": "S10",
+      "seconds": 2.5,
+      "input_tokens": 3075,
+      "output_tokens": 692,
+      "reasoning_tokens": 642,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 3,
+      "item": "S10",
+      "seconds": 2.92,
+      "input_tokens": 3075,
+      "output_tokens": 751,
+      "reasoning_tokens": 701,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 1,
+      "item": "S12",
+      "seconds": 3.56,
+      "input_tokens": 3088,
+      "output_tokens": 949,
+      "reasoning_tokens": 899,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 2,
+      "item": "S12",
+      "seconds": 3.09,
+      "input_tokens": 3088,
+      "output_tokens": 1037,
+      "reasoning_tokens": 987,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 3,
+      "item": "S12",
+      "seconds": 4.38,
+      "input_tokens": 3088,
+      "output_tokens": 1277,
+      "reasoning_tokens": 1227,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 1,
+      "item": "S14",
+      "seconds": 2.66,
+      "input_tokens": 3043,
+      "output_tokens": 710,
+      "reasoning_tokens": 661,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 2,
+      "item": "S14",
+      "seconds": 3.01,
+      "input_tokens": 3043,
+      "output_tokens": 711,
+      "reasoning_tokens": 662,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 3,
+      "item": "S14",
+      "seconds": 3.16,
+      "input_tokens": 3043,
+      "output_tokens": 744,
+      "reasoning_tokens": 695,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 1,
+      "item": "S16",
+      "seconds": 1.88,
+      "input_tokens": 3058,
+      "output_tokens": 547,
+      "reasoning_tokens": 498,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 2,
+      "item": "S16",
+      "seconds": 2.04,
+      "input_tokens": 3058,
+      "output_tokens": 594,
+      "reasoning_tokens": 545,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 3,
+      "item": "S16",
+      "seconds": 2.27,
+      "input_tokens": 3058,
+      "output_tokens": 637,
+      "reasoning_tokens": 588,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 1,
+      "item": "S18",
+      "seconds": 5.86,
+      "input_tokens": 3250,
+      "output_tokens": 2019,
+      "reasoning_tokens": 1913,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 2,
+      "item": "S18",
+      "seconds": 5.71,
+      "input_tokens": 3250,
+      "output_tokens": 1738,
+      "reasoning_tokens": 1632,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 3,
+      "item": "S18",
+      "seconds": 7.24,
+      "input_tokens": 3250,
+      "output_tokens": 1860,
+      "reasoning_tokens": 1754,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 1,
+      "item": "S20",
+      "seconds": 4.71,
+      "input_tokens": 3196,
+      "output_tokens": 1370,
+      "reasoning_tokens": 1265,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 2,
+      "item": "S20",
+      "seconds": 3.9,
+      "input_tokens": 3196,
+      "output_tokens": 1061,
+      "reasoning_tokens": 956,
+      "error": null
+    },
+    {
+      "task": "replanning",
+      "run": 3,
+      "item": "S20",
+      "seconds": 4.32,
+      "input_tokens": 3196,
+      "output_tokens": 1271,
+      "reasoning_tokens": 1166,
+      "error": null
+    }
+  ]
+}

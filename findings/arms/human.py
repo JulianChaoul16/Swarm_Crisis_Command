@@ -13,18 +13,8 @@ its own. The AI arm gets the same tables.
 from datetime import datetime, timezone
 from time import perf_counter
 
-from findings.common import (
-    CASES,
-    RESULTS,
-    SEVERITY_WEIGHT,
-    UNFILLED_MINUTES,
-    load,
-    load_town,
-    open_adjacency,
-    save,
-    slots,
-)
-from findings.oracle import all_routes, distance_table
+from findings.common import CASES, RESULTS, load, load_town, save, slots
+from findings.views import cost_table, road_list
 
 OUTPUT = RESULTS / "human.json"
 VARIANT = "you"
@@ -195,14 +185,7 @@ class Session:
     # --- Tasks 3-6 ------------------------------------------------------------------
 
     def road_list(self, closed) -> str:
-        adjacency = open_adjacency(self.town, closed)
-        number = {place: index + 1 for index, place in enumerate(self.places)}
-        lines = []
-        for place in self.places:
-            links = ", ".join(f"{number[n]} {n} ({length:.2f})"
-                              for n, length, _ in sorted(adjacency[place]))
-            lines.append(f"  {number[place]:>2} {place:<18} -> {links or '(no open roads)'}")
-        return "\n".join(lines)
+        return road_list(self.town, closed)
 
     def routing(self, scenarios: dict) -> None:
         ids = [f"{sid}/{q['id']}" for sid in SUBSET["routing"]
@@ -266,23 +249,7 @@ class Session:
         return order
 
     def cost_table(self, scenario: dict, closed) -> str:
-        distances = distance_table(all_routes(self.town, closed))
-        units = scenario["units"]
-        header = "  slot      need       sev   unfilled | " + " ".join(
-            f"{index + 1}:{unit['id']:<9}" for index, unit in enumerate(units))
-        lines = [header, "  " + "-" * (len(header) - 2)]
-        for slot in slots(scenario):
-            weight = SEVERITY_WEIGHT[slot["severity"]]
-            cells = []
-            for unit in units:
-                distance = distances[(unit["location"], slot["place"])]
-                if slot["need"] not in unit["capabilities"] or distance is None:
-                    cells.append(f"{'-':<11}")
-                else:
-                    cells.append(f"{weight * distance / unit['speed']:<11.1f}")
-            lines.append(f"  {slot['slot']:<9} {slot['need']:<10} {slot['severity'][:4]:<5} "
-                         f"{weight * UNFILLED_MINUTES:>8} | " + " ".join(cells))
-        return "\n".join(lines)
+        return cost_table(self.town, scenario, closed)
 
     def _plan(self, scenario: dict, closed, task: str, sid: str, prior=None) -> None:
         table = self.cost_table(scenario, closed)

@@ -33,7 +33,7 @@ cases/
 arms/
   algorithms.py      algorithm arm
   human.py           timed terminal quiz over a fixed subset; resumable
-  ai_agent.py        (to do) model arm
+  ai_agent.py        model arm (Meta Responses API, strict JSON schemas, no tools)
 build_cases.py       writes town.json, scenarios.json and answers/scenarios.json
 oracle.py            brute-force answer keys (enumerates every path and every assignment)
 common.py            shared rules: costs, slots, triage order, plan validation
@@ -108,6 +108,31 @@ Scored on the quiz subset; the algorithms are scored on the same subset in `resu
   ability.
 - **What this means:** the raw scores stay in `results/`, but they are not a human-versus-
   algorithm comparison. Measuring human assignment properly needs a clearer interface.
+
+### AI agent (muse-spark-1.3, reasoning effort low, no tools, 3 runs, 2026-10-30)
+
+288 calls, 0 failures, 0.90M input and 0.22M output tokens.
+
+| Task | Result | Identical across 3 runs | Median time per call |
+|---|---|---|---|
+| Reports | 100% of fields, every run | 100% | 1.9 s |
+| Conflicts | 6 of 6, every run | 100% | 1.3 s |
+| Routing | 60 of 60 shortest, every run | 100% | 3.5 s for 3 queries |
+| Triage | 20 of 20, every run | 100% | 1.2 s |
+| Assignment | 20 of 20 best plans, every run | 100% | 3.6 s |
+| Replanning | 10, 10 and 9 of 10 best; the miss was 0.1% above best | 90% | 4.2 s |
+
+**What this does and does not show:**
+
+- **The test has hit its ceiling.** On these cases the AI matches the exact algorithms and
+  the best-case rules. It cannot separate AI from rules on reports, or AI from algorithms on
+  optimization.
+- **Optimization:** the AI matched Dijkstra and Hungarian on small problems (at most 6 slots
+  and 15 places). It did so at about 1,000 output tokens and 3–4 s per decision, against
+  milliseconds for the algorithm, with no proof of optimality and one miss. Larger
+  instances are untested.
+- **Reports:** the AI beat the human tester (100% against 73%), including on the Spanish
+  report. It tied the rules, whose score is a best case. The unseen holdout set decides this.
 
 ## Changes made after seeing results
 

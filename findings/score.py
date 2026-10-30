@@ -7,6 +7,7 @@ results/scores.json and results/summary.md. A missing answer counts as wrong. As
 replanning costs use the oracle's brute-force distances, never an arm's own numbers.
 """
 
+import json
 from statistics import mean
 
 from findings.common import (
@@ -203,9 +204,38 @@ def main() -> None:
                     row["seconds"] = seconds if "subset" in result else None
                     scores.setdefault(f"{task} (human subset)", {})[name] = row
 
+    consistency = {result["arm"]: run_consistency(result) for result in results
+                   if result.get("runs", 1) > 1}
+    if consistency:
+        scores["consistency"] = consistency
+
     save(RESULTS / "scores.json", scores)
     (RESULTS / "summary.md").write_text(render(scores), encoding="utf-8")
     print((RESULTS / "summary.md").read_text(encoding="utf-8"))
+
+
+def _canonical(value) -> str:
+    """Comparable form of an answer: set-like fields (needs, road claims) are order-free."""
+    if isinstance(value, dict) and "road_claims" in value:
+        value = {**value, "needs": sorted(value.get("needs") or []),
+                 "road_claims": sorted(_claims(value.get("road_claims")), key=str)}
+    return json.dumps(value, sort_keys=True, default=list)
+
+
+def run_consistency(result: dict) -> dict:
+    """Share of items given the identical answer in every run (a missing answer never matches)."""
+    table = {}
+    for task, variants in result["outputs"].items():
+        runs = list(variants.values())
+        items = set().union(*runs)
+        same = sum(
+            all(item in run for run in runs)
+            and len({_canonical(run[item]) for run in runs}) == 1
+            for item in items
+        )
+        table[task] = {"identical": same / len(items) if items else None, "n": len(items),
+                       "runs": len(runs)}
+    return table
 
 
 def _pct(value) -> str:
@@ -233,6 +263,12 @@ def render(scores: dict) -> str:
         lines.append("")
 
     for section, rows in scores.items():
+        if section == "consistency":
+            table("Consistency across repeated runs (identical answer every run)",
+                  ["Arm", *TITLES.values()],
+                  [[arm, *(_pct(tasks[t]["identical"]) if t in tasks else "—" for t in TITLES)]
+                   for arm, tasks in rows.items()])
+            continue
         task, _, suffix = section.partition(" (")
         title = TITLES[task] + (f" ({suffix}" if suffix else "")
         if task == "reports":

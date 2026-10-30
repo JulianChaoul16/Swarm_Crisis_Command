@@ -8,12 +8,18 @@ seconds there are shown for the human only, since other arms ran the full set.
 
 | Arm / variant | Overall | Kind | Place | People | Severity | Severity ±1 | Needs | Road claims | Invented values | n | Seconds |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 0 | 20 | 43.4864 |
+| ai muse-spark-1.3 (low) / run2 | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 0 | 20 | 40.3826 |
+| ai muse-spark-1.3 (low) / run3 | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 0 | 20 | 41.2593 |
 | algorithms / rules | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 0 | 20 | 0.0044 |
 
 ## Reports (human subset)
 
 | Arm / variant | Overall | Kind | Place | People | Severity | Severity ±1 | Needs | Road claims | Invented values | n | Seconds |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 0 | 20 | — |
+| ai muse-spark-1.3 (low) / run2 | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 0 | 20 | — |
+| ai muse-spark-1.3 (low) / run3 | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 0 | 20 | — |
 | algorithms / rules | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 100% | 0 | 20 | — |
 | human / you | 73% | 75% | 70% | 90% | 40% | 85% | 80% | 85% | 7 | 20 | 946.6000 |
 
@@ -21,12 +27,18 @@ seconds there are shown for the human only, since other arms ran the full set.
 
 | Arm / variant | Accuracy | n | Seconds |
 |---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 6 | 8.0093 |
+| ai muse-spark-1.3 (low) / run2 | 100% | 6 | 8.6346 |
+| ai muse-spark-1.3 (low) / run3 | 100% | 6 | 6.8157 |
 | algorithms / rules | 100% | 6 | 0.0001 |
 
 ## Conflicting road reports (human subset)
 
 | Arm / variant | Accuracy | n | Seconds |
 |---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 6 | — |
+| ai muse-spark-1.3 (low) / run2 | 100% | 6 | — |
+| ai muse-spark-1.3 (low) / run3 | 100% | 6 | — |
 | algorithms / rules | 100% | 6 | — |
 | human / you | 67% | 6 | 67.0000 |
 
@@ -34,6 +46,9 @@ seconds there are shown for the human only, since other arms ran the full set.
 
 | Arm / variant | Optimal | Invalid | Mean extra distance | n | Seconds |
 |---|---|---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 0% | 0% | 60 | 75.6176 |
+| ai muse-spark-1.3 (low) / run2 | 100% | 0% | 0% | 60 | 74.3916 |
+| ai muse-spark-1.3 (low) / run3 | 100% | 0% | 0% | 60 | 74.1135 |
 | algorithms / fewest_hops | 83% | 0% | 4% | 60 | 0.0005 |
 | algorithms / dijkstra | 100% | 0% | 0% | 60 | 0.0006 |
 | algorithms / astar | 100% | 0% | 0% | 60 | 0.0006 |
@@ -42,6 +57,9 @@ seconds there are shown for the human only, since other arms ran the full set.
 
 | Arm / variant | Optimal | Invalid | Mean extra distance | n | Seconds |
 |---|---|---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 0% | 0% | 6 | — |
+| ai muse-spark-1.3 (low) / run2 | 100% | 0% | 0% | 6 | — |
+| ai muse-spark-1.3 (low) / run3 | 100% | 0% | 0% | 6 | — |
 | algorithms / fewest_hops | 83% | 0% | 0% | 6 | — |
 | algorithms / dijkstra | 100% | 0% | 0% | 6 | — |
 | algorithms / astar | 100% | 0% | 0% | 6 | — |
@@ -51,12 +69,18 @@ seconds there are shown for the human only, since other arms ran the full set.
 
 | Arm / variant | Exact order | Pairs out of order | n | Seconds |
 |---|---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 0% | 20 | 23.2134 |
+| ai muse-spark-1.3 (low) / run2 | 100% | 0% | 20 | 23.7347 |
+| ai muse-spark-1.3 (low) / run3 | 100% | 0% | 20 | 23.0604 |
 | algorithms / rule | 100% | 0% | 20 | 0.0000 |
 
 ## Triage (human subset)
 
 | Arm / variant | Exact order | Pairs out of order | n | Seconds |
 |---|---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 0% | 6 | — |
+| ai muse-spark-1.3 (low) / run2 | 100% | 0% | 6 | — |
+| ai muse-spark-1.3 (low) / run3 | 100% | 0% | 6 | — |
 | algorithms / rule | 100% | 0% | 6 | — |
 | human / you | 50% | 14% | 6 | 100.3000 |
 
@@ -64,6 +88,9 @@ seconds there are shown for the human only, since other arms ran the full set.
 
 | Arm / variant | Optimal | Mean cost above optimal | Worst | Rule violations | n | Seconds |
 |---|---|---|---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 0% | 0% | 0 | 20 | 80.2552 |
+| ai muse-spark-1.3 (low) / run2 | 100% | 0% | 0% | 0 | 20 | 76.8826 |
+| ai muse-spark-1.3 (low) / run3 | 100% | 0% | 0% | 0 | 20 | 81.1944 |
 | algorithms / greedy_priority | 80% | 16% | 224% | 0 | 20 | 0.0014 |
 | algorithms / greedy_global | 40% | 68% | 449% | 0 | 20 | 0.0011 |
 | algorithms / hungarian | 100% | 0% | 0% | 0 | 20 | 0.0014 |
@@ -72,6 +99,9 @@ seconds there are shown for the human only, since other arms ran the full set.
 
 | Arm / variant | Optimal | Mean cost above optimal | Worst | Rule violations | n | Seconds |
 |---|---|---|---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 0% | 0% | 0 | 4 | — |
+| ai muse-spark-1.3 (low) / run2 | 100% | 0% | 0% | 0 | 4 | — |
+| ai muse-spark-1.3 (low) / run3 | 100% | 0% | 0% | 0 | 4 | — |
 | algorithms / greedy_priority | 50% | 61% | 224% | 0 | 4 | — |
 | algorithms / greedy_global | 25% | 82% | 224% | 0 | 4 | — |
 | algorithms / hungarian | 100% | 0% | 0% | 0 | 4 | — |
@@ -81,6 +111,9 @@ seconds there are shown for the human only, since other arms ran the full set.
 
 | Arm / variant | Optimal | Mean cost above optimal | Worst | Rule violations | Mean churn (optimal plan's churn) | n | Seconds |
 |---|---|---|---|---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 0% | 0% | 0 | 0.10 (0.30) | 10 | 42.5362 |
+| ai muse-spark-1.3 (low) / run2 | 100% | 0% | 0% | 0 | 0.10 (0.30) | 10 | 38.4422 |
+| ai muse-spark-1.3 (low) / run3 | 90% | 0% | 1% | 0 | 0.30 (0.30) | 10 | 44.1466 |
 | algorithms / greedy_priority | 100% | 0% | 0% | 0 | 0.30 (0.30) | 10 | 0.0006 |
 | algorithms / greedy_global | 40% | 47% | 147% | 0 | 1.80 (0.30) | 10 | 0.0005 |
 | algorithms / hungarian | 100% | 0% | 0% | 0 | 0.30 (0.30) | 10 | 0.0006 |
@@ -90,8 +123,17 @@ seconds there are shown for the human only, since other arms ran the full set.
 
 | Arm / variant | Optimal | Mean cost above optimal | Worst | Rule violations | Mean churn (optimal plan's churn) | n | Seconds |
 |---|---|---|---|---|---|---|---|
+| ai muse-spark-1.3 (low) / run1 | 100% | 0% | 0% | 0 | 0.00 (0.00) | 2 | — |
+| ai muse-spark-1.3 (low) / run2 | 100% | 0% | 0% | 0 | 0.00 (0.00) | 2 | — |
+| ai muse-spark-1.3 (low) / run3 | 50% | 1% | 1% | 0 | 1.00 (0.00) | 2 | — |
 | algorithms / greedy_priority | 100% | 0% | 0% | 0 | 0.00 (0.00) | 2 | — |
 | algorithms / greedy_global | 50% | 74% | 147% | 0 | 2.00 (0.00) | 2 | — |
 | algorithms / hungarian | 100% | 0% | 0% | 0 | 0.00 (0.00) | 2 | — |
 | algorithms / hungarian_sticky | 100% | 0% | 0% | 0 | 0.00 (0.00) | 2 | — |
 | human / you | 0% | 252% | 379% | 8 | 4.00 (0.00) | 2 | 9.4000 |
+
+## Consistency across repeated runs (identical answer every run)
+
+| Arm | Reports | Conflicting road reports | Routing | Triage | Assignment | Replanning |
+|---|---|---|---|---|---|---|
+| ai muse-spark-1.3 (low) | 100% | 100% | 100% | 100% | 100% | 90% |
