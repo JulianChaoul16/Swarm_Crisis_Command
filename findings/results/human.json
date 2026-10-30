@@ -1,0 +1,647 @@
+{
+  "arm": "human",
+  "tester": "project author",
+  "started_at": "2026-10-30T18:02:22+00:00",
+  "subset": {
+    "reports": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06",
+      "R07",
+      "R08",
+      "R09",
+      "R10",
+      "R11",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R16",
+      "R17",
+      "R18",
+      "R19",
+      "R20"
+    ],
+    "conflicts": [
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5",
+      "C6"
+    ],
+    "routing_items": [
+      "S01/q1",
+      "S01/q2",
+      "S01/q3",
+      "S02/q1",
+      "S02/q2",
+      "S02/q3"
+    ],
+    "routing": [
+      "S01",
+      "S02"
+    ],
+    "triage": [
+      "S01",
+      "S02",
+      "S03",
+      "S04",
+      "S05",
+      "S06"
+    ],
+    "assignment": [
+      "S01",
+      "S03",
+      "S05",
+      "S07"
+    ],
+    "replanning": [
+      "S02",
+      "S04"
+    ]
+  },
+  "outputs": {
+    "reports": {
+      "you": {
+        "R01": {
+          "kind": "flood_rescue",
+          "place": "riverside_apts",
+          "people": 3,
+          "severity": "critical",
+          "needs": [
+            "boat"
+          ],
+          "road_claims": []
+        },
+        "R02": {
+          "kind": "medical",
+          "place": "elm_and_5th",
+          "people": 1,
+          "severity": "high",
+          "needs": [
+            "medic"
+          ],
+          "road_claims": [
+            {
+              "road_id": "fifth-st",
+              "status": "open"
+            }
+          ]
+        },
+        "R03": {
+          "kind": "road_status",
+          "place": "main_st_north",
+          "people": null,
+          "severity": "medium",
+          "needs": [],
+          "road_claims": [
+            {
+              "road_id": "main-st-bridge",
+              "status": "open"
+            }
+          ]
+        },
+        "R04": {
+          "kind": "fire",
+          "place": "old_mill",
+          "people": null,
+          "severity": "high",
+          "needs": [
+            "fire"
+          ],
+          "road_claims": []
+        },
+        "R05": {
+          "kind": "flood_rescue",
+          "place": "cedar_lane_park",
+          "people": 12,
+          "severity": "medium",
+          "needs": [
+            "boat"
+          ],
+          "road_claims": []
+        },
+        "R06": {
+          "kind": "property_damage",
+          "place": null,
+          "people": null,
+          "severity": "low",
+          "needs": [],
+          "road_claims": []
+        },
+        "R07": {
+          "kind": "road_status",
+          "place": "upriver_north",
+          "people": null,
+          "severity": "high",
+          "needs": [],
+          "road_claims": [
+            {
+              "road_id": "upriver-bridge",
+              "status": "closed"
+            }
+          ]
+        },
+        "R08": {
+          "kind": "flood_rescue",
+          "place": "main_st_south",
+          "people": 34,
+          "severity": "critical",
+          "needs": [
+            "boat"
+          ],
+          "road_claims": []
+        },
+        "R09": {
+          "kind": "medical",
+          "place": "southgate_shelter",
+          "people": 3,
+          "severity": "high",
+          "needs": [
+            "medic"
+          ],
+          "road_claims": []
+        },
+        "R10": {
+          "kind": "flood_rescue",
+          "place": null,
+          "people": null,
+          "severity": "medium",
+          "needs": [],
+          "road_claims": []
+        },
+        "R11": {
+          "kind": "road_status",
+          "place": null,
+          "people": null,
+          "severity": "high",
+          "needs": [],
+          "road_claims": [
+            {
+              "road_id": "main-st-bridge",
+              "status": "closed"
+            }
+          ]
+        },
+        "R12": {
+          "kind": "medical",
+          "place": "county_hospital",
+          "people": 3,
+          "severity": "high",
+          "needs": [
+            "medic"
+          ],
+          "road_claims": []
+        },
+        "R13": {
+          "kind": "road_status",
+          "place": "oak_and_3rd",
+          "people": null,
+          "severity": "medium",
+          "needs": [],
+          "road_claims": [
+            {
+              "road_id": "oak-ave",
+              "status": "closed"
+            }
+          ]
+        },
+        "R14": {
+          "kind": "flood_rescue",
+          "place": "pine_market",
+          "people": 2,
+          "severity": "critical",
+          "needs": [
+            "boat"
+          ],
+          "road_claims": []
+        },
+        "R15": {
+          "kind": "road_status",
+          "place": null,
+          "people": null,
+          "severity": "medium",
+          "needs": [],
+          "road_claims": [
+            {
+              "road_id": "river-rd-north",
+              "status": "closed"
+            },
+            {
+              "road_id": "mill-rd",
+              "status": "open"
+            }
+          ]
+        },
+        "R16": {
+          "kind": "other",
+          "place": "cedar_lane_park",
+          "people": 1,
+          "severity": "medium",
+          "needs": [
+            "medic"
+          ],
+          "road_claims": []
+        },
+        "R17": {
+          "kind": "evacuation",
+          "place": "riverside_apts",
+          "people": null,
+          "severity": "high",
+          "needs": [
+            "boat"
+          ],
+          "road_claims": []
+        },
+        "R18": {
+          "kind": "evacuation",
+          "place": "north_school",
+          "people": 1,
+          "severity": "high",
+          "needs": [
+            "boat"
+          ],
+          "road_claims": [
+            {
+              "road_id": "school-ln",
+              "status": "closed"
+            }
+          ]
+        },
+        "R19": {
+          "kind": "road_status",
+          "place": "main_st_north",
+          "people": null,
+          "severity": "medium",
+          "needs": [],
+          "road_claims": [
+            {
+              "road_id": "main-st-bridge",
+              "status": "open"
+            },
+            {
+              "road_id": "upriver-bridge",
+              "status": "closed"
+            }
+          ]
+        },
+        "R20": {
+          "kind": "other",
+          "place": "southgate_shelter",
+          "people": 50,
+          "severity": "low",
+          "needs": [],
+          "road_claims": []
+        }
+      }
+    },
+    "conflicts": {
+      "you": {
+        "C1": "open",
+        "C2": "closed",
+        "C3": "open",
+        "C4": "closed",
+        "C5": "closed",
+        "C6": "unknown"
+      }
+    },
+    "routing_items": {
+      "you": {
+        "S01/q1": [
+          "fire_station_1",
+          "north_school",
+          "elm_and_5th",
+          "lowtown_depot"
+        ],
+        "S01/q2": [
+          "upriver_south",
+          "upriver_north",
+          "old_mill",
+          "county_hospital",
+          "main_st_north"
+        ],
+        "S01/q3": [
+          "main_st_north",
+          "main_st_south"
+        ],
+        "S02/q1": [
+          "lowtown_depot",
+          "elm_and_5th",
+          "main_st_south",
+          "main_st_north",
+          "north_school"
+        ],
+        "S02/q2": [
+          "fire_station_1",
+          "north_school",
+          "main_st_north",
+          "main_st_south",
+          "riverside_apts",
+          "pine_market",
+          "cedar_lane_park"
+        ],
+        "S02/q3": [
+          "county_hospital",
+          "main_st_north",
+          "main_st_south",
+          "riverside_apts",
+          "pine_market"
+        ]
+      }
+    },
+    "routing": {
+      "you": {
+        "S01": {
+          "q1": [
+            "fire_station_1",
+            "north_school",
+            "elm_and_5th",
+            "lowtown_depot"
+          ],
+          "q2": [
+            "upriver_south",
+            "upriver_north",
+            "old_mill",
+            "county_hospital",
+            "main_st_north"
+          ],
+          "q3": [
+            "main_st_north",
+            "main_st_south"
+          ]
+        },
+        "S02": {
+          "q1": [
+            "lowtown_depot",
+            "elm_and_5th",
+            "main_st_south",
+            "main_st_north",
+            "north_school"
+          ],
+          "q2": [
+            "fire_station_1",
+            "north_school",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market",
+            "cedar_lane_park"
+          ],
+          "q3": [
+            "county_hospital",
+            "main_st_north",
+            "main_st_south",
+            "riverside_apts",
+            "pine_market"
+          ]
+        }
+      }
+    },
+    "triage": {
+      "you": {
+        "S01": [
+          "inc-3",
+          "inc-2",
+          "inc-1"
+        ],
+        "S02": [
+          "inc-1",
+          "inc-2",
+          "inc-3"
+        ],
+        "S03": [
+          "inc-3",
+          "inc-2",
+          "inc-1",
+          "inc-4"
+        ],
+        "S04": [
+          "inc-2",
+          "inc-3",
+          "inc-1"
+        ],
+        "S05": [
+          "inc-3",
+          "inc-1",
+          "inc-2"
+        ],
+        "S06": [
+          "inc-2",
+          "inc-1",
+          "inc-3"
+        ]
+      }
+    },
+    "assignment": {
+      "you": {
+        "S01": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "engine-1"
+          }
+        ],
+        "S03": [
+          {
+            "slot": "inc-1#0",
+            "unit": "bus-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "bus-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "bus-3"
+          },
+          {
+            "slot": "inc-4#0",
+            "unit": "boat-1"
+          }
+        ],
+        "S05": [
+          {
+            "slot": "inc-1#0",
+            "unit": "engine-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "boat-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          }
+        ],
+        "S07": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-1"
+          }
+        ]
+      }
+    },
+    "replanning": {
+      "you": {
+        "S02": [
+          {
+            "slot": "inc-1#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-2#1",
+            "unit": "rescue-2"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "rescue-2"
+          }
+        ],
+        "S04": [
+          {
+            "slot": "inc-1#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-1#1",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-2#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#0",
+            "unit": "medic-1"
+          },
+          {
+            "slot": "inc-3#1",
+            "unit": "medic-1"
+          }
+        ]
+      }
+    }
+  },
+  "seconds": {
+    "reports": {
+      "you": 946.6
+    },
+    "conflicts": {
+      "you": 67.0
+    },
+    "routing_items": {
+      "you": 254.7
+    },
+    "routing": {
+      "you": 254.7
+    },
+    "triage": {
+      "you": 100.3
+    },
+    "assignment": {
+      "you": 170.5
+    },
+    "replanning": {
+      "you": 9.4
+    }
+  },
+  "item_seconds": {
+    "reports": {
+      "R01": 86.6,
+      "R02": 58.0,
+      "R03": 91.6,
+      "R04": 39.6,
+      "R05": 51.4,
+      "R06": 49.4,
+      "R07": 43.4,
+      "R08": 34.3,
+      "R09": 38.0,
+      "R10": 15.1,
+      "R11": 39.1,
+      "R12": 49.8,
+      "R13": 58.3,
+      "R14": 37.2,
+      "R15": 58.7,
+      "R16": 39.8,
+      "R17": 30.2,
+      "R18": 49.9,
+      "R19": 43.9,
+      "R20": 32.3
+    },
+    "conflicts": {
+      "C1": 20.4,
+      "C2": 10.6,
+      "C3": 4.8,
+      "C4": 12.2,
+      "C5": 7.2,
+      "C6": 11.8
+    },
+    "routing_items": {
+      "S01/q1": 72.4,
+      "S01/q2": 81.9,
+      "S01/q3": 5.6,
+      "S02/q1": 36.6,
+      "S02/q2": 41.2,
+      "S02/q3": 17.0
+    },
+    "triage": {
+      "S01": 24.3,
+      "S02": 9.6,
+      "S03": 15.6,
+      "S04": 9.8,
+      "S05": 20.9,
+      "S06": 20.1
+    },
+    "assignment": {
+      "S01": 139.7,
+      "S03": 20.2,
+      "S05": 5.8,
+      "S07": 4.8
+    },
+    "replanning": {
+      "S02": 3.4,
+      "S04": 6.0
+    }
+  },
+  "updated_at": "2026-10-30T18:28:11+00:00",
+  "finished_at": "2026-10-30T18:28:11+00:00"
+}

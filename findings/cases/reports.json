@@ -1,0 +1,25 @@
+{
+  "note": "Fictional reports written for this test. All names and events are invented.",
+  "reports": [
+    {"id": "R01", "source": "public", "received": "13:02", "text": "HELP water coming in fast at riverside apts, me and my 2 kids on the 2nd floor, cant get out stairs flooded"},
+    {"id": "R02", "source": "public", "received": "13:04", "text": "elm st & 5th, old man fell on his porch steps maybe broke his hip. hes 80. water not too bad here yet"},
+    {"id": "R03", "source": "responder", "received": "13:05", "text": "Engine 4 reporting: main st bridge passable, water 10cm below deck, monitoring"},
+    {"id": "R04", "source": "public", "received": "13:07", "text": "smoke pouring out of the old mill roof, no idea if anyones inside"},
+    {"id": "R05", "source": "public", "received": "13:09", "text": "Cedar ln trailer park - about a dozen of us here, water at the steps, no one hurt but we need to get out before dark. most of us dont have cars"},
+    {"id": "R06", "source": "public", "received": "13:10", "text": "my basement at 42 pine st is flooded, everyone is fine, just reporting"},
+    {"id": "R07", "source": "official", "received": "13:11", "text": "County EOC: Upriver bridge CLOSED to all traffic effective 13:10 – structural damage reported"},
+    {"id": "R08", "source": "public", "received": "13:12", "text": "omg the school on school ln is flooding fast and theres like 30 kids + 4 teachers stuck on the 2nd floor"},
+    {"id": "R09", "source": "responder", "received": "13:15", "text": "Medic 2: we're at Southgate shelter, 3 people with hypothermia symptoms need transport to County Hospital"},
+    {"id": "R10", "source": "public", "received": "13:16", "text": "Por favor ayuda, mi madre está atrapada en su casa en la calle Elm, el agua sube. Ella usa silla de ruedas."},
+    {"id": "R11", "source": "public", "received": "13:18", "text": "I think the bridge is out??"},
+    {"id": "R12", "source": "public", "received": "13:20", "text": "Car accident right outside County Hospital on Hospital Dr, 2 people hurt, one bleeding from the head"},
+    {"id": "R13", "source": "public", "received": "13:22", "text": "So I've been watching the river all morning from my place near Oak and 3rd and it's way higher than 2019, I'd say 3 feet above the marker. Nothing flooded on our block yet though. Also saw a fire truck heading south on 3rd st about 10 min ago."},
+    {"id": "R14", "source": "public", "received": "13:24", "text": "Two guys in a canoe flipped near Pine market, holding onto a tree, current is strong"},
+    {"id": "R15", "source": "responder", "received": "13:26", "text": "PD unit 12: River Rd closed at the old mill, water over road. Mill Rd still open."},
+    {"id": "R16", "source": "public", "received": "13:28", "text": "pls someone check on mrs kowalski on cedar lane she's diabetic and hasnt answered her phone since yesterday"},
+    {"id": "R17", "source": "public", "received": "13:30", "text": "RIVERSIDE APARTMENTS!!! FAMILY TRAPPED 2ND FLOOR WATER RISING"},
+    {"id": "R18", "source": "public", "received": "13:33", "text": "the low water crossing by the school is under like 2 ft of water, someone drove into it, car stalled, driver on the roof"},
+    {"id": "R19", "source": "official", "received": "13:40", "text": "EOC update 13:40: Main St bridge reopened to emergency vehicles only. Upriver bridge remains closed."},
+    {"id": "R20", "source": "public", "received": "13:42", "text": "lol the 'shelter' at southgate has no power and no blankets, great job city. 50+ people here"}
+  ]
+}

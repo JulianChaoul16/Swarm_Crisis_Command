@@ -1,0 +1,352 @@
+{
+  "name": "Millbrook (fictional)",
+  "units_of_measure": {
+    "distance": "km",
+    "speed": "km per minute",
+    "time": "minutes"
+  },
+  "river": "Runs east-west between y=3 and y=4; crossings are main-st-bridge, upriver-bridge and low-water-crossing.",
+  "places": [
+    {
+      "id": "fire_station_1",
+      "name": "Fire Station 1",
+      "x": 1,
+      "y": 6,
+      "aliases": [
+        "fire station 1",
+        "station 1",
+        "firehouse"
+      ]
+    },
+    {
+      "id": "oak_and_3rd",
+      "name": "Oak Ave & 3rd St",
+      "x": 3,
+      "y": 6,
+      "aliases": [
+        "oak and 3rd",
+        "oak & 3rd",
+        "3rd and oak"
+      ]
+    },
+    {
+      "id": "county_hospital",
+      "name": "County Hospital",
+      "x": 5,
+      "y": 6,
+      "aliases": [
+        "county hospital",
+        "county general",
+        "hospital"
+      ]
+    },
+    {
+      "id": "old_mill",
+      "name": "Old Mill",
+      "x": 7,
+      "y": 5.2,
+      "aliases": [
+        "old mill",
+        "the mill"
+      ]
+    },
+    {
+      "id": "north_school",
+      "name": "North School",
+      "x": 1.5,
+      "y": 4.5,
+      "aliases": [
+        "north school",
+        "north elementary",
+        "the school"
+      ]
+    },
+    {
+      "id": "main_st_north",
+      "name": "Main St bridge, north end",
+      "x": 4,
+      "y": 4,
+      "aliases": []
+    },
+    {
+      "id": "upriver_north",
+      "name": "Upriver bridge, north end",
+      "x": 8,
+      "y": 4,
+      "aliases": []
+    },
+    {
+      "id": "main_st_south",
+      "name": "Main St bridge, south end",
+      "x": 4,
+      "y": 3,
+      "aliases": []
+    },
+    {
+      "id": "elm_and_5th",
+      "name": "Elm St & 5th St",
+      "x": 2,
+      "y": 2,
+      "aliases": [
+        "elm st",
+        "elm and 5th",
+        "elm & 5th",
+        "calle elm"
+      ]
+    },
+    {
+      "id": "riverside_apts",
+      "name": "Riverside Apartments",
+      "x": 5.5,
+      "y": 2.2,
+      "aliases": [
+        "riverside apartments",
+        "riverside apts"
+      ]
+    },
+    {
+      "id": "pine_market",
+      "name": "Pine St Market",
+      "x": 7,
+      "y": 1.5,
+      "aliases": [
+        "pine market",
+        "pine st market",
+        "pine st"
+      ]
+    },
+    {
+      "id": "upriver_south",
+      "name": "Upriver bridge, south end",
+      "x": 8,
+      "y": 3,
+      "aliases": []
+    },
+    {
+      "id": "southgate_shelter",
+      "name": "Southgate Shelter",
+      "x": 4,
+      "y": 0.5,
+      "aliases": [
+        "southgate",
+        "the shelter"
+      ]
+    },
+    {
+      "id": "lowtown_depot",
+      "name": "Lowtown Ambulance Depot",
+      "x": 1,
+      "y": 0.5,
+      "aliases": [
+        "lowtown",
+        "ambulance depot"
+      ]
+    },
+    {
+      "id": "cedar_lane_park",
+      "name": "Cedar Lane Trailer Park",
+      "x": 9,
+      "y": 1,
+      "aliases": [
+        "cedar lane",
+        "cedar ln",
+        "trailer park"
+      ]
+    }
+  ],
+  "roads": [
+    {
+      "id": "station-rd",
+      "a": "fire_station_1",
+      "b": "oak_and_3rd",
+      "length": 2.2,
+      "aliases": [
+        "station rd",
+        "station road"
+      ]
+    },
+    {
+      "id": "oak-ave",
+      "a": "oak_and_3rd",
+      "b": "county_hospital",
+      "length": 2.0,
+      "aliases": [
+        "oak ave",
+        "oak avenue"
+      ]
+    },
+    {
+      "id": "school-ln",
+      "a": "fire_station_1",
+      "b": "north_school",
+      "length": 1.897,
+      "aliases": [
+        "school ln",
+        "school lane"
+      ]
+    },
+    {
+      "id": "school-connector",
+      "a": "north_school",
+      "b": "main_st_north",
+      "length": 2.804,
+      "aliases": []
+    },
+    {
+      "id": "third-st",
+      "a": "oak_and_3rd",
+      "b": "main_st_north",
+      "length": 2.348,
+      "aliases": [
+        "3rd st",
+        "third st"
+      ]
+    },
+    {
+      "id": "mill-rd",
+      "a": "county_hospital",
+      "b": "old_mill",
+      "length": 2.585,
+      "aliases": [
+        "mill rd",
+        "mill road"
+      ]
+    },
+    {
+      "id": "river-rd-north",
+      "a": "old_mill",
+      "b": "upriver_north",
+      "length": 1.718,
+      "aliases": [
+        "river rd",
+        "river road"
+      ]
+    },
+    {
+      "id": "hospital-dr",
+      "a": "county_hospital",
+      "b": "main_st_north",
+      "length": 2.348,
+      "aliases": [
+        "hospital dr",
+        "hospital drive"
+      ]
+    },
+    {
+      "id": "main-st-bridge",
+      "a": "main_st_north",
+      "b": "main_st_south",
+      "length": 1.0,
+      "aliases": [
+        "main st bridge",
+        "main street bridge",
+        "main bridge"
+      ]
+    },
+    {
+      "id": "upriver-bridge",
+      "a": "upriver_north",
+      "b": "upriver_south",
+      "length": 1.0,
+      "aliases": [
+        "upriver bridge"
+      ]
+    },
+    {
+      "id": "low-water-crossing",
+      "a": "north_school",
+      "b": "elm_and_5th",
+      "length": 3.314,
+      "aliases": [
+        "low water crossing"
+      ]
+    },
+    {
+      "id": "elm-st",
+      "a": "main_st_south",
+      "b": "elm_and_5th",
+      "length": 2.46,
+      "aliases": [
+        "elm st",
+        "elm street"
+      ]
+    },
+    {
+      "id": "main-st-south",
+      "a": "main_st_south",
+      "b": "riverside_apts",
+      "length": 1.785,
+      "aliases": []
+    },
+    {
+      "id": "pine-st",
+      "a": "riverside_apts",
+      "b": "pine_market",
+      "length": 1.821,
+      "aliases": [
+        "pine st"
+      ]
+    },
+    {
+      "id": "river-rd-south",
+      "a": "pine_market",
+      "b": "upriver_south",
+      "length": 2.073,
+      "aliases": [
+        "river rd south"
+      ]
+    },
+    {
+      "id": "fifth-st",
+      "a": "elm_and_5th",
+      "b": "lowtown_depot",
+      "length": 1.983,
+      "aliases": [
+        "5th st",
+        "fifth st"
+      ]
+    },
+    {
+      "id": "elm-southgate",
+      "a": "elm_and_5th",
+      "b": "southgate_shelter",
+      "length": 3.0,
+      "aliases": []
+    },
+    {
+      "id": "shelter-rd",
+      "a": "southgate_shelter",
+      "b": "riverside_apts",
+      "length": 2.494,
+      "aliases": [
+        "shelter rd"
+      ]
+    },
+    {
+      "id": "depot-rd",
+      "a": "southgate_shelter",
+      "b": "lowtown_depot",
+      "length": 3.0,
+      "aliases": [
+        "depot rd"
+      ]
+    },
+    {
+      "id": "cedar-ln",
+      "a": "pine_market",
+      "b": "cedar_lane_park",
+      "length": 2.474,
+      "aliases": [
+        "cedar ln",
+        "cedar lane"
+      ]
+    },
+    {
+      "id": "river-rd-east",
+      "a": "upriver_south",
+      "b": "cedar_lane_park",
+      "length": 2.46,
+      "aliases": []
+    }
+  ]
+}

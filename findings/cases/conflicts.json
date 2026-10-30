@@ -1,0 +1,30 @@
+{
+  "note": "Each set asks for the status of one road. Resolve with the rubric's conflict rules.",
+  "sets": [
+    {"id": "C1", "road_id": "main-st-bridge", "claims": [
+      {"source": "public", "time": "13:05", "text": "main st bridge is closed, cops blocking it"},
+      {"source": "responder", "time": "13:15", "text": "Engine 4: main st bridge open, crossed it just now"}
+    ]},
+    {"id": "C2", "road_id": "upriver-bridge", "claims": [
+      {"source": "official", "time": "13:12", "text": "EOC: upriver bridge closed, structural damage"},
+      {"source": "public", "time": "13:30", "text": "drove over the upriver bridge fine a minute ago"}
+    ]},
+    {"id": "C3", "road_id": "river-rd-north", "claims": [
+      {"source": "responder", "time": "13:20", "text": "River Rd closed at the mill, water over road"},
+      {"source": "responder", "time": "13:45", "text": "River Rd reopened, water receded"}
+    ]},
+    {"id": "C4", "road_id": "low-water-crossing", "claims": [
+      {"source": "public", "time": "13:02", "text": "low water crossing is open, just went through"},
+      {"source": "public", "time": "13:02", "text": "low water crossing under water, a car is stuck in it"}
+    ]},
+    {"id": "C5", "road_id": "elm-st", "claims": [
+      {"source": "responder", "time": "13:10", "text": "Medic 1: elm st clear"},
+      {"source": "public", "time": "13:25", "text": "elm st open still"},
+      {"source": "public", "time": "13:40", "text": "elm st now blocked by a fallen tree"}
+    ]},
+    {"id": "C6", "road_id": "upriver-bridge", "claims": [
+      {"source": "public", "time": "13:20", "text": "upriver bridge closed, barriers are up"},
+      {"source": "public", "time": "13:30", "text": "I think the upriver bridge may be open now?"}
+    ]}
+  ]
+}

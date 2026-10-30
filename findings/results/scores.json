@@ -1,0 +1,639 @@
+{
+  "reports": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 20,
+      "overall": 1.0,
+      "fields": {
+        "kind": 1.0,
+        "place": 1.0,
+        "people": 1.0,
+        "severity": 1.0,
+        "needs": 1.0,
+        "road_claims": 1.0
+      },
+      "severity_within_one": 1.0,
+      "invented_values": 0,
+      "seconds": 43.48642690037377
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 20,
+      "overall": 1.0,
+      "fields": {
+        "kind": 1.0,
+        "place": 1.0,
+        "people": 1.0,
+        "severity": 1.0,
+        "needs": 1.0,
+        "road_claims": 1.0
+      },
+      "severity_within_one": 1.0,
+      "invented_values": 0,
+      "seconds": 40.38262779987417
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 20,
+      "overall": 1.0,
+      "fields": {
+        "kind": 1.0,
+        "place": 1.0,
+        "people": 1.0,
+        "severity": 1.0,
+        "needs": 1.0,
+        "road_claims": 1.0
+      },
+      "severity_within_one": 1.0,
+      "invented_values": 0,
+      "seconds": 41.25932589941658
+    },
+    "algorithms / rules": {
+      "n": 20,
+      "overall": 1.0,
+      "fields": {
+        "kind": 1.0,
+        "place": 1.0,
+        "people": 1.0,
+        "severity": 1.0,
+        "needs": 1.0,
+        "road_claims": 1.0
+      },
+      "severity_within_one": 1.0,
+      "invented_values": 0,
+      "seconds": 0.004431799985468388
+    }
+  },
+  "reports (human subset)": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 20,
+      "overall": 1.0,
+      "fields": {
+        "kind": 1.0,
+        "place": 1.0,
+        "people": 1.0,
+        "severity": 1.0,
+        "needs": 1.0,
+        "road_claims": 1.0
+      },
+      "severity_within_one": 1.0,
+      "invented_values": 0,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 20,
+      "overall": 1.0,
+      "fields": {
+        "kind": 1.0,
+        "place": 1.0,
+        "people": 1.0,
+        "severity": 1.0,
+        "needs": 1.0,
+        "road_claims": 1.0
+      },
+      "severity_within_one": 1.0,
+      "invented_values": 0,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 20,
+      "overall": 1.0,
+      "fields": {
+        "kind": 1.0,
+        "place": 1.0,
+        "people": 1.0,
+        "severity": 1.0,
+        "needs": 1.0,
+        "road_claims": 1.0
+      },
+      "severity_within_one": 1.0,
+      "invented_values": 0,
+      "seconds": null
+    },
+    "algorithms / rules": {
+      "n": 20,
+      "overall": 1.0,
+      "fields": {
+        "kind": 1.0,
+        "place": 1.0,
+        "people": 1.0,
+        "severity": 1.0,
+        "needs": 1.0,
+        "road_claims": 1.0
+      },
+      "severity_within_one": 1.0,
+      "invented_values": 0,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 20,
+      "overall": 0.7333333333333334,
+      "fields": {
+        "kind": 0.75,
+        "place": 0.7,
+        "people": 0.9,
+        "severity": 0.4,
+        "needs": 0.85,
+        "road_claims": 0.8
+      },
+      "severity_within_one": 0.85,
+      "invented_values": 7,
+      "seconds": 946.6
+    }
+  },
+  "conflicts": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 6,
+      "accuracy": 1.0,
+      "seconds": 8.009288900298998
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 6,
+      "accuracy": 1.0,
+      "seconds": 8.634576600044966
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 6,
+      "accuracy": 1.0,
+      "seconds": 6.8157264003530145
+    },
+    "algorithms / rules": {
+      "n": 6,
+      "accuracy": 1.0,
+      "seconds": 6.109988316893578e-05
+    }
+  },
+  "conflicts (human subset)": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 6,
+      "accuracy": 1.0,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 6,
+      "accuracy": 1.0,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 6,
+      "accuracy": 1.0,
+      "seconds": null
+    },
+    "algorithms / rules": {
+      "n": 6,
+      "accuracy": 1.0,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 6,
+      "accuracy": 0.6666666666666666,
+      "seconds": 67.0
+    }
+  },
+  "routing": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 60,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 5.742532885992189e-18,
+      "seconds": 75.61761309951544
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 60,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 5.742532885992189e-18,
+      "seconds": 74.39161710022017
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 60,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 5.742532885992189e-18,
+      "seconds": 74.11352490028366
+    },
+    "algorithms / fewest_hops": {
+      "n": 60,
+      "optimal": 0.8333333333333334,
+      "invalid": 0.0,
+      "mean_extra_distance": 0.03886708160839358,
+      "seconds": 0.0005482998676598072
+    },
+    "algorithms / dijkstra": {
+      "n": 60,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 5.742532885992189e-18,
+      "seconds": 0.0005556000396609306
+    },
+    "algorithms / astar": {
+      "n": 60,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 5.742532885992189e-18,
+      "seconds": 0.0006138000171631575
+    }
+  },
+  "routing (human subset)": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 6,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 3.700743415417188e-17,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 6,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 3.700743415417188e-17,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 6,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 3.700743415417188e-17,
+      "seconds": null
+    },
+    "algorithms / fewest_hops": {
+      "n": 6,
+      "optimal": 0.8333333333333334,
+      "invalid": 0.0,
+      "mean_extra_distance": 0.0021929824561403763,
+      "seconds": null
+    },
+    "algorithms / dijkstra": {
+      "n": 6,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 3.700743415417188e-17,
+      "seconds": null
+    },
+    "algorithms / astar": {
+      "n": 6,
+      "optimal": 1.0,
+      "invalid": 0.0,
+      "mean_extra_distance": 3.700743415417188e-17,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 6,
+      "optimal": 0.6666666666666666,
+      "invalid": 0.0,
+      "mean_extra_distance": 0.026448110469315982,
+      "seconds": 254.7
+    }
+  },
+  "triage": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 20,
+      "exact": 1,
+      "pair_disagreement": 0.0,
+      "seconds": 23.213449499569833
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 20,
+      "exact": 1,
+      "pair_disagreement": 0.0,
+      "seconds": 23.73470940021798
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 20,
+      "exact": 1,
+      "pair_disagreement": 0.0,
+      "seconds": 23.06037350045517
+    },
+    "algorithms / rule": {
+      "n": 20,
+      "exact": 1,
+      "pair_disagreement": 0.0,
+      "seconds": 2.9899878427386284e-05
+    }
+  },
+  "triage (human subset)": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 6,
+      "exact": 1,
+      "pair_disagreement": 0.0,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 6,
+      "exact": 1,
+      "pair_disagreement": 0.0,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 6,
+      "exact": 1,
+      "pair_disagreement": 0.0,
+      "seconds": null
+    },
+    "algorithms / rule": {
+      "n": 6,
+      "exact": 1,
+      "pair_disagreement": 0.0,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 6,
+      "exact": 0.5,
+      "pair_disagreement": 0.1388888888888889,
+      "seconds": 100.3
+    }
+  },
+  "assignment": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 20,
+      "optimal": 1.0,
+      "mean_gap": 2.7755575615628914e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "seconds": 80.25518739968538
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 20,
+      "optimal": 1.0,
+      "mean_gap": 2.7755575615628914e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "seconds": 76.88264480046928
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 20,
+      "optimal": 1.0,
+      "mean_gap": 2.7755575615628914e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "seconds": 81.19443689938635
+    },
+    "algorithms / greedy_priority": {
+      "n": 20,
+      "optimal": 0.8,
+      "mean_gap": 0.16044892353132337,
+      "worst_gap": 2.2432302446739816,
+      "rule_violations": 0,
+      "seconds": 0.0014125998131930828
+    },
+    "algorithms / greedy_global": {
+      "n": 20,
+      "optimal": 0.4,
+      "mean_gap": 0.6819316976491463,
+      "worst_gap": 4.494487615690563,
+      "rule_violations": 0,
+      "seconds": 0.00113769993185997
+    },
+    "algorithms / hungarian": {
+      "n": 20,
+      "optimal": 1.0,
+      "mean_gap": 2.7755575615628914e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "seconds": 0.0013667999301105738
+    }
+  },
+  "assignment (human subset)": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 4,
+      "optimal": 1.0,
+      "mean_gap": -2.7755575615628914e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 4,
+      "optimal": 1.0,
+      "mean_gap": -2.7755575615628914e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 4,
+      "optimal": 1.0,
+      "mean_gap": -2.7755575615628914e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "seconds": null
+    },
+    "algorithms / greedy_priority": {
+      "n": 4,
+      "optimal": 0.5,
+      "mean_gap": 0.6067169555046785,
+      "worst_gap": 2.2432302446739816,
+      "rule_violations": 0,
+      "seconds": null
+    },
+    "algorithms / greedy_global": {
+      "n": 4,
+      "optimal": 0.25,
+      "mean_gap": 0.8174705527028663,
+      "worst_gap": 2.2432302446739816,
+      "rule_violations": 0,
+      "seconds": null
+    },
+    "algorithms / hungarian": {
+      "n": 4,
+      "optimal": 1.0,
+      "mean_gap": -2.7755575615628914e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 4,
+      "optimal": 0.0,
+      "mean_gap": 5.471807692881415,
+      "worst_gap": 17.201365888726283,
+      "rule_violations": 10,
+      "seconds": 170.5
+    }
+  },
+  "replanning": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 10,
+      "optimal": 1.0,
+      "mean_gap": -4.4408920985006264e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "mean_churn": 0.1,
+      "optimal_churn": 0.3,
+      "seconds": 42.536168799968436
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 10,
+      "optimal": 1.0,
+      "mean_gap": -4.4408920985006264e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "mean_churn": 0.1,
+      "optimal_churn": 0.3,
+      "seconds": 38.44220400019549
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 10,
+      "optimal": 0.9,
+      "mean_gap": 0.00149861565378977,
+      "worst_gap": 0.014986156537898143,
+      "rule_violations": 0,
+      "mean_churn": 0.3,
+      "optimal_churn": 0.3,
+      "seconds": 44.14657110022381
+    },
+    "algorithms / greedy_priority": {
+      "n": 10,
+      "optimal": 1.0,
+      "mean_gap": -4.4408920985006264e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "mean_churn": 0.3,
+      "optimal_churn": 0.3,
+      "seconds": 0.0006295999046415091
+    },
+    "algorithms / greedy_global": {
+      "n": 10,
+      "optimal": 0.4,
+      "mean_gap": 0.46658879490626237,
+      "worst_gap": 1.4746370540213478,
+      "rule_violations": 0,
+      "mean_churn": 1.8,
+      "optimal_churn": 0.3,
+      "seconds": 0.0005406998097896576
+    },
+    "algorithms / hungarian": {
+      "n": 10,
+      "optimal": 1.0,
+      "mean_gap": -4.4408920985006264e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "mean_churn": 0.3,
+      "optimal_churn": 0.3,
+      "seconds": 0.0006140000186860561
+    },
+    "algorithms / hungarian_sticky": {
+      "n": 10,
+      "optimal": 1.0,
+      "mean_gap": -4.4408920985006264e-17,
+      "worst_gap": 2.220446049250313e-16,
+      "rule_violations": 0,
+      "mean_churn": 0.1,
+      "optimal_churn": 0.3,
+      "seconds": 0.0006641000509262085
+    }
+  },
+  "replanning (human subset)": {
+    "ai muse-spark-1.3 (low) / run1": {
+      "n": 2,
+      "optimal": 1.0,
+      "mean_gap": -5.551115123125783e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "mean_churn": 0,
+      "optimal_churn": 0,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run2": {
+      "n": 2,
+      "optimal": 1.0,
+      "mean_gap": -5.551115123125783e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "mean_churn": 0,
+      "optimal_churn": 0,
+      "seconds": null
+    },
+    "ai muse-spark-1.3 (low) / run3": {
+      "n": 2,
+      "optimal": 0.5,
+      "mean_gap": 0.007493078268949016,
+      "worst_gap": 0.014986156537898143,
+      "rule_violations": 0,
+      "mean_churn": 1,
+      "optimal_churn": 0,
+      "seconds": null
+    },
+    "algorithms / greedy_priority": {
+      "n": 2,
+      "optimal": 1.0,
+      "mean_gap": -5.551115123125783e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "mean_churn": 0,
+      "optimal_churn": 0,
+      "seconds": null
+    },
+    "algorithms / greedy_global": {
+      "n": 2,
+      "optimal": 0.5,
+      "mean_gap": 0.7373185270106739,
+      "worst_gap": 1.4746370540213478,
+      "rule_violations": 0,
+      "mean_churn": 2,
+      "optimal_churn": 0,
+      "seconds": null
+    },
+    "algorithms / hungarian": {
+      "n": 2,
+      "optimal": 1.0,
+      "mean_gap": -5.551115123125783e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "mean_churn": 0,
+      "optimal_churn": 0,
+      "seconds": null
+    },
+    "algorithms / hungarian_sticky": {
+      "n": 2,
+      "optimal": 1.0,
+      "mean_gap": -5.551115123125783e-17,
+      "worst_gap": 0.0,
+      "rule_violations": 0,
+      "mean_churn": 0,
+      "optimal_churn": 0,
+      "seconds": null
+    },
+    "human / you": {
+      "n": 2,
+      "optimal": 0.0,
+      "mean_gap": 2.520151260240581,
+      "worst_gap": 3.794371199604366,
+      "rule_violations": 8,
+      "mean_churn": 4,
+      "optimal_churn": 0,
+      "seconds": 9.4
+    }
+  },
+  "consistency": {
+    "ai muse-spark-1.3 (low)": {
+      "reports": {
+        "identical": 1.0,
+        "n": 20,
+        "runs": 3
+      },
+      "conflicts": {
+        "identical": 1.0,
+        "n": 6,
+        "runs": 3
+      },
+      "routing": {
+        "identical": 1.0,
+        "n": 20,
+        "runs": 3
+      },
+      "triage": {
+        "identical": 1.0,
+        "n": 20,
+        "runs": 3
+      },
+      "assignment": {
+        "identical": 1.0,
+        "n": 20,
+        "runs": 3
+      },
+      "replanning": {
+        "identical": 0.9,
+        "n": 10,
+        "runs": 3
+      }
+    }
+  }
+}
