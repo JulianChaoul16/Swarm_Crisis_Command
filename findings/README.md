@@ -32,7 +32,7 @@ cases/
   answers/           answer keys; the human tester must not open this folder
 arms/
   algorithms.py      algorithm arm
-  human.py           (to do) terminal session that times the tester and saves answers
+  human.py           timed terminal quiz over a fixed subset; resumable
   ai_agent.py        (to do) model arm
 build_cases.py       writes town.json, scenarios.json and answers/scenarios.json
 oracle.py            brute-force answer keys (enumerates every path and every assignment)
@@ -107,7 +107,7 @@ Algorithm arm only. Full table: `results/summary.md`.
 
 ## Next steps
 
-1. Human arm: `arms/human.py`.
+1. Human arm: run `python -m findings.arms.human`, then `python -m findings.score`.
 2. AI arm: `arms/ai_agent.py`.
    - Same rubric and cases; JSON output.
    - Three runs per case, to measure consistency.
