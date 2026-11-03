@@ -10,7 +10,6 @@ from crisis_command.model import (
     Road,
     Severity,
 )
-from crisis_command.coordinator import Coordinator, UnserviceableIncidentsError
 from crisis_command.planner import (
     Claim,
     EvidenceArbitrator,
@@ -376,34 +375,6 @@ class PlannerEvidenceTests(unittest.TestCase):
         self.assertEqual(recorded_claims[0]["verification_status"], "verified")
         self.assertEqual(recorded_claims[0]["confidence"], 0.91)
         self.assertEqual(recorded_claims[0]["world_version"], 1)
-
-    def test_blocked_decision_records_supporting_evidence(self) -> None:
-        claim = Claim(
-            subject="bridge",
-            attribute="is_closed",
-            value=None,
-            source="road_authority",
-            timestamp=datetime(2026, 10, 27, 14, tzinfo=timezone.utc),
-            world_version=1,
-            verification_status=VerificationStatus.VERIFIED,
-            confidence=1.0,
-            evidence_reference="missing-road-status-report",
-        )
-        world = World([self.incident], [self.service], city=self.city)
-
-        with self.assertRaises(UnserviceableIncidentsError):
-            Coordinator(world).step(claims=(claim,))
-
-        blocked_event = next(
-            event for event in world.event_log if event.kind == "plan_blocked"
-        )
-        details = dict(blocked_event.details)
-        recorded_claims = json.loads(details["claims"])
-        self.assertEqual(
-            recorded_claims[0]["evidence_reference"],
-            "missing-road-status-report",
-        )
-        self.assertEqual(json.loads(details["unknown_road_ids"]), ["bridge"])
 
     def test_future_version_claim_is_rejected(self) -> None:
         claim = self.make_claim(

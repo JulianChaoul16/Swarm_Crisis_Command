@@ -1,4 +1,4 @@
-import type { ReplayData, ReportFields, RunSummary, WorldEvent, WorldState } from "./types";
+import type { ReportFields, WorldEvent, WorldState } from "./types";
 
 export class ApiError extends Error {
   constructor(
@@ -30,17 +30,11 @@ const post = <T>(path: string, body?: unknown) =>
 export const api = {
   state: () => request<WorldState>("/state"),
   events: (limit = 200) => request<WorldEvent[]>(`/events?limit=${limit}`),
-  runs: () => request<RunSummary[]>("/runs"),
-  replay: (runId: string) => request<ReplayData>(`/runs/${runId}/replay`),
   reset: () => post<WorldState>("/reset"),
-  advance: () => post<WorldState>("/clock/advance"),
   submitReport: (content: string, source: string, fields?: Partial<ReportFields>) =>
     post<WorldState>("/reports", { content, source, fields }),
-  clarifyReport: (id: string, fields: Partial<ReportFields>) =>
-    post<WorldState>(`/reports/${id}/clarify`, { fields }),
   confirmReport: (id: string) => post<WorldState>(`/reports/${id}/confirm`),
   rejectReport: (id: string, reason: string) => post<WorldState>(`/reports/${id}/reject`, { reason }),
-  injectDisruption: (key: string) => post<WorldState>(`/scenario/disruptions/${key}`),
   propose: () => post<WorldState>("/plans/propose"),
   approve: (planId: string, worldVersion: number) =>
     post<WorldState>(`/plans/${planId}/approve`, { world_version: worldVersion }),

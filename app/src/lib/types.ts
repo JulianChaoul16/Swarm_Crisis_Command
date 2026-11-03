@@ -4,6 +4,7 @@ export type LngLat = [number, number];
 
 export type Incident = {
   id: string;
+  place: string | null;
   kind: string;
   severity: "low" | "medium" | "high" | "critical";
   severity_level: number;
@@ -19,6 +20,7 @@ export type Incident = {
 export type Service = {
   id: string;
   name: string;
+  place: string | null;
   capabilities: string[];
   speed: number;
   capacity: number;
@@ -138,22 +140,4 @@ export type WorldEvent = {
   entity_ids: string[];
   reason: string;
   details: Record<string, string>;
-};
-
-export type RunSummary = { id: string; scenario: string; started_at: string; event_count: number };
-
-export type ReplaySnapshot = {
-  version: number;
-  tick: number;
-  incidents: (Pick<Incident, "id" | "kind" | "severity" | "severity_level" | "status" | "position"> & {
-    required_services: string[];
-  })[];
-  services: Pick<Service, "id" | "name" | "available" | "position" | "route">[];
-  roads: Pick<Road, "id" | "is_closed" | "path">[];
-};
-
-export type ReplayData = {
-  run: RunSummary;
-  events: WorldEvent[];
-  snapshots: ReplaySnapshot[];
 };

@@ -3,8 +3,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Crisis Command",
-  description: "Emergency operations dashboard for the Crisis Command simulation.",
+  title: "Crisis Command Swarm",
+  description: "A human-led agent swarm for Richmond flood operations (simulation)."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

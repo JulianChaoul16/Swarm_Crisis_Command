@@ -1,0 +1,140 @@
+# CRISIS COMMAND - REBUILD INSTRUCTIONS FOR CODING AGENT
+
+You are rebuilding an existing hackathon project. Do NOT start from scratch. First, audit the current codebase, preserve the existing stack (framework, language, map library), remove bloat, then implement the spec below.
+
+## 1. PRODUCT DEFINITION
+
+**Name:** Crisis Command Swarm
+**Tagline:** A human-led agent swarm for Richmond flood operations. The swarm triages, humans decide.
+
+**User:** Emergency Operations Manager in Richmond, VA during a James River / Shockoe Bottom flash flood.
+**Core Workflow (ONE workflow only):** Detect -> Prioritize -> Decide -> Dispatch -> Communicate
+**Core Promise:** Make the first critical decision in 90 seconds instead of 47 minutes.
+
+If a feature does not support this workflow, delete or hide it.
+
+## 2. NON-NEGOTIABLE UI FIX
+
+Replace the current confusing UI with 3 panels ONLY. No extra tabs, settings, analytics charts, or generic chat history.
+
+**Layout:**
+*   **Top Bar:** Crisis Command Swarm - Richmond Flood | [ START DEMO SCENARIO ] button (large, primary) | Live James River Gauge: 11.2ft Rising
+*   **Left Panel (30%): Swarm Incident Queue**
+    Ranked list, highest severity on top. Each card shows: severity score, location, type, people_at_risk, agent consensus pills.
+*   **Center Panel (40%): Live Map of Richmond**
+    Focus: Shockoe Bottom, Dock St, 14th St Bridge, E Main St. Layers: incident pins, SAM 3.1 flood mask (blue overlay), road open/closed status, shelters, response units.
+*   **Right Panel (30%): Swarm Recommendation + Swarm Activity**
+    Top: Recommendation Card. Bottom: Live Swarm Activity Feed.
+
+**Recommendation Card Must Contain:**
+```
+RECOMMEND: [Specific action, e.g., Close Dock St, Dispatch Swift Water Team 2 via 14th St Bridge]
+WHY: [2-3 bullet reasons with sources]
+CONFIDENCE: 89%
+TRADEOFF: [What this delays / costs]
+[ Approve & Dispatch ] [ Simulate Alternative ] [ Reject ]
+```
+Below approval: Generated Public Alert in English and Spanish.
+
+**5-Second Test:** A muted user must be able to point to the most urgent incident and the recommended action. If not, make those elements larger and delete something else.
+
+Label every AI feature with model pills in the UI: `[Muse Spark]` `[SAM 3.1]` `[Muse Glimmer]` etc.
+
+## 3. SWARM ARCHITECTURE (Not a Pipeline)
+
+Do NOT build A -> B -> C. Build a shared blackboard system.
+
+**Implementation:**
+1.  Create a central `IncidentBoard` state/store. All agents read from and write to it.
+2.  Create an event bus / pub-sub. When one agent updates the board, other agents react automatically.
+3.  When a new incident arrives, call `spawn_incident_swarm(incident_id)` which runs the agents below in parallel for that one incident.
+4.  Final severity is a **consensus vote**, not one model's output. Show all 3 votes on the card:
+    `Triage: 82 | Vision: 96 | Logistics: 91 = Final: 94`
+
+**Swarm Activity Feed:** Log every agent action with timestamp to the UI:
+`[12:41:03] Vision Agent (SAM 3.1): Dock St now 85% flooded`
+`[12:41:04] Triage Agent (Muse Spark): Incident #14 severity 72 -> 94`
+
+## 4. AGENTS & META MODEL ASSIGNMENTS
+
+Use Meta Model API as the central hub. Create ONE file: `meta_api.py` (or `metaApi.ts`) where all model calls live. Use env var `META_API_KEY`. Every function must have a cached/mock fallback for Demo Mode.
+
+**Agent 1: Listener Agent**
+Model: **Muse Voice Transcribe**
+Job: Transcribe 911/radio audio to text in real-time. Show live transcript in UI.
+
+**Agent 2: Triage Agent**
+Models: **Muse Spark (API)** for reasoning, **Muse Spark Open (open weights, local)** for PII redaction first.
+Job: Convert messy text/transcript into strict JSON only:
+```json
+{
+  "location": "E 18th St & E Main St, Shockoe Bottom",
+  "type": "stranded_vehicle",
+  "people_at_risk": 4,
+  "vulnerable": true,
+  "severity_score": 82,
+  "summary": "Bus taking on water, road impassable"
+}
+```
+Instruct code to explain: Spark Open runs locally so sensitive data is redacted before cloud calls.
+
+**Agent 3: Vision Agent (Wow Factor)**
+Models: **SAM 3.1** for segmentation, **Muse Wonder** for multimodal reasoning.
+Job: 
+- SAM 3.1 prompt with text: `"flood water"`, `"stranded vehicle"`, `"dry passable road"`
+- Render returned mask as blue GeoJSON/polygon overlay on map.
+- Send image + mask to Muse Wonder to estimate water depth and passability. Return confidence.
+UI Badge: `SAM 3.1: Water detected | Wonder: Est. 18-24in, Impassable (89%)`
+
+**Agent 4: Logistics / Planner Agent**
+Model: **Muse Glimmer (open weights, local RAG)**
+Job: Load Richmond-specific knowledge ONLY: City of Richmond Flood Response Plan (create sample doc), shelter list (Arthur Ashe Center, etc.), USGS Westham Gauge trigger rules (e.g., evacuation trigger = 12ft). Provide cited recommendation.
+Story to implement in code comments/UI: Glimmer runs locally, so it works if EOC loses internet. Always show citation: `Per Richmond Plan p.42...`
+
+**Agent 5: Command & Comms Agent**
+Models: **Muse Spark (Orchestrator)** + **Muse Image**
+Job:
+- Spark synthesizes all agent votes into the Recommendation Card.
+- After human clicks Approve, Muse Image generates a clean public alert graphic from the map view (evacuation zone map card for social/SMS).
+- Generate alert text in English and Spanish, 6th-grade reading level.
+
+## 5. DEMO MODE (CRITICAL FOR JUDGING)
+
+Build `START DEMO SCENARIO` that is 100% reliable offline.
+
+Create `/demo_cache/richmond_flood_scenario.json` with seeded timeline:
+- T+0: James River gauge 11.2ft. 5 initial incidents.
+- T+15s: New audio report arrives (pre-cached transcript) -> creates Incident #14, severity 94 in Shockoe Bottom.
+- T+30s: Pre-cached citizen photo loads -> SAM mask appears -> road Dock St turns red/closed.
+- T+45s: Agents re-vote, re-rank queue, generate recommendation via 14th St Bridge.
+
+Cache: transcripts, SAM masks (as GeoJSON), Wonder estimates, Muse Image alerts, and all LLM JSON responses. Live APIs are for exploration, Demo Mode uses cache.
+
+## 6. EXECUTION PLAN - DO IN THIS ORDER
+
+**Phase 1: Simplify** - Audit repo, delete extra pages/widgets, implement 3-panel layout.
+**Phase 2: Blackboard** - Implement IncidentBoard, event bus, spawn_incident_swarm, Activity Feed.
+**Phase 3: Model Layer** - Create meta_api hub with 6 model functions + fallbacks. Add model pills to UI.
+**Phase 4: Demo Scenario** - Seed Richmond data, cache results, wire START DEMO button.
+**Phase 5: Docs** - Update README.md with: architecture diagram, model table from section 4, eval table (test Triage on 20 sample incidents, report accuracy), and pilot story for City of Richmond.
+**Phase 6: Build Log** - Create `BUILD_LOG.md` and log every major feature you build as: "Built with Muse Code: [feature + tests generated]".
+
+## 7. RULES
+
+1.  Human-in-the-loop always. Swarm never dispatches without Approve click.
+2.  Show confidence + sources everywhere. No black-box recommendations.
+3.  Never build login, settings, generic chatbot, or multiple disaster types. Richmond Flood ONLY.
+4.  If a Meta API call fails, fallback to cache silently and log to Activity Feed.
+5.  Commit after each Phase with a clear message.
+
+## 8. ACCEPTANCE CRITERIA
+
+Project is done when:
+[ ] User can run Demo Scenario end-to-end in <3 mins with no typing.
+[ ] All 7 touchpoints are visible in UI/Code: Muse Spark, Muse Wonder, Muse Image, Muse Voice Transcribe, SAM 3.1, Muse Glimmer, Muse Spark Open, and Muse Code in BUILD_LOG.
+[ ] Severity shows 3-agent consensus vote.
+[ ] SAM 3.1 mask renders on Richmond map.
+[ ] Approve button generates English + Spanish alert.
+[ ] README explains Impact: who (Richmond Ops Manager), quantified benefit (90s vs 47min), and Meta tooling creativity.
+
+Start with Phase 1 audit and report what you will delete before writing code.

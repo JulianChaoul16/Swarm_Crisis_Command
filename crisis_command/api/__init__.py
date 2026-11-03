@@ -1,5 +1,4 @@
-"""HTTP API exposing the Crisis Command simulation to the dashboard."""
+"""HTTP API for the dashboard. Run `crisis_command.api.server:app`.
 
-from .server import app
-
-__all__ = ["app"]
+The server is not imported here: importing it starts the live session.
+"""

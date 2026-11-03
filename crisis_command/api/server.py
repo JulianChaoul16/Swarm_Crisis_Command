@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from ..operations import CommandError, StaleApprovalError
-from .serializers import serialize_event, serialize_replay, serialize_state
+from .serializers import serialize_event, serialize_state
 from .session import service
 
 app = FastAPI(title="Crisis Command API")
@@ -25,9 +25,6 @@ class ReportCreate(BaseModel):
     # Operator-entered fields; omit to request model extraction.
     fields: dict[str, Any] | None = None
 
-
-class ReportClarify(BaseModel):
-    fields: dict[str, Any]
 
 
 class Decision(BaseModel):
@@ -71,40 +68,15 @@ def get_events(limit: int = 200) -> list[dict[str, Any]]:
     return [serialize_event(event) for event in reversed(events)]
 
 
-@app.get("/api/runs")
-def list_runs() -> list[dict[str, Any]]:
-    return service.store.runs()
-
-
-@app.get("/api/runs/{run_id}/replay")
-def replay(run_id: str) -> dict[str, Any]:
-    data = serialize_replay(service, run_id)
-    if not data:
-        raise HTTPException(404, f"Unknown run {run_id}.")
-    return data
-
-
 @app.post("/api/reset")
 def reset() -> dict[str, Any]:
     service.reset()
     return _state()
 
 
-@app.post("/api/clock/advance")
-def advance_clock() -> dict[str, Any]:
-    service.advance_clock()
-    return _state()
-
-
 @app.post("/api/reports")
 def submit_report(payload: ReportCreate) -> dict[str, Any]:
     service.submit_report(payload.content, payload.source, payload.occurred_at, payload.fields)
-    return _state()
-
-
-@app.post("/api/reports/{report_id}/clarify")
-def clarify_report(report_id: str, payload: ReportClarify) -> dict[str, Any]:
-    service.clarify_report(report_id, payload.fields)
     return _state()
 
 
@@ -117,12 +89,6 @@ def confirm_report(report_id: str) -> dict[str, Any]:
 @app.post("/api/reports/{report_id}/reject")
 def reject_report(report_id: str, payload: Decision) -> dict[str, Any]:
     service.reject_report(report_id, payload.reason)
-    return _state()
-
-
-@app.post("/api/scenario/disruptions/{key}")
-def inject_disruption(key: str) -> dict[str, Any]:
-    service.inject_disruption(key)
     return _state()
 
 

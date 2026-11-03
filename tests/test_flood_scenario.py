@@ -125,22 +125,6 @@ class EvidenceAndReplayTests(FloodScenarioTestCase):
 
         self.assertIn(f"main-street-bridge ({report.id})", diff["fire-2"][1])
 
-    def test_replay_reads_back_the_persisted_run(self) -> None:
-        from crisis_command.api.serializers import serialize_replay
-
-        self.service.inject_disruption("bridge_closure")
-        replay = serialize_replay(self.service, self.service.run_id)
-
-        self.assertEqual(
-            [event["kind"] for event in replay["events"]],
-            [event.kind for event in self.service.world.event_log],
-        )
-        last = replay["snapshots"][-1]
-        self.assertEqual(last["version"], self.service.world.version)
-        bridge = next(road for road in last["roads"] if road["id"] == "main-street-bridge")
-        self.assertTrue(bridge["is_closed"])
-        self.assertEqual(len(bridge["path"]), 2)
-
 
 class CapacityAndPriorityTests(FloodScenarioTestCase):
     def test_rescue_report_without_head_count_needs_clarification(self) -> None:

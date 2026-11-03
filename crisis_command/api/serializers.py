@@ -9,7 +9,8 @@ import networkx as nx
 from ..model import City, Coordinate, EmergencyService, Incident, IncidentStatus, Road
 from ..operations import CommandService, PlanProposal, Report
 from ..simulation import WorldEvent
-from .geo import to_line, to_lng_lat
+from ..operations.scenario import FLOOD_PLACES
+from .geo import LABELS, to_line, to_lng_lat
 
 
 def _coordinate(point: Coordinate) -> dict[str, float]:
@@ -20,9 +21,11 @@ def serialize_incident(
     incident: Incident,
     services: list[EmergencyService],
     reported_tick: int,
+    place: str | None = None,
 ) -> dict[str, Any]:
     return {
         "id": incident.id,
+        "place": place,
         "kind": incident.kind,
         "severity": incident.severity.name.lower(),
         "severity_level": int(incident.severity),
@@ -58,10 +61,12 @@ def serialize_service(
     service: EmergencyService,
     incidents_by_id: dict[str, Incident],
     city: City | None,
+    place: str | None = None,
 ) -> dict[str, Any]:
     return {
         "id": service.id,
         "name": service.name,
+        "place": place,
         "capabilities": sorted(service.capabilities),
         "speed": service.speed,
         "capacity": service.capacity,
@@ -163,66 +168,6 @@ def serialize_event(event: WorldEvent) -> dict[str, Any]:
     }
 
 
-def serialize_replay(service: CommandService, run_id: str) -> dict[str, Any]:
-    """Recorded events and world snapshots for one run, projected for the map."""
-    run = next((run for run in service.store.runs() if run["id"] == run_id), None)
-    if run is None:
-        return {}
-    # Road geometry comes from the scenario; snapshots record only road status.
-    geometry = (
-        {road.id: to_line([road.start, road.end]) for road in service.world.city.roads}
-        if run["scenario"] == service.scenario.name and service.world.city is not None
-        else {}
-    )
-    severity_levels = {"low": 1, "medium": 2, "high": 3, "critical": 4}
-    snapshots = []
-    for snapshot in service.store.snapshots(run_id):
-        world = snapshot["world"]
-        snapshots.append(
-            {
-                "version": snapshot["version"],
-                "tick": snapshot["tick"],
-                "incidents": [
-                    {
-                        **incident,
-                        "severity_level": severity_levels[incident["severity"]],
-                        "position": to_lng_lat(Coordinate(*incident["location"])),
-                    }
-                    for incident in world["incidents"]
-                ],
-                "services": [
-                    {
-                        **unit,
-                        "available": unit["assigned_incident_id"] is None,
-                        "position": to_lng_lat(Coordinate(*unit["location"])),
-                        "route": None,
-                    }
-                    for unit in world["services"]
-                ],
-                "roads": [
-                    {**road, "path": geometry[road["id"]]}
-                    for road in world["roads"]
-                    if road["id"] in geometry
-                ],
-            }
-        )
-    events = [
-        {
-            "sequence": row["sequence"],
-            "tick": None,
-            "version": row["world_version"],
-            "kind": row["event_type"],
-            "actor": row["actor"],
-            "recorded_at": row["occurred_at"],
-            "entity_ids": json.loads(row["entity_ids_json"]),
-            "reason": row["message"],
-            "details": json.loads(row["payload_json"]),
-        }
-        for row in service.store.events(run_id)
-    ]
-    return {"run": run, "events": events, "snapshots": snapshots}
-
-
 def _disruption_in_effect(fields: dict[str, Any], world) -> bool:
     if fields.get("report_type") != "road_status" or world.city is None:
         return False
@@ -241,6 +186,7 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
         if event.kind == "incident_added"
     }
     current = service.current_plan
+    place_names = {point: name for name, point in service.scenario.places.items()}
     return {
         "simulation": True,
         "run_id": service.run_id,
@@ -253,16 +199,21 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
             incident.status == IncidentStatus.RESOLVED for incident in incidents
         ),
         "incidents": [
-            serialize_incident(incident, services, reported_ticks.get(incident.id, 0))
+            serialize_incident(incident, services, reported_ticks.get(incident.id, 0),
+                               place_names.get(incident.location))
             for incident in incidents
         ],
         "services": [
-            serialize_service(service_, incidents_by_id, world.city) for service_ in services
+            serialize_service(service_, incidents_by_id, world.city, place_names.get(service_.location))
+            for service_ in services
         ],
         "roads": [serialize_road(road) for road in world.city.roads] if world.city else [],
         "places": sorted(service.scenario.places),
         "priority_rule": service.planner.priority_rule,
+        # On the satellite map the real river is visible; only its name is drawn.
         "annotations": [
+            {"label": label, "path": [point]} for label, point in LABELS.items()
+        ] if service.scenario.places is FLOOD_PLACES else [
             {"label": label, "path": to_line(points)}
             for label, points in service.scenario.annotations
         ],

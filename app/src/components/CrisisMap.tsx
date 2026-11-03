@@ -4,21 +4,52 @@ import { useEffect, useRef, useState } from "react";
 import type { GeoJSONSource, Map as MapLibreMap, Marker, StyleSpecification } from "maplibre-gl";
 import type { Incident, LngLat, Road, Service } from "@/lib/types";
 
-// The road graph renders on a plain background with no network access. The street
-// basemap is optional context only and is labeled illustrative in the UI.
+// Without network access the road graph renders on a plain background. With it, the
+// basemap is Esri World Imagery satellite tiles of Richmond, dimmed so overlays read.
 const OFFLINE_STYLE: StyleSpecification = {
   version: 8,
   sources: {},
-  layers: [{ id: "background", type: "background", paint: { "background-color": "#eef2f6" } }],
+  layers: [{ id: "background", type: "background", paint: { "background-color": "#0d1424" } }],
 };
-const BASEMAP_STYLE = "https://tiles.openfreemap.org/styles/positron";
+const BASEMAP_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    satellite: {
+      type: "raster",
+      tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution: "Imagery © Esri, Maxar, Earthstar Geographics · Streets © OpenStreetMap contributors",
+    },
+  },
+  layers: [
+    { id: "background", type: "background", paint: { "background-color": "#0d1424" } },
+    { id: "satellite", type: "raster", source: "satellite", paint: { "raster-brightness-max": 0.7, "raster-saturation": -0.2 } },
+  ],
+};
 const OWN = "cc-";
 const LABEL_MAX = 24;
 const shorten = (text: string) => (text.length > LABEL_MAX ? `${text.slice(0, LABEL_MAX - 1)}…` : text);
 
+// Unit colors by service type, shared with the legend.
+export const UNIT_COLORS: Record<string, string> = {
+  fire: "#ef4444",
+  police: "#3b82f6",
+  medical: "#22c55e",
+  rescue: "#f97316",
+  utility: "#eab308",
+};
+const unitKind = (capabilities: string[]) => capabilities.find((c) => c in UNIT_COLORS) ?? "other";
+const OUT_OF_SERVICE = "#64748b";
+const KIND_COLOR = ["match", ["get", "kind"], ...Object.entries(UNIT_COLORS).flat(), "out", OUT_OF_SERVICE, "#cbd5e1"] as unknown as string;
+
+// Dispatched units drive their route on the map. The pace is time-compressed for display;
+// arrival times in the plan come from the planner, not from this animation.
+const DISPLAY_METRES_PER_SECOND = 140;
+
 export type MapData = {
   incidents: Pick<Incident, "id" | "kind" | "severity" | "severity_level" | "status" | "position">[];
-  services: Pick<Service, "id" | "name" | "available" | "position" | "route">[];
+  services: (Pick<Service, "id" | "name" | "capabilities" | "available" | "position" | "route"> & { out_of_service?: boolean })[];
   roads: Pick<Road, "id" | "is_closed" | "path">[];
   proposedRoutes?: { service_id: string; route: LngLat[] }[];
   annotations?: { label: string; path: LngLat[] }[];
@@ -33,6 +64,8 @@ type Props = {
 };
 
 type Collection = GeoJSON.FeatureCollection;
+type Trip = { key: string; route: LngLat[]; totals: number[]; started: number };
+
 const line = (coordinates: LngLat[], properties: Record<string, unknown>): GeoJSON.Feature => ({
   type: "Feature",
   properties,
@@ -43,17 +76,37 @@ const point = (coordinates: LngLat, properties: Record<string, unknown>): GeoJSO
   properties,
   geometry: { type: "Point", coordinates },
 });
+const collection = (features: GeoJSON.Feature[]): Collection => ({ type: "FeatureCollection", features });
 
-function toGeoJson(data: MapData): Record<string, Collection> {
-  const collection = (features: GeoJSON.Feature[]): Collection => ({ type: "FeatureCollection", features });
+function metres([lng1, lat1]: LngLat, [lng2, lat2]: LngLat) {
+  const dx = (lng2 - lng1) * 111320 * Math.cos((lat1 * Math.PI) / 180);
+  const dy = (lat2 - lat1) * 110540;
+  return Math.hypot(dx, dy);
+}
+
+function newTrip(route: LngLat[], started: number): Trip {
+  const totals = [0];
+  for (let i = 1; i < route.length; i++) totals.push(totals[i - 1] + metres(route[i - 1], route[i]));
+  return { key: `${route[0]}|${route[route.length - 1]}|${route.length}`, route, totals, started };
+}
+
+/** Where a trip is now, and the part of its route still ahead. */
+function tripState(trip: Trip, now: number): { at: LngLat; ahead: LngLat[] } {
+  const length = trip.totals[trip.totals.length - 1];
+  const travelled = Math.min(length, ((now - trip.started) / 1000) * DISPLAY_METRES_PER_SECOND);
+  let index = 1;
+  while (index < trip.route.length - 1 && trip.totals[index] < travelled) index++;
+  const [a, b] = [trip.route[index - 1], trip.route[index]];
+  const span = trip.totals[index] - trip.totals[index - 1] || 1;
+  const share = Math.min(1, Math.max(0, (travelled - trip.totals[index - 1]) / span));
+  const at: LngLat = [a[0] + (b[0] - a[0]) * share, a[1] + (b[1] - a[1]) * share];
+  return { at, ahead: [at, ...trip.route.slice(index)] };
+}
+
+function staticGeoJson(data: MapData): Record<string, Collection> {
   return {
     [`${OWN}annotations`]: collection((data.annotations ?? []).map((item) => line(item.path, { label: item.label }))),
     [`${OWN}roads`]: collection(data.roads.map((road) => line(road.path, { id: road.id, closed: road.is_closed }))),
-    [`${OWN}routes`]: collection(
-      data.services
-        .filter((service) => service.route && service.route.length > 1)
-        .map((service) => line(service.route!, { id: service.id })),
-    ),
     [`${OWN}proposed`]: collection(
       (data.proposedRoutes ?? [])
         .filter((item) => item.route.length > 1)
@@ -64,16 +117,12 @@ function toGeoJson(data: MapData): Record<string, Collection> {
         point(incident.position, { id: incident.id, status: incident.status, severity: incident.severity_level }),
       ),
     ),
-    [`${OWN}services`]: collection(
-      data.services.map((service) => point(service.position, { id: service.id, available: service.available })),
-    ),
   };
 }
 
 function addOwnLayers(map: MapLibreMap) {
-  const empty: Collection = { type: "FeatureCollection", features: [] };
   for (const name of ["annotations", "roads", "routes", "proposed", "incidents", "services"]) {
-    if (!map.getSource(`${OWN}${name}`)) map.addSource(`${OWN}${name}`, { type: "geojson", data: empty });
+    if (!map.getSource(`${OWN}${name}`)) map.addSource(`${OWN}${name}`, { type: "geojson", data: collection([]) });
   }
   const layers: Parameters<MapLibreMap["addLayer"]>[0][] = [
     {
@@ -81,22 +130,33 @@ function addOwnLayers(map: MapLibreMap) {
       type: "line",
       source: `${OWN}annotations`,
       layout: { "line-cap": "round" },
-      paint: { "line-color": "#93c5fd", "line-width": 18, "line-opacity": 0.55 },
+      paint: { "line-color": "#1d4ed8", "line-width": 18, "line-opacity": 0.35 },
     },
+    // The scenario's road network, faint so the imagery shows through.
     {
       id: `${OWN}roads`,
       type: "line",
       source: `${OWN}roads`,
       filter: ["==", ["get", "closed"], false],
-      layout: { "line-cap": "round" },
-      paint: { "line-color": "#64748b", "line-width": 5 },
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": "#e2e8f0", "line-width": 2.5, "line-opacity": 0.45 },
+    },
+    // Closed roads: blacked out, with a pale edge so they read on dark imagery.
+    {
+      id: `${OWN}roads-closed-edge`,
+      type: "line",
+      source: `${OWN}roads`,
+      filter: ["==", ["get", "closed"], true],
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": "#f8fafc", "line-width": 10, "line-opacity": 0.75 },
     },
     {
       id: `${OWN}roads-closed`,
       type: "line",
       source: `${OWN}roads`,
       filter: ["==", ["get", "closed"], true],
-      paint: { "line-color": "#dc2626", "line-width": 5, "line-dasharray": [1.2, 1] },
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": "#000000", "line-width": 7 },
     },
     {
       id: `${OWN}roads-selected`,
@@ -111,41 +171,59 @@ function addOwnLayers(map: MapLibreMap) {
       source: `${OWN}roads`,
       paint: { "line-color": "#000", "line-width": 18, "line-opacity": 0 },
     },
+    // Proposed routes: dashed white until a person approves the plan.
     {
-      id: `${OWN}routes`,
+      id: `${OWN}proposed-casing`,
       type: "line",
-      source: `${OWN}routes`,
+      source: `${OWN}proposed`,
       layout: { "line-cap": "round", "line-join": "round" },
-      paint: { "line-color": "#2563eb", "line-width": 3.5, "line-opacity": 0.9 },
+      paint: { "line-color": "#0a0f1c", "line-width": 7, "line-opacity": 0.7 },
     },
     {
       id: `${OWN}proposed`,
       type: "line",
       source: `${OWN}proposed`,
       layout: { "line-join": "round" },
-      paint: { "line-color": "#7c3aed", "line-width": 3, "line-dasharray": [2, 1.5], "line-opacity": 0.85 },
+      paint: { "line-color": "#f8fafc", "line-width": 3.5, "line-dasharray": [2, 1.2] },
     },
+    // Dispatched routes: the road still ahead of each moving unit, in the unit's color.
+    {
+      id: `${OWN}routes-casing`,
+      type: "line",
+      source: `${OWN}routes`,
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": "#0a0f1c", "line-width": 8, "line-opacity": 0.8 },
+    },
+    {
+      id: `${OWN}routes`,
+      type: "line",
+      source: `${OWN}routes`,
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": KIND_COLOR, "line-width": 4.5 },
+    },
+    // Incidents: rings, so they never read as a unit.
     {
       id: `${OWN}incidents`,
       type: "circle",
       source: `${OWN}incidents`,
       paint: {
-        "circle-radius": ["+", 5, ["*", 2, ["get", "severity"]]],
-        "circle-color": ["match", ["get", "status"], "open", "#dc2626", "assigned", "#d97706", "#16a34a"],
-        "circle-opacity": 0.9,
-        "circle-stroke-color": "#fff",
-        "circle-stroke-width": 2,
+        "circle-radius": ["+", 7, ["*", 2, ["get", "severity"]]],
+        "circle-color": ["match", ["get", "status"], "open", "#ef4444", "assigned", "#f59e0b", "#94a3b8"],
+        "circle-opacity": 0.25,
+        "circle-stroke-color": ["match", ["get", "status"], "open", "#ef4444", "assigned", "#f59e0b", "#94a3b8"],
+        "circle-stroke-width": 3,
       },
     },
+    // Units: solid dots colored by type; a white ring marks one out on a mission.
     {
       id: `${OWN}services`,
       type: "circle",
       source: `${OWN}services`,
       paint: {
-        "circle-radius": 6,
-        "circle-color": ["case", ["get", "available"], "#0f172a", "#2563eb"],
-        "circle-stroke-color": "#fff",
-        "circle-stroke-width": 2,
+        "circle-radius": 7,
+        "circle-color": KIND_COLOR,
+        "circle-stroke-color": ["case", ["get", "available"], "#0a0f1c", "#ffffff"],
+        "circle-stroke-width": ["case", ["get", "available"], 2, 3],
       },
     },
   ];
@@ -157,12 +235,15 @@ export default function CrisisMap({ data, basemap, onBasemapError, selectedRoadI
   const mapRef = useRef<MapLibreMap | null>(null);
   const libRef = useRef<typeof import("maplibre-gl") | null>(null);
   const markers = useRef(new Map<string, Marker>());
+  const trips = useRef(new Map<string, Trip>());
+  const dataRef = useRef<MapData | null>(data);
   const fitted = useRef(false);
   const callbacks = useRef({ onSelectRoad, onBasemapError });
   const basemapRef = useRef(basemap);
   const [ready, setReady] = useState(0);
   callbacks.current = { onSelectRoad, onBasemapError };
   basemapRef.current = basemap;
+  dataRef.current = data;
 
   useEffect(() => {
     let cancelled = false;
@@ -177,9 +258,9 @@ export default function CrisisMap({ data, basemap, onBasemapError, selectedRoadI
       maplibregl.setWorkerUrl(new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).href);
       const instance = new maplibregl.Map({
         container: container.current,
-        style: OFFLINE_STYLE,
-        center: [-77.43, 37.545],
-        zoom: 13.5,
+        style: basemapRef.current ? BASEMAP_STYLE : OFFLINE_STYLE,
+        center: [-77.435, 37.533],
+        zoom: 14,
         attributionControl: { compact: true },
       });
       instance.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
@@ -217,7 +298,7 @@ export default function CrisisMap({ data, basemap, onBasemapError, selectedRoadI
     };
   }, []);
 
-  // Switch between the offline style and the optional basemap, keeping our layers.
+  // Switch between the offline style and the satellite basemap, keeping our layers.
   useEffect(() => {
     const map = mapRef.current;
     if (!ready || !map) return;
@@ -234,40 +315,101 @@ export default function CrisisMap({ data, basemap, onBasemapError, selectedRoadI
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [basemap]);
 
-  useEffect(() => {
+  // Place or move an HTML label (no remote font glyphs needed, so it works offline).
+  const label = (key: string, at: LngLat, text: string, kind: string, title?: string) => {
     const map = mapRef.current;
     const lib = libRef.current;
-    if (!ready || !map || !lib || !data) return;
-    for (const [id, collection] of Object.entries(toGeoJson(data))) {
-      (map.getSource(id) as GeoJSONSource | undefined)?.setData(collection);
+    if (!map || !lib) return;
+    let marker = markers.current.get(key);
+    if (!marker) {
+      const element = document.createElement("div");
+      element.className = `map-label map-label-${kind}`;
+      marker = new lib.Marker({
+        element,
+        anchor: kind === "incident" ? "top" : kind === "annotation" ? "center" : "bottom",
+        offset: kind === "incident" ? [0, 14] : kind === "annotation" ? [0, 0] : [0, -9],
+      });
+      marker.setLngLat(at).addTo(map);
+      markers.current.set(key, marker);
+    }
+    marker.getElement().textContent = text;
+    marker.getElement().title = title ?? text;
+    marker.setLngLat(at);
+  };
+
+  // Draw units and their remaining routes at a moment in time; returns whether any still move.
+  const drawUnits = (now: number) => {
+    const map = mapRef.current;
+    const current = dataRef.current;
+    if (!map || !current) return false;
+    let moving = false;
+    const units: GeoJSON.Feature[] = [];
+    const routes: GeoJSON.Feature[] = [];
+    for (const service of current.services) {
+      const kind = service.out_of_service ? "out" : unitKind(service.capabilities);
+      const trip = trips.current.get(service.id);
+      let at = service.position;
+      if (trip) {
+        const state = tripState(trip, now);
+        at = state.at;
+        if (state.ahead.length > 1 && metres(state.at, trip.route[trip.route.length - 1]) > 1) {
+          moving = true;
+          routes.push(line(state.ahead, { id: service.id, kind }));
+        }
+        label(`m:${service.id}`, at, service.name, "unit");
+      }
+      units.push(point(at, { id: service.id, available: service.available, kind }));
+    }
+    (map.getSource(`${OWN}services`) as GeoJSONSource | undefined)?.setData(collection(units));
+    (map.getSource(`${OWN}routes`) as GeoJSONSource | undefined)?.setData(collection(routes));
+    return moving;
+  };
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map || !data) return;
+    for (const [id, layerData] of Object.entries(staticGeoJson(data))) {
+      (map.getSource(id) as GeoJSONSource | undefined)?.setData(layerData);
     }
 
-    // HTML labels need no remote font glyphs, so they work offline.
-    const wanted = new Map<string, { at: LngLat; text: string; kind: string; title?: string }>();
-    for (const incident of data.incidents) {
-      wanted.set(`i:${incident.id}`, {
-        at: incident.position,
-        text: shorten(incident.kind),
-        kind: "incident",
-        title: `${incident.id} · ${incident.kind} · ${incident.severity} · ${incident.status}`,
-      });
+    // Start a trip when a unit gets a new route; keep running trips untouched.
+    const now = performance.now();
+    const active = new Set<string>();
+    for (const service of data.services) {
+      if (service.available || !service.route || service.route.length < 2) continue;
+      active.add(service.id);
+      const trip = newTrip(service.route, now);
+      if (trips.current.get(service.id)?.key !== trip.key) trips.current.set(service.id, trip);
     }
-    // Units sharing a position (e.g. one station) share a label so none is hidden.
+    for (const id of [...trips.current.keys()]) if (!active.has(id)) trips.current.delete(id);
+
+    const wanted = new Set<string>();
+    for (const incident of data.incidents) {
+      wanted.add(`i:${incident.id}`);
+      label(`i:${incident.id}`, incident.position, shorten(incident.kind), "incident",
+        `${incident.id} · ${incident.kind} · ${incident.severity} · ${incident.status}`);
+    }
+    // Units parked at the same spot (e.g. one station) share a label so none is hidden.
     const unitsAt = new Map<string, string[]>();
     for (const service of data.services) {
+      if (trips.current.has(service.id)) {
+        wanted.add(`m:${service.id}`);
+        continue;
+      }
       const key = service.position.join(",");
       unitsAt.set(key, [...(unitsAt.get(key) ?? []), service.name]);
     }
     for (const [key, names] of unitsAt) {
-      const at = key.split(",").map(Number) as LngLat;
-      wanted.set(`s:${key}`, { at, text: names.join(" · "), kind: "unit" });
+      wanted.add(`s:${key}`);
+      label(`s:${key}`, key.split(",").map(Number) as LngLat, names.join(" · "), "unit");
     }
     for (const annotation of data.annotations ?? []) {
       const middle = annotation.path[Math.floor(annotation.path.length / 2)] ?? annotation.path[0];
       const at: LngLat = annotation.path.length === 2
         ? [(annotation.path[0][0] * 3 + annotation.path[1][0]) / 4, annotation.path[0][1]]
         : middle;
-      wanted.set(`a:${annotation.label}`, { at, text: annotation.label, kind: "annotation" });
+      wanted.add(`a:${annotation.label}`);
+      label(`a:${annotation.label}`, at, annotation.label, "annotation");
     }
     for (const [key, marker] of markers.current) {
       if (!wanted.has(key)) {
@@ -275,23 +417,13 @@ export default function CrisisMap({ data, basemap, onBasemapError, selectedRoadI
         markers.current.delete(key);
       }
     }
-    for (const [key, label] of wanted) {
-      let marker = markers.current.get(key);
-      if (!marker) {
-        const element = document.createElement("div");
-        element.className = `map-label map-label-${label.kind}`;
-        marker = new lib.Marker({
-          element,
-          anchor: label.kind === "unit" ? "bottom" : label.kind === "incident" ? "top" : "center",
-          offset: label.kind === "unit" ? [0, -8] : label.kind === "incident" ? [0, 12] : [0, 0],
-        });
-        marker.setLngLat(label.at).addTo(map);
-        markers.current.set(key, marker);
-      }
-      marker.getElement().textContent = label.text;
-      marker.getElement().title = label.title ?? label.text;
-      marker.setLngLat(label.at);
-    }
+
+    // Animate until every dispatched unit has reached its destination.
+    let frame = 0;
+    const tick = () => {
+      if (drawUnits(performance.now())) frame = requestAnimationFrame(tick);
+    };
+    tick();
 
     if (!fitted.current && data.roads.length) {
       const points = data.roads.flatMap((road) => road.path);
@@ -302,10 +434,12 @@ export default function CrisisMap({ data, basemap, onBasemapError, selectedRoadI
           [Math.min(...lngs), Math.min(...lats)],
           [Math.max(...lngs), Math.max(...lats)],
         ],
-        { padding: 70, duration: 0 },
+        { padding: 50, duration: 0 },
       );
       fitted.current = true;
     }
+    return () => cancelAnimationFrame(frame);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, data]);
 
   useEffect(() => {
