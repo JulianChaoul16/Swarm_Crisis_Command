@@ -1,8 +1,10 @@
 """Command service: the only writer of authoritative state.
 
-Flow (handoff §6): snapshot -> specialists in parallel -> deterministic plan -> feasibility
-checks -> proposal for human review -> approval bound to plan ID and world version ->
-atomic in-memory commit plus SQLite transaction. Agents and planners never write state.
+Flow: a confirmed change lands -> the incident swarm (Triage, Vision, Logistics) votes on the
+shared IncidentBoard, reacting to each other through the event bus -> the exact solver plans
+with the swarm's consensus severity as priority -> feasibility checks -> proposal for human
+review -> approval bound to plan ID and world version -> atomic in-memory commit plus SQLite
+transaction. Agents write only to the board; they never write world state or dispatch.
 """
 
 from contextlib import contextmanager
@@ -14,12 +16,9 @@ from typing import Any, Iterator
 from uuid import uuid4
 
 from ..agents.model_client import ModelClient, ModelUnavailableError, model_client_from_env
-from ..agents.specialists import (
-    DEFAULT_AGENT_TIMEOUT_SECONDS,
-    AgentStatus,
-    run_specialists,
-)
 from ..model import Incident, IncidentStatus, Severity
+from ..swarm.agents import SEVERITY_BASE, Swarm
+from ..swarm.board import ROAD_CHANGED, IncidentBoard
 from ..planner import Planner
 from ..simulation import Simulation, World
 from .feasibility import all_passed, check_plan
@@ -37,6 +36,8 @@ from .scenario import FLOOD_SCENARIO, Scenario
 from .store import OperationsStore
 
 MAX_PROPOSAL_ATTEMPTS = 3
+DEFAULT_AGENT_TIMEOUT_SECONDS = 20.0
+SWARM_PRIORITY_RULE = "swarm consensus severity (highest first), then people affected, then incident id"
 
 def _nullable_enum(values) -> dict[str, Any]:
     return {"type": ["string", "null"], "enum": [*sorted(values), None]}
@@ -139,7 +140,13 @@ class CommandService:
         with self._lock:
             self.run_id = f"run-{uuid4().hex[:12]}"
             self.world: World = self.scenario.build_world()
-            self.planner = Planner()
+            # The shared blackboard for this run; a reset replaces it, so late writes from
+            # the old run's agents land on a board nobody reads.
+            self.board = IncidentBoard(self.run_id)
+            place_names = {point: name for name, point in self.scenario.places.items()}
+            self.swarm = Swarm(self.board, self._snapshot, lambda point: place_names.get(point, "unknown"),
+                               self.scenario.flood_sample)
+            self.planner = Planner(priority_key=self._swarm_priority, priority_rule=SWARM_PRIORITY_RULE)
             self.simulation = Simulation(self.world, self.planner)
             self._reports: dict[str, Report] = {}
             self._plans: dict[str, PlanProposal] = {}
@@ -157,7 +164,19 @@ class CommandService:
                 actor="operator",
             )
             self._commit()
+            seeds = [i.id for i in self.world.incidents if i.status != IncidentStatus.RESOLVED]
+        for incident_id in seeds:
+            self.swarm.spawn_incident_swarm(incident_id)
         self.propose()
+
+    def _snapshot(self):
+        with self._lock:
+            return self.world.snapshot()
+
+    def _swarm_priority(self, incident: Incident) -> tuple[object, ...]:
+        """Plan in the swarm's consensus order; before the swarm has voted, by severity class."""
+        final = self.board.final(incident.id)
+        return (-(final if final is not None else SEVERITY_BASE[incident.severity]), -incident.people, incident.id)
 
     @property
     def reports(self) -> tuple[Report, ...]:
@@ -333,6 +352,10 @@ class CommandService:
             )
             self._mark_stale_locked()
             self._commit(reports=(report,), plans=self._plans.values())
+        if report.linked_incident_id:
+            self.swarm.spawn_incident_swarm(report.linked_incident_id)
+        elif report.linked_road_id:
+            self.board.bus.publish(ROAD_CHANGED, {"road_id": fields.road_id, "closed": fields.road_closed})
         self.propose()
         return report
 
@@ -379,7 +402,7 @@ class CommandService:
             with self._lock:
                 run_id = self.run_id
                 snapshot = self.world.snapshot()
-            findings = run_specialists(snapshot, self.client, self.agent_timeout)
+            findings = ()
             plan = self.planner.plan(
                 list(snapshot.incidents),
                 list(snapshot.services),
@@ -444,14 +467,9 @@ class CommandService:
             previous.status = PlanStatus.SUPERSEDED
         self._plans[proposal.id] = proposal
         self.current_plan_id = proposal.id
-        agent_states = ", ".join(f"{f.agent}: {f.status.value}" for f in findings)
-        self.world._append_event(
-            "agents_reported",
-            tuple(f.agent for f in findings),
-            f"Specialists finished ({agent_states}).",
-            tuple((f.agent, f.error or f.summary or f.status.value) for f in findings),
-            actor="coordinator",
-        )
+        self.board.log("Coordinator", "exact solver",
+                       f"Plan {proposal.id}: {len(plan.assignments)} dispatches, "
+                       f"{len(plan.unassigned_incident_ids)} unmet, ranked by swarm consensus")
         self.world._append_event(
             "plan_proposed" if proposal.valid else "plan_invalid",
             (proposal.id,),
@@ -587,15 +605,8 @@ class CommandService:
         if any(incident.status == IncidentStatus.OPEN for incident in self.world.incidents):
             self.propose()
 
-    def agent_statuses(self) -> dict[str, str]:
-        plan = self.current_plan
-        if plan is None:
-            return {}
-        return {finding.agent: finding.status.value for finding in plan.agent_findings}
-
 
 __all__ = [
-    "AgentStatus",
     "CommandError",
     "CommandService",
     "ConflictError",

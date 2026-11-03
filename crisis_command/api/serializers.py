@@ -10,6 +10,7 @@ from ..model import City, Coordinate, EmergencyService, Incident, IncidentStatus
 from ..operations import CommandService, PlanProposal, Report
 from ..simulation import WorldEvent
 from ..operations.scenario import FLOOD_PLACES
+from ..swarm.board import IncidentBoard, agreement
 from .geo import LABELS, to_line, to_lng_lat
 
 
@@ -114,20 +115,29 @@ def serialize_proposal(proposal: PlanProposal) -> dict[str, Any]:
         "checks": [asdict(check) for check in proposal.checks],
         "changes": [asdict(change) for change in proposal.changes],
         "invalidated": [asdict(mission) for mission in proposal.invalidated],
-        "agents": [
-            {
-                "agent": finding.agent,
-                "status": finding.status.value,
-                "summary": finding.summary,
-                "findings": list(finding.findings),
-                "missing_information": list(finding.missing_information),
-                "error": finding.error,
-                "model_id": finding.model_id,
-                "latency_ms": finding.latency_ms,
-                "tools": [{"name": tool.name, "output": tool.output} for tool in finding.tool_results],
+    }
+
+
+def serialize_swarm(board: IncidentBoard) -> dict[str, Any]:
+    data = board.snapshot()
+    return {
+        "incidents": {
+            incident_id: {
+                "votes": {agent: {"score": vote.score, "reasons": list(vote.reasons), "source": vote.source}
+                          for agent, vote in votes.items()},
+                "final": data["finals"].get(incident_id),
+                "agreement": agreement(votes),
             }
-            for finding in proposal.agent_findings
+            for incident_id, votes in data["votes"].items()
+        },
+        "flood_cover": data["flood_cover"],
+        # Newest first, capped for the UI.
+        "activity": [
+            {"at": item.at.isoformat(), "agent": item.agent, "source": item.source,
+             "text": item.text, "incident_id": item.incident_id}
+            for item in reversed(data["activity"][-120:])
         ],
+        "consensus_rule": "Final = median vote, pulled halfway toward the highest vote.",
     }
 
 
@@ -226,5 +236,6 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
             for key, disruption in service.scenario.disruptions.items()
         ],
         "current_plan": serialize_proposal(current) if current is not None else None,
+        "swarm": serialize_swarm(service.board),
         "reports": [serialize_report(report) for report in reversed(service.reports)],
     }

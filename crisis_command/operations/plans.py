@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-from ..agents.specialists import AgentFinding
 from ..model import City
 from ..planner import ResponsePlan
 from .feasibility import Check, closed_roads_on_route
@@ -48,7 +47,8 @@ class PlanProposal:
     plan: ResponsePlan
     checks: tuple[Check, ...]
     changes: tuple[AssignmentChange, ...]
-    agent_findings: tuple[AgentFinding, ...]
+    # Kept for the stored plan format; the swarm's votes live on the IncidentBoard.
+    agent_findings: tuple
     created_at: datetime
     previous_plan_id: str | None = None
     invalidated: tuple[InvalidatedMission, ...] = ()

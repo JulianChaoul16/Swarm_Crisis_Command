@@ -30,6 +30,9 @@ class Scenario:
     disruptions: dict[str, Disruption] = field(default_factory=dict)
     # Map-only context lines such as a river: (label, points). Not part of the road graph.
     annotations: tuple[tuple[str, tuple[Coordinate, ...]], ...] = ()
+    # Sample flood cover per place (percent of the area under water), used by the Vision
+    # agent until segmentation output is wired in. Invented exercise values.
+    flood_sample: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
 def build_demo_world() -> World:
@@ -233,6 +236,15 @@ FLOOD_SCENARIO = Scenario(
                 "certainty": "confirmed",
             },
         ),
+    },
+    flood_sample={
+        "Shockoe Bottom": {"percent": 85, "note": "sample imagery: Dock St and 17th St under water"},
+        "Riverside Apartments": {"percent": 80, "note": "sample imagery: ground floor flooded"},
+        "Manchester": {"percent": 65, "note": "sample imagery: low streets near Hull St flooded"},
+        "East Junction": {"percent": 55, "note": "sample imagery: E Main St partly flooded"},
+        "Downtown Junction": {"percent": 40, "note": "sample imagery: water at 14th St and Main St"},
+        "South Junction": {"percent": 45, "note": "sample imagery: south end of the Mayo Bridge"},
+        "Broad & 3rd": {"percent": 5, "note": "sample imagery: dry"},
     },
     annotations=(
         ("River", (Coordinate(-1, 3.5), Coordinate(10, 3.5))),

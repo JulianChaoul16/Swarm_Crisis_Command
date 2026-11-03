@@ -48,18 +48,6 @@ export type Change = {
   explanation: string;
 };
 
-export type AgentRun = {
-  agent: string;
-  status: "completed" | "failed" | "timed_out" | "unavailable";
-  summary: string | null;
-  findings: string[];
-  missing_information: string[];
-  error: string | null;
-  model_id: string | null;
-  latency_ms: number;
-  tools: { name: string; output: Record<string, unknown> }[];
-};
-
 export type Proposal = {
   id: string;
   run_id: string;
@@ -77,7 +65,6 @@ export type Proposal = {
   checks: Check[];
   changes: Change[];
   invalidated: { incident_id: string; service_ids: string[]; blocked_service_ids: string[]; cause: string }[];
-  agents: AgentRun[];
 };
 
 export type ReportFields = {
@@ -128,6 +115,16 @@ export type WorldState = {
   disruptions: { key: string; label: string; in_effect: boolean }[];
   current_plan: Proposal | null;
   reports: Report[];
+  swarm: Swarm;
+};
+
+export type SwarmVote = { score: number; reasons: string[]; source: string };
+
+export type Swarm = {
+  incidents: Record<string, { votes: Record<string, SwarmVote>; final: number | null; agreement: number | null }>;
+  flood_cover: Record<string, { percent: number; note?: string }>;
+  activity: { at: string; agent: string; source: string; text: string; incident_id: string | null }[];
+  consensus_rule: string;
 };
 
 export type WorldEvent = {

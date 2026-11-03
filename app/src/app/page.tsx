@@ -3,19 +3,41 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CrisisMap, { type MapData } from "@/components/CrisisMap";
 import { ApiError, api } from "@/lib/api";
-import type { Incident, Proposal, WorldEvent, WorldState } from "@/lib/types";
+import type { Incident, Proposal, Swarm, WorldState } from "@/lib/types";
 
 // One screen, three panels: incident queue | map | recommendation + activity.
 // Workflow: Detect -> Prioritize -> Decide -> Dispatch -> Communicate.
 
-const rank = (incidents: Incident[]) =>
-  incidents
+// Ranked by the swarm's consensus severity (the same order the solver plans in).
+const rank = (incidents: Incident[], swarm: Swarm) => {
+  const final = (incident: Incident) => swarm.incidents[incident.id]?.final ?? -1;
+  return incidents
     .filter((incident) => incident.status !== "resolved")
-    .sort((a, b) => b.severity_level - a.severity_level || b.people - a.people || a.id.localeCompare(b.id));
+    .sort((a, b) => final(b) - final(a) || b.people - a.people || a.id.localeCompare(b.id));
+};
+
+const AGENTS: [string, string][] = [["Triage Agent", "Triage"], ["Vision Agent", "Vision"], ["Logistics Agent", "Logistics"]];
+
+function Votes({ entry }: { entry: Swarm["incidents"][string] | undefined }) {
+  if (!entry) return <div className="votes muted">Swarm voting…</div>;
+  return (
+    <div className="votes">
+      {AGENTS.map(([agent, label]) => {
+        const vote = entry.votes[agent];
+        return (
+          <span key={agent} className="vote" title={vote ? `${vote.reasons.join("; ")} (source: ${vote.source})` : "waiting"}>
+            {label}: <b>{vote ? vote.score : "…"}</b>
+          </span>
+        );
+      })}
+      <span className="final">= Final: <b>{entry.final ?? "…"}</b></span>
+    </div>
+  );
+}
 
 const time = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
-function IncidentQueue({ incidents, focus }: { incidents: Incident[]; focus: string | null }) {
+function IncidentQueue({ incidents, focus, swarm }: { incidents: Incident[]; focus: string | null; swarm: Swarm }) {
   if (!incidents.length) return <p className="empty">No open incidents.</p>;
   return (
     <ol className="queue">
@@ -23,6 +45,7 @@ function IncidentQueue({ incidents, focus }: { incidents: Incident[]; focus: str
         <li key={incident.id} className={`card sev-${incident.severity} ${incident.id === focus ? "focus" : ""}`}>
           <div className="card-top">
             <span className="rank">#{index + 1}</span>
+            <span className="score">{swarm.incidents[incident.id]?.final ?? "…"}</span>
             <span className={`sev sev-${incident.severity}`}>{incident.severity}</span>
             <span className="muted">{incident.id}</span>
             <span className={`status st-${incident.status}`}>{incident.status === "assigned" ? "dispatched" : "needs units"}</span>
@@ -32,6 +55,7 @@ function IncidentQueue({ incidents, focus }: { incidents: Incident[]; focus: str
           <div className="meta">
             <b>{incident.people}</b> people at risk · needs {incident.required_services.join(", ") || "none"}
           </div>
+          <Votes entry={swarm.incidents[incident.id]} />
         </li>
       ))}
     </ol>
@@ -55,7 +79,7 @@ function Recommendation({
   const incidents = new Map(world.incidents.map((incident) => [incident.id, incident]));
   const units = new Map(world.services.map((service) => [service.id, service.name]));
   // Lead with the most urgent incident the plan serves.
-  const served = rank(plan.assignments.map((d) => incidents.get(d.incident_id)!).filter(Boolean))
+  const served = rank(plan.assignments.map((d) => incidents.get(d.incident_id)!).filter(Boolean), world.swarm)
     .filter((incident, index, all) => all.findIndex((other) => other.id === incident.id) === index);
   const lead = served[0];
   const leadDispatches = lead ? plan.assignments.filter((d) => d.incident_id === lead.id) : [];
@@ -92,9 +116,19 @@ function Recommendation({
           )}
           <div className="rec-label">Why</div>
           <ul className="rec-why">
-            <li>Most urgent open incident: {lead.severity}, {lead.people} people at risk</li>
+            <li>
+              Highest swarm consensus: {world.swarm.incidents[lead.id]?.final ?? "?"}, {lead.people} people at risk
+            </li>
+            {AGENTS.map(([agent, label]) => {
+              const vote = world.swarm.incidents[lead.id]?.votes[agent];
+              return vote ? <li key={agent}>{label} ({vote.source}): {vote.reasons[0]}</li> : null;
+            })}
             {reasons.map((reason) => <li key={reason}>{reason}</li>)}
           </ul>
+          <div className="rec-label">Confidence</div>
+          <div className="rec-conf" title="How closely the three agents' votes agree (100 = identical). Not a calibrated probability.">
+            {world.swarm.incidents[lead.id]?.agreement ?? "?"}% <span className="muted">vote agreement</span>
+          </div>
         </>
       ) : (
         <div className="rec-action">No new dispatches needed.</div>
@@ -117,13 +151,13 @@ function Recommendation({
   );
 }
 
-function ActivityFeed({ events }: { events: WorldEvent[] }) {
-  if (!events.length) return <p className="empty">No activity yet.</p>;
+function ActivityFeed({ activity }: { activity: Swarm["activity"] }) {
+  if (!activity.length) return <p className="empty">No activity yet.</p>;
   return (
     <ol className="feed">
-      {events.map((event) => (
-        <li key={event.sequence}>
-          <span className="t">[{time(event.recorded_at)}]</span> <b>{event.actor}</b>: {event.reason}
+      {activity.map((item, index) => (
+        <li key={`${item.at}${index}`}>
+          <span className="t">[{time(item.at)}]</span> <b>{item.agent}</b> <span className="src">({item.source})</span>: {item.text}
         </li>
       ))}
     </ol>
@@ -132,14 +166,11 @@ function ActivityFeed({ events }: { events: WorldEvent[] }) {
 
 export default function CommandScreen() {
   const [world, setWorld] = useState<WorldState | null>(null);
-  const [events, setEvents] = useState<WorldEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const refresh = useCallback(async () => {
-    const [state, log] = await Promise.all([api.state(), api.events(60)]);
-    setWorld(state);
-    setEvents(log);
+    setWorld(await api.state());
   }, []);
 
   const run = useCallback(
@@ -164,7 +195,7 @@ export default function CommandScreen() {
     );
   }, [refresh]);
 
-  const queue = useMemo(() => (world ? rank(world.incidents) : []), [world]);
+  const queue = useMemo(() => (world ? rank(world.incidents, world.swarm) : []), [world]);
   const mapData: MapData | null = useMemo(
     () =>
       world && {
@@ -196,7 +227,7 @@ export default function CommandScreen() {
         <main className="panels">
           <section className="panel left">
             <h2>Swarm Incident Queue</h2>
-            <IncidentQueue incidents={queue} focus={queue[0]?.id ?? null} />
+            <IncidentQueue incidents={queue} focus={queue[0]?.id ?? null} swarm={world.swarm} />
           </section>
 
           <section className="panel center">
@@ -219,7 +250,7 @@ export default function CommandScreen() {
               onReject={(plan) => run(() => api.rejectPlan(plan.id, "Rejected by operator."))}
             />
             <h2>Swarm Activity</h2>
-            <ActivityFeed events={events} />
+            <ActivityFeed activity={world.swarm.activity} />
           </section>
         </main>
       )}

@@ -7,7 +7,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 from crisis_command.agents.model_client import UnavailableModelClient
-from crisis_command.agents.specialists import AgentStatus, run_specialists
 from crisis_command.database import connection
 from crisis_command.model import IncidentStatus
 from crisis_command.operations import (
@@ -128,12 +127,11 @@ class ApprovalTests(CommandServiceTestCase):
         self.assertTrue(all(check.passed for check in plan.checks))
         self.assertTrue(all(service.available for service in self.service.world.services))
 
-    def test_unavailable_model_is_never_reported_as_completed_analysis(self) -> None:
-        findings = self.service.current_plan.agent_findings
-
-        self.assertEqual({f.agent for f in findings}, {"Situation", "Resources", "Routing"})
-        self.assertTrue(all(f.status == AgentStatus.UNAVAILABLE for f in findings))
-        self.assertTrue(all(f.summary is None and f.tool_results for f in findings))
+    def test_every_seed_incident_gets_three_votes_and_a_consensus(self) -> None:
+        board = self.service.board
+        for incident in self.service.world.incidents:
+            self.assertEqual(set(board.votes[incident.id]), {"Triage Agent", "Vision Agent", "Logistics Agent"})
+            self.assertIsNotNone(board.final(incident.id))
 
     def test_approval_commits_dispatches_and_persists_atomically(self) -> None:
         plan = self.service.current_plan
@@ -243,47 +241,6 @@ class ApprovalTests(CommandServiceTestCase):
             [e.kind for e in self.service.world.event_log if e.kind == "plan_proposed"],
             ["plan_proposed"],
         )
-
-
-class FakeClient:
-    def __init__(self, behaviour):
-        self.model_id = "fake-model"
-        self.behaviour = behaviour
-
-    def complete_json(self, *, system, user, schema, timeout):
-        return self.behaviour()
-
-
-class SpecialistTests(CommandServiceTestCase):
-    def snapshot(self):
-        return self.service.world.snapshot()
-
-    def test_valid_model_output_is_completed(self) -> None:
-        client = FakeClient(lambda: {"summary": "ok", "findings": ["a"], "missing_information": []})
-        findings = run_specialists(self.snapshot(), client, timeout=1)
-        self.assertTrue(all(f.status == AgentStatus.COMPLETED for f in findings))
-
-    def test_invalid_output_and_errors_are_failures(self) -> None:
-        findings = run_specialists(self.snapshot(), FakeClient(lambda: {"summary": 3}), timeout=1)
-        self.assertTrue(all(f.status == AgentStatus.FAILED for f in findings))
-
-        def boom():
-            raise RuntimeError("HTTP 500")
-
-        findings = run_specialists(self.snapshot(), FakeClient(boom), timeout=1)
-        self.assertTrue(all(f.status == AgentStatus.FAILED and "HTTP 500" in f.error for f in findings))
-
-    def test_slow_specialist_is_reported_as_timed_out(self) -> None:
-        def slow():
-            time.sleep(3)
-            return {"summary": "late", "findings": [], "missing_information": []}
-
-        findings = run_specialists(self.snapshot(), FakeClient(slow), timeout=0.2)
-        self.assertTrue(all(f.status == AgentStatus.TIMED_OUT for f in findings))
-
-    def test_unavailable_client(self) -> None:
-        findings = run_specialists(self.snapshot(), UnavailableModelClient("no key"), timeout=1)
-        self.assertTrue(all(f.status == AgentStatus.UNAVAILABLE for f in findings))
 
 
 class FeasibilityTests(CommandServiceTestCase):

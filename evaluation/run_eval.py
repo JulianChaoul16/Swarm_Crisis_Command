@@ -252,7 +252,7 @@ def run() -> dict:
                         "update_to_proposal_ms": None if outcome.update_to_proposal_ms is None else round(outcome.update_to_proposal_ms, 2),
                         "priority_weighted_unmet": _weighted_unmet(service),
                         "unmet_incidents": _unmet(service),
-                        "agent_statuses": service.agent_statuses(),
+                        "swarm_finals": dict(service.board.finals),
                         "observations": outcome.observations,
                         **_invariants(service),
                     }
