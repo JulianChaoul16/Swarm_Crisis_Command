@@ -11,11 +11,13 @@ from contextlib import contextmanager
 from dataclasses import replace
 from datetime import datetime, timezone
 import json
-from threading import RLock
+from concurrent.futures import ThreadPoolExecutor
+from threading import RLock, Thread
 from typing import Any, Iterator
 from uuid import uuid4
 
 from ..agents.model_client import ModelClient, ModelUnavailableError, model_client_from_env
+from ..meta_api import MetaHub, hub_from_env
 from ..model import Incident, IncidentStatus, Severity
 from ..swarm.agents import SEVERITY_BASE, Swarm
 from ..swarm.board import ROAD_CHANGED, IncidentBoard
@@ -125,9 +127,15 @@ class CommandService:
         client: ModelClient | None = None,
         store: OperationsStore | None = None,
         agent_timeout: float = DEFAULT_AGENT_TIMEOUT_SECONDS,
+        background_models: bool = False,
     ) -> None:
         self.scenario = scenario
         self.client = client or model_client_from_env()
+        self.hub: MetaHub = hub_from_env(self.client)
+        self.hub.timeout = agent_timeout
+        # When on, the recommendation text and public alert are written in a background
+        # thread and attach when ready; the plan itself never waits for them.
+        self.background_models = background_models
         self.store = store or OperationsStore()
         self.agent_timeout = agent_timeout
         self._lock = RLock()
@@ -144,8 +152,12 @@ class CommandService:
             # the old run's agents land on a board nobody reads.
             self.board = IncidentBoard(self.run_id)
             place_names = {point: name for name, point in self.scenario.places.items()}
+            self.hub.on_fallback = lambda model, text: self.board.log(model, "fallback", text)
             self.swarm = Swarm(self.board, self._snapshot, lambda point: place_names.get(point, "unknown"),
-                               self.scenario.flood_sample)
+                               self.scenario.flood_sample, self.hub, self._report_text)
+            # Plan id -> model-written explanation, and approved plan id -> public alert.
+            self.explanations: dict[str, Any] = {}
+            self.alerts: dict[str, Any] = {}
             self.planner = Planner(priority_key=self._swarm_priority, priority_rule=SWARM_PRIORITY_RULE)
             self.simulation = Simulation(self.world, self.planner)
             self._reports: dict[str, Report] = {}
@@ -165,9 +177,13 @@ class CommandService:
             )
             self._commit()
             seeds = [i.id for i in self.world.incidents if i.status != IncidentStatus.RESOLVED]
-        for incident_id in seeds:
-            self.swarm.spawn_incident_swarm(incident_id)
+        with ThreadPoolExecutor(max_workers=max(1, len(seeds))) as pool:
+            list(pool.map(self.swarm.spawn_incident_swarm, seeds))
         self.propose()
+
+    def _report_text(self, incident_id: str) -> str:
+        with self._lock:
+            return " / ".join(r.content for r in self._reports.values() if r.linked_incident_id == incident_id)
 
     def _snapshot(self):
         with self._lock:
@@ -425,7 +441,9 @@ class CommandService:
                     )
                     self._commit()
                     continue
-                return self._store_proposal(plan, snapshot, findings)
+                proposal = self._store_proposal(plan, snapshot, findings)
+            self._explain(proposal)
+            return proposal
 
         with self._lock:
             self.world._append_event(
@@ -562,12 +580,96 @@ class CommandService:
                 )
 
         replacement = self.propose()
+        if not stale:
+            self._announce(proposal)
         if stale:
             raise StaleApprovalError(
                 f"{plan_id} is stale; a new proposal was computed from the latest snapshot.",
                 replacement.id if replacement else None,
             )
         return proposal
+
+    # ----- command & comms (model-written text around the solver's decision) --
+
+    def _in_background(self, work) -> None:
+        if self.background_models:
+            Thread(target=work, daemon=True).start()
+        else:
+            work()
+
+    def _lead(self, proposal: PlanProposal) -> Incident | None:
+        served = {d.incident_id for d in proposal.plan.assignments}
+        candidates = [i for i in self.world.incidents if i.id in served]
+        return min(candidates, key=self._swarm_priority) if candidates else None
+
+    def _explain(self, proposal: PlanProposal) -> None:
+        """Muse Spark explains the solver's recommendation from the swarm's evidence."""
+        with self._lock:
+            lead = self._lead(proposal)
+            if lead is None:
+                return
+            names = {s.id: s.name for s in self.world.services}
+            places = {point: name for name, point in self.scenario.places.items()}
+            votes = self.board.votes.get(lead.id, {})
+            unmet = [line.replace("Incident ", "", 1) for line in proposal.plan.rationale if "left unassigned" in line]
+            facts = {
+                "plan": proposal.id,
+                "recommended": {"incident": lead.id, "type": lead.kind, "location": places.get(lead.location),
+                                "people_at_risk": lead.people,
+                                "units": [f"{names[d.service_id]} (ETA {d.estimated_arrival:.1f} min)"
+                                          for d in proposal.plan.assignments if d.incident_id == lead.id]},
+                # Sources (live/cache) are left out so a replayed run asks the same question.
+                "swarm_votes": {agent: {"score": v.score, "reasons": list(v.reasons)}
+                                for agent, v in votes.items()},
+                "consensus": self.board.final(lead.id),
+                "unmet": unmet,
+            }
+            run_id = self.run_id
+
+        def fallback() -> dict[str, Any]:
+            why = [f"{v['reasons'][0]} [{agent}]" for agent, v in facts["swarm_votes"].items() if v["reasons"]][:3]
+            return {"why": why, "tradeoff": "; ".join(unmet) or "No other incident is left waiting."}
+
+        def work() -> None:
+            result = self.hub.recommend(facts, fallback)
+            with self._lock:
+                if run_id == self.run_id:
+                    self.explanations[proposal.id] = result
+                    self.board.log("Command Agent", result.label, f"Recommendation for {proposal.id} written")
+
+        self._in_background(work)
+
+    def _announce(self, proposal: PlanProposal) -> None:
+        """After approval: a public alert in English and Spanish (Muse Spark), plus the graphic slot."""
+        with self._lock:
+            places = {point: name for name, point in self.scenario.places.items()}
+            incidents = {i.id: i for i in self.world.incidents}
+            served = sorted({d.incident_id for d in proposal.plan.assignments})
+            facts = {
+                "approved_plan": proposal.id,
+                "responding_to": [{"type": incidents[i].kind, "location": places.get(incidents[i].location)}
+                                  for i in served if i in incidents],
+                "closed_roads": sorted(r.id for r in self.world.city.roads if r.is_closed),
+            }
+            run_id = self.run_id
+        areas = sorted({item["location"] for item in facts["responding_to"] if item["location"]})
+
+        def fallback() -> dict[str, Any]:
+            where = ", ".join(areas) or "flooded areas"
+            return {
+                "english": f"Flooding in Richmond. Stay away from {where}. Do not drive through water; follow official instructions.",
+                "spanish": f"Inundaciones en Richmond. Manténgase lejos de {where}. No maneje por el agua; siga las instrucciones oficiales.",
+            }
+
+        def work() -> None:
+            text = self.hub.public_alert(facts, fallback)
+            graphic = self.hub.alert_graphic(facts)
+            with self._lock:
+                if run_id == self.run_id:
+                    self.alerts[proposal.id] = {"text": text, "graphic": graphic}
+                    self.board.log("Comms Agent", text.label, f"Public alert for {proposal.id} written (EN/ES)")
+
+        self._in_background(work)
 
     def reject_plan(self, plan_id: str, reason: str, actor: str = "operator") -> PlanProposal:
         with self._atomic():

@@ -184,3 +184,16 @@ button.approve { font-weight: 800; background: var(--approve); border-color: var
 .final { padding: 1px 7px; border-radius: 10px; background: #1e293b; }
 .rec-conf { font-size: 16px; font-weight: 700; }
 .feed .src { color: var(--muted); }
+
+/* ---------- Model pills ---------- */
+
+.model-strip { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 16px 0; }
+.pill-live { background: rgba(52, 211, 153, 0.14); color: #6ee7b7; }
+.pill-cache { background: rgba(96, 165, 250, 0.14); color: #93c5fd; }
+.pill-local { background: rgba(250, 204, 21, 0.12); color: #fde68a; }
+.pill-sample, .pill-off { background: #1e293b; color: var(--muted); }
+.pill-rules { background: #1e293b; color: var(--muted); }
+.pill-src { font-weight: 400; opacity: 0.85; }
+.vote-src { font-size: 10px; opacity: 0.7; }
+.alert { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--border); }
+.alert p { margin: 4px 0; }

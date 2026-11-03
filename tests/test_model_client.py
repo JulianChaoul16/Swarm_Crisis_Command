@@ -75,6 +75,16 @@ class MetaResponsesClientTests(unittest.TestCase):
         self.assertNotIn(SECRET, repr(self.client.__dict__.get("model_id")))
 
 
+class ParseJsonObjectTests(unittest.TestCase):
+    def test_leading_prose_is_ignored_but_trailing_text_or_arrays_are_not(self) -> None:
+        from crisis_command.agents.model_client import parse_json_object
+
+        self.assertEqual(parse_json_object('Checking reports now.{"a": {"b": 1}}'), {"a": {"b": 1}})
+        self.assertIsNone(parse_json_object('{"a": 1} and more'))
+        self.assertIsNone(parse_json_object("[1, 2]"))
+        self.assertIsNone(parse_json_object("no json"))
+
+
 class ClientFromEnvTests(unittest.TestCase):
     def test_missing_settings_give_an_unavailable_client(self) -> None:
         with patch.dict("os.environ", {}, clear=True), \

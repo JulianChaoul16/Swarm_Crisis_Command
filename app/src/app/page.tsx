@@ -18,6 +18,29 @@ const rank = (incidents: Incident[], swarm: Swarm) => {
 
 const AGENTS: [string, string][] = [["Triage Agent", "Triage"], ["Vision Agent", "Vision"], ["Logistics Agent", "Logistics"]];
 
+/** A model pill: the model's name and where this output really came from. */
+function Pill({ label, title }: { label: string; title?: string }) {
+  const [model, source] = label.split(" · ");
+  const kind = source === "live" ? "live" : source === "cache" ? "cache" : source === "local" ? "local" : source ? "sample" : "rules";
+  return (
+    <span className={`pill pill-${kind}`} title={title}>
+      [{model}]{source ? <span className="pill-src"> {source}</span> : null}
+    </span>
+  );
+}
+
+function ModelStrip({ models }: { models: WorldState["models"] }) {
+  return (
+    <div className="model-strip">
+      {models.map((m) => (
+        <span key={m.model} className={`pill ${m.status === "live" ? "pill-live" : "pill-off"}`} title={m.detail || m.status}>
+          [{m.model}] {m.status === "live" ? "live" : m.status}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function Votes({ entry }: { entry: Swarm["incidents"][string] | undefined }) {
   if (!entry) return <div className="votes muted">Swarm voting…</div>;
   return (
@@ -27,6 +50,7 @@ function Votes({ entry }: { entry: Swarm["incidents"][string] | undefined }) {
         return (
           <span key={agent} className="vote" title={vote ? `${vote.reasons.join("; ")} (source: ${vote.source})` : "waiting"}>
             {label}: <b>{vote ? vote.score : "…"}</b>
+            {vote && <span className="vote-src"> {vote.source.replace(" · ", " ")}</span>}
           </span>
         );
       })}
@@ -114,16 +138,18 @@ function Recommendation({
               }).join(" · ")}
             </div>
           )}
-          <div className="rec-label">Why</div>
+          <div className="rec-label">
+            Why {world.explanation ? <Pill label={world.explanation.label} title={world.explanation.note} /> : <span className="muted">(writing…)</span>}
+          </div>
           <ul className="rec-why">
             <li>
               Highest swarm consensus: {world.swarm.incidents[lead.id]?.final ?? "?"}, {lead.people} people at risk
             </li>
-            {AGENTS.map(([agent, label]) => {
+            {(world.explanation?.value.why.length ? world.explanation.value.why : AGENTS.map(([agent, label]) => {
               const vote = world.swarm.incidents[lead.id]?.votes[agent];
-              return vote ? <li key={agent}>{label} ({vote.source}): {vote.reasons[0]}</li> : null;
-            })}
-            {reasons.map((reason) => <li key={reason}>{reason}</li>)}
+              return vote ? `${vote.reasons[0]} [${label}]` : "";
+            }).filter(Boolean)).map((line) => <li key={line}>{line}</li>)}
+            {reasons.map((reason) => <li key={reason}>{reason} [Exact solver]</li>)}
           </ul>
           <div className="rec-label">Confidence</div>
           <div className="rec-conf" title="How closely the three agents' votes agree (100 = identical). Not a calibrated probability.">
@@ -135,7 +161,8 @@ function Recommendation({
       )}
       <div className="rec-label">Tradeoff</div>
       <ul className="rec-why">
-        {unmet.length ? unmet.map((line) => <li key={line} className="bad">{line}</li>) : <li>No incident left waiting.</li>}
+        {world.explanation?.value.tradeoff && <li>{world.explanation.value.tradeoff}</li>}
+        {unmet.length ? unmet.map((line) => <li key={line} className="bad">{line}</li>) : !world.explanation && <li>No incident left waiting.</li>}
       </ul>
       {live && (
         <div className="rec-buttons">
@@ -147,6 +174,32 @@ function Recommendation({
         </div>
       )}
       {plan.status === "approved" && <p className="approved">✓ Approved by {plan.decided_by}: units dispatched (simulated)</p>}
+      <Alert alert={world.alerts[plan.id] ?? latestAlert(world)} />
+    </div>
+  );
+}
+
+function latestAlert(world: WorldState) {
+  const ids = Object.keys(world.alerts).sort();
+  return ids.length ? world.alerts[ids[ids.length - 1]] : undefined;
+}
+
+function Alert({ alert }: { alert: WorldState["alerts"][string] | undefined }) {
+  if (!alert) return null;
+  return (
+    <div className="alert">
+      <div className="rec-label">Public alert {alert.text && <Pill label={alert.text.label} title={alert.text.note} />}</div>
+      {alert.text ? (
+        <>
+          <p><b>EN</b> {alert.text.value.english}</p>
+          <p><b>ES</b> {alert.text.value.spanish}</p>
+        </>
+      ) : (
+        <p className="muted">Writing…</p>
+      )}
+      {alert.graphic && !alert.graphic.value && (
+        <p className="muted">Alert graphic: <Pill label={alert.graphic.label} title={alert.graphic.note} /> {alert.graphic.note}</p>
+      )}
     </div>
   );
 }
@@ -184,6 +237,8 @@ export default function CommandScreen() {
       } finally {
         setBusy(false);
         await refresh().catch(() => null);
+        // Model-written text attaches a few seconds after the plan; pick it up.
+        for (const delay of [2500, 6000, 12000]) setTimeout(() => refresh().catch(() => null), delay);
       }
     },
     [refresh],
@@ -221,6 +276,7 @@ export default function CommandScreen() {
         </div>
       </header>
 
+      {world && <ModelStrip models={world.models} />}
       {error && <div className="banner">{error}</div>}
 
       {world && (

@@ -114,13 +114,29 @@ class MetaResponsesClient:
             for item in data.get("output", []) if item.get("type") == "message"
             for part in item.get("content") or [] if part.get("type") == "output_text"
         )
-        try:
-            output = json.loads(text)
-        except json.JSONDecodeError as error:
-            raise RuntimeError("Model output was not valid JSON.") from error
-        if not isinstance(output, dict):
-            raise RuntimeError("Model output was not a JSON object.")
+        output = parse_json_object(text)
+        if output is None:
+            raise RuntimeError("Model output was not valid JSON.")
         return output
+
+
+def parse_json_object(text: str) -> dict[str, Any] | None:
+    """The JSON object the text ends with. The model sometimes writes a short sentence
+    before the object; that prose is ignored. Anything else is not accepted."""
+    try:
+        value = json.loads(text)
+        return value if isinstance(value, dict) else None
+    except json.JSONDecodeError:
+        pass
+    decoder = json.JSONDecoder()
+    for start in (i for i, char in enumerate(text) if char == "{"):
+        try:
+            value, end = decoder.raw_decode(text, start)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict) and not text[end:].strip():
+            return value
+    return None
 
 
 def _env_file_values() -> dict[str, str]:

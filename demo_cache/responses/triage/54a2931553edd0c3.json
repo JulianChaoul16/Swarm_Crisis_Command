@@ -1,0 +1,27 @@
+{
+ "function": "triage",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-03T23:18:50.296005+00:00",
+ "input": {
+  "incident": "incident-3",
+  "type": "transformer fire",
+  "location": "Downtown Junction",
+  "people_at_risk": 0,
+  "needs": [
+   "fire",
+   "utility"
+  ],
+  "reported_severity": "high",
+  "text": ""
+ },
+ "output": {
+  "reasons": [
+   "High-severity transformer fire requiring fire response",
+   "Zero people at risk reported"
+  ],
+  "severity_score": 70,
+  "summary": "Transformer fire at Downtown Junction needing fire and utility, no people at risk.",
+  "vulnerable": false
+ }
+}

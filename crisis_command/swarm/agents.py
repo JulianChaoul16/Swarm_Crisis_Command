@@ -5,8 +5,10 @@ reads a frozen world snapshot and writes its vote to the board. Agents also reac
 other through the bus: a flood-cover change makes Vision and Logistics re-vote, and a road
 change makes Logistics re-vote. The coordinator re-plans when the consensus moves.
 
-Phase 2 scoring is rule-based and documented below; each vote records its source. Model
-calls (Muse Spark, SAM 3.1, Muse Wonder, Muse Glimmer) replace these rules in Phase 3.
+Model calls go through `meta_api` and each vote records its real source: Triage asks Muse
+Spark (rules if it fails); Vision uses flood cover from SAM 3.1 sample data until a
+segmentation endpoint is connected; Logistics scores access with rules and cites the local
+knowledge base (the Muse Glimmer role, retrieval running locally).
 """
 
 from concurrent.futures import ThreadPoolExecutor
@@ -14,6 +16,7 @@ from typing import Any
 
 import networkx as nx
 
+from ..meta_api import SAM, MetaHub
 from ..model import Incident, IncidentStatus, Severity
 from ..simulation import WorldSnapshot
 from .board import FLOOD_CHANGED, LOGISTICS, ROAD_CHANGED, TRIAGE, VISION, IncidentBoard
@@ -73,8 +76,11 @@ def logistics_vote(incident: Incident, snapshot: WorldSnapshot, cover: dict[str,
 class Swarm:
     """Binds the agents to a board and a source of world snapshots."""
 
-    def __init__(self, board: IncidentBoard, snapshot, place_of, flood_sample: dict[str, dict[str, Any]]):
+    def __init__(self, board: IncidentBoard, snapshot, place_of, flood_sample: dict[str, dict[str, Any]],
+                 hub: MetaHub, report_text=None):
         self.board = board
+        self.hub = hub
+        self.report_text = report_text or (lambda incident_id: "")  # incident id -> original report text
         self.snapshot = snapshot  # () -> WorldSnapshot
         self.place_of = place_of  # Coordinate -> place name
         self.flood_sample = flood_sample
@@ -91,8 +97,18 @@ class Swarm:
 
     def triage(self, incident_id: str) -> None:
         incident = self._incident(self.snapshot(), incident_id)
-        if incident is not None:
-            self.board.cast(incident_id, TRIAGE, *triage_vote(incident), source=RULES)
+        if incident is None:
+            return
+        rules_score, rules_reasons = triage_vote(incident)
+        facts = {"incident": incident_id, "type": incident.kind, "location": self.place_of(incident.location),
+                 "people_at_risk": incident.people, "needs": sorted(incident.required_services),
+                 "reported_severity": incident.severity.name.lower(), "text": self.report_text(incident_id)}
+        result = self.hub.triage(facts, lambda: {"severity_score": rules_score, "vulnerable": False,
+                                                 "summary": incident.kind, "reasons": list(rules_reasons)})
+        value = result.value
+        source = RULES if result.source == "fallback" else result.label
+        reasons = tuple(str(r) for r in value.get("reasons", [])[:2]) or rules_reasons
+        self.board.cast(incident_id, TRIAGE, value.get("severity_score", rules_score), reasons, source=source)
 
     def vision(self, incident_id: str) -> None:
         incident = self._incident(self.snapshot(), incident_id)
@@ -102,17 +118,24 @@ class Swarm:
         cover = self.board.flood_cover.get(place)
         if cover is None and place in self.flood_sample:
             # Phase 2: flood cover comes from the scenario's sample imagery table.
-            self.board.set_flood_cover(place, {**self.flood_sample[place], "place": place}, VISION, "sample data")
+            self.board.set_flood_cover(place, {**self.flood_sample[place], "place": place}, VISION, f"{SAM} · sample")
             cover = self.board.flood_cover.get(place)
         self.board.cast(incident_id, VISION, *vision_vote(incident, cover),
-                        source="sample data" if cover else RULES)
+                        source=cover.get("source", f"{SAM} · sample") if cover else RULES)
 
     def logistics(self, incident_id: str) -> None:
         snapshot = self.snapshot()
         incident = self._incident(snapshot, incident_id)
         if incident is not None:
             cover = self.board.flood_cover.get(self.place_of(incident.location))
-            self.board.cast(incident_id, LOGISTICS, *logistics_vote(incident, snapshot, cover), source=RULES)
+            score, reasons = logistics_vote(incident, snapshot, cover)
+            guide = self.hub.guidance(f"{incident.kind} {self.place_of(incident.location)} "
+                                      f"{' '.join(incident.required_services)}", limit=1)
+            if guide.value:
+                passage = guide.value[0]
+                reasons = reasons + (f"Per {passage['citation']}: {passage['text']}",)
+            self.board.cast(incident_id, LOGISTICS, score, reasons,
+                            source=f"rules + {guide.label}" if guide.value else RULES)
 
     # ----- spawning and reactions -----------------------------------------
 

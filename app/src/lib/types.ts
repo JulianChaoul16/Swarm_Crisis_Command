@@ -116,7 +116,12 @@ export type WorldState = {
   current_plan: Proposal | null;
   reports: Report[];
   swarm: Swarm;
+  models: { model: string; status: string; detail: string }[];
+  explanation: ModelResult<{ why: string[]; tradeoff: string }> | null;
+  alerts: Record<string, { text: ModelResult<{ english: string; spanish: string }> | null; graphic: ModelResult<unknown> | null }>;
 };
+
+export type ModelResult<T> = { value: T; model: string; source: string; note: string; label: string };
 
 export type SwarmVote = { score: number; reasons: string[]; source: string };
 

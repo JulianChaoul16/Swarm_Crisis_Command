@@ -118,6 +118,13 @@ def serialize_proposal(proposal: PlanProposal) -> dict[str, Any]:
     }
 
 
+def _result(result: Any) -> dict[str, Any] | None:
+    if result is None:
+        return None
+    return {"value": result.value, "model": result.model, "source": result.source,
+            "note": result.note, "label": result.label}
+
+
 def serialize_swarm(board: IncidentBoard) -> dict[str, Any]:
     data = board.snapshot()
     return {
@@ -237,5 +244,9 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
         ],
         "current_plan": serialize_proposal(current) if current is not None else None,
         "swarm": serialize_swarm(service.board),
+        "models": service.hub.status(),
+        "explanation": _result(service.explanations.get(current.id)) if current is not None else None,
+        "alerts": {plan_id: {"text": _result(alert["text"]), "graphic": _result(alert["graphic"])}
+                   for plan_id, alert in service.alerts.items()},
         "reports": [serialize_report(report) for report in reversed(service.reports)],
     }
