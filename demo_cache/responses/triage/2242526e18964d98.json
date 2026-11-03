@@ -2,9 +2,9 @@
  "function": "triage",
  "model": "Muse Spark",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-03T23:18:48.594375+00:00",
+ "recorded_at": "2026-11-03T23:56:45.029063+00:00",
  "input": {
-  "incident": "incident-1",
+  "incident": "incident-9",
   "type": "residents trapped by rising water",
   "location": "Riverside Apartments",
   "people_at_risk": 5,
@@ -17,11 +17,11 @@
  },
  "output": {
   "reasons": [
-   "Trapped by rising water",
-   "Critical severity with medical need"
+   "trapped by rising water",
+   "critical medical and rescue needs"
   ],
   "severity_score": 95,
-  "summary": "5 residents trapped by rising water at Riverside Apartments need rescue and medical help",
+  "summary": "5 residents trapped by rising water at Riverside Apartments needing rescue and medical help",
   "vulnerable": true
  }
 }

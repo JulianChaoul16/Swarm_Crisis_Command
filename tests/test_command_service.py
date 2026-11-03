@@ -57,7 +57,7 @@ class IntakeTests(CommandServiceTestCase):
 
         self.assertEqual(report.status, ReportStatus.NEEDS_EXTRACTION)
         self.assertIsNone(report.extracted_by)
-        self.assertIn("No model configured", report.extraction_error)
+        self.assertIn("No reading: no live model", report.extraction_error)
         self.assertEqual(report.fields.kind, None)
 
     def test_missing_fields_block_confirmation_until_clarified(self) -> None:

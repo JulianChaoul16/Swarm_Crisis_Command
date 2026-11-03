@@ -19,7 +19,7 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from crisis_command.operations.scenario import FLOOD_PLACES, FLOOD_ROADS  # noqa: E402
+from crisis_command.operations.scenario import DEMO_EXTRA_ROADS, FLOOD_PLACES, FLOOD_ROADS  # noqa: E402
 
 OUT = ROOT / "crisis_command" / "api" / "richmond_geo.json"
 OSRM = "https://router.project-osrm.org"
@@ -45,6 +45,8 @@ ANCHORS: dict[str, tuple[float, float]] = {
 
 # Optional via points that keep a road on the street it is named after.
 VIA: dict[str, list[tuple[float, float]]] = {
+    # Over Church Hill (near St. John's Church on E Broad St), not along Dock St.
+    "broad-street-east": [(-77.4206, 37.5318)],
     "main-street-bridge": [(-77.4345, 37.5280)],  # Mayo Bridge
 }
 
@@ -67,7 +69,22 @@ def route(points: list[list[float]] | list[tuple[float, float]]) -> tuple[list[l
     return coordinates, best["distance"]
 
 
+def add_roads(road_ids: list[str]) -> None:
+    """Fetch only the named roads and merge them into the existing file."""
+    data = json.loads(OUT.read_text(encoding="utf-8"))
+    places = data["places"]
+    for road_id, start, end, _closed in FLOOD_ROADS + DEMO_EXTRA_ROADS:
+        if road_id in road_ids:
+            line, metres = route([places[start], *VIA.get(road_id, []), places[end]])
+            data["roads"][road_id] = [places[start], *line, places[end]]
+            print(f"{road_id:22s} {metres / 1000:5.2f} km  {len(line)} points")
+    OUT.write_text(json.dumps(data, indent=1), encoding="utf-8")
+
+
 def main() -> None:
+    if len(sys.argv) > 1:
+        add_roads(sys.argv[1:])
+        return
     missing = set(FLOOD_PLACES) - set(ANCHORS)
     if missing:
         raise SystemExit(f"No anchor for: {sorted(missing)}")
@@ -76,7 +93,7 @@ def main() -> None:
         places[name] = snap(anchor)
         sleep(0.3)
     roads = {}
-    for road_id, start, end, _closed in FLOOD_ROADS:
+    for road_id, start, end, _closed in FLOOD_ROADS + DEMO_EXTRA_ROADS:
         line, metres = route([places[start], *VIA.get(road_id, []), places[end]])
         # Pin both ends exactly on the place markers.
         roads[road_id] = [places[start], *line, places[end]]

@@ -1,0 +1,35 @@
+{
+ "name": "richmond-flood-demo",
+ "label": "SIMULATION: seeded scenario, not live data",
+ "gauge_label": "scenario value, not a live USGS reading",
+ "gauge": {
+  "site": "James River at Westham (USGS 02037500)",
+  "value": 11.2,
+  "trend": "rising"
+ },
+ "initial_incidents": "5, seeded in crisis_command/operations/scenario.py (build_richmond_demo_world)",
+ "events": [
+  {
+   "at": 15,
+   "type": "audio_report",
+   "label": "911 call from a bus in Shockoe Bottom",
+   "audio_id": "call_0141",
+   "source": "911 call (transcribed)"
+  },
+  {
+   "at": 30,
+   "type": "photo_report",
+   "label": "Citizen photo of Dock St",
+   "image_id": "dock_st_photo",
+   "place": "Shockoe Bottom",
+   "road_id": "dock-street"
+  },
+  {
+   "at": 45,
+   "type": "gauge",
+   "label": "River gauge update",
+   "value": 11.8,
+   "trend": "rising"
+  }
+ ]
+}

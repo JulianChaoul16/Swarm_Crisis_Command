@@ -33,6 +33,7 @@ export type Service = {
 
 export type Road = {
   id: string;
+  name?: string;
   is_closed: boolean;
   length: number;
   path: LngLat[];
@@ -59,7 +60,7 @@ export type Proposal = {
   decided_at: string | null;
   decided_by: string | null;
   decision_reason: string | null;
-  assignments: { incident_id: string; service_id: string; estimated_arrival: number; route: LngLat[] }[];
+  assignments: { incident_id: string; service_id: string; estimated_arrival: number; route: LngLat[]; via: string[] }[];
   unassigned_incident_ids: string[];
   rationale: string[];
   checks: Check[];
@@ -117,6 +118,7 @@ export type WorldState = {
   reports: Report[];
   swarm: Swarm;
   models: { model: string; status: string; detail: string }[];
+  demo: { running: boolean; elapsed_s: number | null; events: { at: number; label: string; done: boolean }[]; errors: string[] };
   explanation: ModelResult<{ why: string[]; tradeoff: string }> | null;
   alerts: Record<string, { text: ModelResult<{ english: string; spanish: string }> | null; graphic: ModelResult<unknown> | null }>;
 };
@@ -128,6 +130,18 @@ export type SwarmVote = { score: number; reasons: string[]; source: string };
 export type Swarm = {
   incidents: Record<string, { votes: Record<string, SwarmVote>; final: number | null; agreement: number | null }>;
   flood_cover: Record<string, { percent: number; note?: string }>;
+  gauge: { value?: number; trend?: string; site?: string; label?: string };
+  imagery: {
+    image_id: string;
+    place: string;
+    road_id: string;
+    mask: GeoJSON.Feature;
+    mask_source: string;
+    estimate: { depth_in: string; passable: boolean; confidence: number; note: string };
+    estimate_source: string;
+    note: string;
+  }[];
+  transcripts: { audio_id: string; text: string; source: string; note: string }[];
   activity: { at: string; agent: string; source: string; text: string; incident_id: string | null }[];
   consensus_rule: string;
 };

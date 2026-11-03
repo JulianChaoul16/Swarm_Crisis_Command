@@ -2,7 +2,7 @@
 
 from .plans import PlanProposal, PlanStatus
 from .reports import Report, ReportStatus
-from .scenario import DEMO_SCENARIO, Scenario
+from .scenario import DEMO_FLOOD_SCENARIO, DEMO_SCENARIO, Scenario
 from .service import (
     CommandError,
     CommandService,

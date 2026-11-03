@@ -33,6 +33,9 @@ class Scenario:
     # Sample flood cover per place (percent of the area under water), used by the Vision
     # agent until segmentation output is wired in. Invented exercise values.
     flood_sample: dict[str, dict[str, Any]] = field(default_factory=dict)
+    # Street-level descriptions for the report reader, and readable road names for the UI.
+    place_notes: dict[str, str] = field(default_factory=dict)
+    road_names: dict[str, str] = field(default_factory=dict)
 
 
 def build_demo_world() -> World:
@@ -249,4 +252,85 @@ FLOOD_SCENARIO = Scenario(
     annotations=(
         ("River", (Coordinate(-1, 3.5), Coordinate(10, 3.5))),
     ),
+)
+
+
+# ----- Richmond flood demo (the START DEMO SCENARIO run) -------------------------------
+
+# A higher route between 14th St & Main and Rocketts over Church Hill: with Dock St under
+# water, it keeps Shockoe Bottom reachable from the 14th St (Mayo) Bridge.
+DEMO_EXTRA_ROADS = (("broad-street-east", "Downtown Junction", "East Junction", False),)
+
+DEMO_ROAD_NAMES = {
+    "main-street-bridge": "14th St (Mayo) Bridge",
+    "upriver-bridge": "Lee Bridge",
+    "dock-street": "Dock St",
+    "east-main": "E Main St",
+    "broad-street-east": "Church Hill route",
+    "hull-street": "Hull St",
+    "broad-street": "E Broad St",
+    "riverside-drive": "Riverside Dr",
+    "river-road": "Commerce Rd riverside",
+    "station-road": "Commerce Rd",
+    "hospital-broad": "E Broad St (VCU)",
+    "west-broad": "W Broad St",
+    "station-broad": "N 2nd St",
+    "shelter-road": "Church Hill (Broad St)",
+    "hospital-shelter": "E Marshall St",
+    "upriver-north-road": "Belvidere St",
+    "upriver-south-road": "Cowardin Ave",
+}
+
+DEMO_PLACE_NOTES = {
+    "Shockoe Bottom": "E Main St between 15th and 21st St, including E 18th St, Dock St and Main Street Station",
+    "Downtown Junction": "14th St at Main St, north end of the 14th St (Mayo) Bridge",
+    "South Junction": "south end of the 14th St (Mayo) Bridge, Hull St at Commerce Rd",
+    "East Junction": "Rocketts Landing, E Main St at Williamsburg Ave",
+    "Riverside Apartments": "south-bank apartments east of the Mayo Bridge",
+    "Manchester": "Hull St at Cowardin Ave and the blocks around it",
+    "Broad & 3rd": "E Broad St at N 3rd St",
+    "dock-street": "Dock St, along the river below Shockoe Bottom",
+    "main-street-bridge": "the 14th St (Mayo) Bridge over the James River",
+    "east-main": "E Main St from Shockoe Bottom to Rocketts Landing",
+}
+
+
+def build_richmond_demo_world() -> World:
+    places = FLOOD_PLACES
+    city = City("Richmond flood demo (simulation)")
+    for road_id, start, end, closed in FLOOD_ROADS + DEMO_EXTRA_ROADS:
+        city.add_road(Road(road_id, places[start], places[end], is_closed=closed))
+    incidents = [
+        Incident("incident-9", "residents trapped by rising water", places["Riverside Apartments"],
+                 Severity.CRITICAL, frozenset({"rescue", "medical"}), people=5),
+        Incident("incident-10", "transformer fire", places["Downtown Junction"],
+                 Severity.HIGH, frozenset({"fire", "utility"})),
+        Incident("incident-11", "dialysis patient cut off from clinic", places["Manchester"],
+                 Severity.MEDIUM, frozenset({"medical"}), people=1),
+        Incident("incident-12", "downed power lines across road", places["East Junction"],
+                 Severity.MEDIUM, frozenset({"police"})),
+        Incident("incident-13", "vehicle fire at flooded intersection", places["Broad & 3rd"],
+                 Severity.LOW, frozenset({"fire"})),
+    ]
+    services = [
+        EmergencyService("fire-1", "Fire Engine 1", places["West End"], frozenset({"fire"}), speed=2.0),
+        EmergencyService("fire-2", "Fire Engine 2", places["South Junction"], frozenset({"fire"}), speed=2.0),
+        EmergencyService("medic-1", "Ambulance 1", places["Hospital"], frozenset({"medical"}), speed=2.5, capacity=2),
+        EmergencyService("medic-2", "Ambulance 2", places["South Station"], frozenset({"medical"}), speed=2.5, capacity=2),
+        EmergencyService("swift-1", "Swift Water Team 1", places["Riverside Apartments"], frozenset({"rescue"}), speed=1.5, capacity=6),
+        EmergencyService("swift-2", "Swift Water Team 2", places["South Station"], frozenset({"rescue"}), speed=1.5, capacity=6),
+        EmergencyService("police-1", "Police Unit 1", places["Hospital"], frozenset({"police"}), speed=3.0),
+        EmergencyService("utility-1", "Utility Crew 1", places["East Junction"], frozenset({"utility"}), speed=2.0),
+    ]
+    return World(incidents=incidents, services=services, city=city)
+
+
+DEMO_FLOOD_SCENARIO = Scenario(
+    name="richmond-flood-demo",
+    description="Seeded Richmond flash flood run by START DEMO SCENARIO (simulation).",
+    build_world=build_richmond_demo_world,
+    places=FLOOD_PLACES,
+    flood_sample={key: value for key, value in FLOOD_SCENARIO.flood_sample.items() if key != "Shockoe Bottom"},
+    place_notes=DEMO_PLACE_NOTES,
+    road_names=DEMO_ROAD_NAMES,
 )

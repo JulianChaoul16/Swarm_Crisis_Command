@@ -179,6 +179,11 @@ class MetaHub:
         payload = {**facts, "text": self.redact(facts.get("text", "")).value} if "text" in facts else facts
         return self._spark("triage", self.TRIAGE_SYSTEM, payload, self.TRIAGE_SCHEMA, fallback)
 
+    def extract(self, source: str, text: str, system: str, schema: dict[str, Any]) -> ModelResult:
+        """Read a raw report into structured fields (Muse Spark). Text is redacted first."""
+        payload = {"source": source, "report": self.redact(text).value}
+        return self._spark("extract", system, payload, schema, lambda: None)
+
     # ----- 4. SAM 3.1 and 5. Muse Wonder ------------------------------------
 
     def segment(self, image_id: str) -> ModelResult:

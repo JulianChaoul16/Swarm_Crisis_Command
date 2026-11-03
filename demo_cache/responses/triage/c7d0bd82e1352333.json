@@ -1,0 +1,27 @@
+{
+ "function": "triage",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-03T23:57:13.109004+00:00",
+ "input": {
+  "incident": "incident-14",
+  "type": "bus passengers trapped by floodwater",
+  "location": "Shockoe Bottom",
+  "people_at_risk": 5,
+  "needs": [
+   "medical",
+   "rescue"
+  ],
+  "reported_severity": "critical",
+  "text": "Yeah, I'm driving a city bus on East 18th and Main in Shockoe Bottom. Water is coming in through the doors, it's up past the steps. I've got four passengers, one of them is in a wheelchair, we can't get out. The road is like a river. Please hurry."
+ },
+ "output": {
+  "reasons": [
+   "Water entering bus, occupants cannot evacuate",
+   "Wheelchair passenger requires rescue and medical need"
+  ],
+  "severity_score": 95,
+  "summary": "City bus with 5 trapped by rising floodwater in Shockoe Bottom",
+  "vulnerable": true
+ }
+}

@@ -53,6 +53,8 @@ export type MapData = {
   roads: Pick<Road, "id" | "is_closed" | "path">[];
   proposedRoutes?: { service_id: string; route: LngLat[] }[];
   annotations?: { label: string; path: LngLat[] }[];
+  // Flood-water masks (GeoJSON features) drawn as a blue overlay.
+  floodMasks?: GeoJSON.Feature[];
 };
 
 type Props = {
@@ -106,6 +108,7 @@ function tripState(trip: Trip, now: number): { at: LngLat; ahead: LngLat[] } {
 function staticGeoJson(data: MapData): Record<string, Collection> {
   return {
     [`${OWN}annotations`]: collection((data.annotations ?? []).map((item) => line(item.path, { label: item.label }))),
+    [`${OWN}masks`]: collection(data.floodMasks ?? []),
     [`${OWN}roads`]: collection(data.roads.map((road) => line(road.path, { id: road.id, closed: road.is_closed }))),
     [`${OWN}proposed`]: collection(
       (data.proposedRoutes ?? [])
@@ -121,10 +124,16 @@ function staticGeoJson(data: MapData): Record<string, Collection> {
 }
 
 function addOwnLayers(map: MapLibreMap) {
-  for (const name of ["annotations", "roads", "routes", "proposed", "incidents", "services"]) {
+  for (const name of ["masks", "annotations", "roads", "routes", "proposed", "incidents", "services"]) {
     if (!map.getSource(`${OWN}${name}`)) map.addSource(`${OWN}${name}`, { type: "geojson", data: collection([]) });
   }
   const layers: Parameters<MapLibreMap["addLayer"]>[0][] = [
+    {
+      id: `${OWN}masks`,
+      type: "fill",
+      source: `${OWN}masks`,
+      paint: { "fill-color": "#3b82f6", "fill-opacity": 0.45, "fill-outline-color": "#93c5fd" },
+    },
     {
       id: `${OWN}annotations`,
       type: "line",

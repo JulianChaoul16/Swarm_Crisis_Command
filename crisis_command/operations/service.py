@@ -245,6 +245,7 @@ class CommandService:
         source: str,
         occurred_at: datetime | None = None,
         fields: dict[str, Any] | None = None,
+        entered_by: str = "operator",
     ) -> Report:
         if not content.strip() or not source.strip():
             raise CommandError("Report content and source are required.")
@@ -256,7 +257,7 @@ class CommandService:
             occurred_at=occurred_at,
         )
         if fields is not None:
-            report = replace(report, fields=ReportFields.from_mapping(fields), extracted_by="operator")
+            report = replace(report, fields=ReportFields.from_mapping(fields), extracted_by=entered_by)
         else:
             report = self._extract(report)
         with self._atomic():
@@ -273,30 +274,27 @@ class CommandService:
         return report
 
     def _extract(self, report: Report) -> Report:
+        """Muse Spark reads the report (through the hub: redacted, recorded, replayable)."""
         context = self.intake_context()
         guide = "\n".join(
             f"- {capability}: {CAPABILITY_GUIDE.get(capability, 'as named')}"
             for capability in sorted(context.capabilities)
         )
-        try:
-            output = self.client.complete_json(
-                system=(
-                    f"{EXTRACTION_RULES}\nCapabilities:\n{guide}\n\n"
-                    f"Known places: {', '.join(sorted(context.places))}.\n"
-                    f"Known roads: {', '.join(sorted(context.road_ids))}."
-                ),
-                user=f"Source: {report.source}\nReport: {report.content}",
-                schema=extraction_schema(context),
-                timeout=self.agent_timeout,
-            )
-        except ModelUnavailableError as error:
-            return replace(report, extraction_error=str(error))
-        except Exception as error:  # noqa: BLE001 - surfaced to the operator, never hidden
-            return replace(report, extraction_error=f"Extraction failed: {error}")
+        notes = self.scenario.place_notes
+        places = ", ".join(f"{name} ({notes[name]})" if name in notes else name for name in sorted(context.places))
+        roads = ", ".join(f"{road} ({notes[road]})" if road in notes else road for road in sorted(context.road_ids))
+        result = self.hub.extract(
+            report.source,
+            report.content,
+            f"{EXTRACTION_RULES}\nCapabilities:\n{guide}\n\nKnown places: {places}.\nKnown roads: {roads}.",
+            extraction_schema(context),
+        )
+        if result.value is None:
+            return replace(report, extraction_error=f"No reading: {result.note}")
         return replace(
             report,
-            fields=ReportFields.from_mapping(output),
-            extracted_by=f"model:{self.client.model_id}",
+            fields=ReportFields.from_mapping(result.value),
+            extracted_by=f"model:{result.model} ({result.source})",
         )
 
     def clarify_report(self, report_id: str, fields: dict[str, Any], actor: str = "operator") -> Report:
@@ -404,11 +402,9 @@ class CommandService:
         return report
 
     def _next_incident_id(self) -> str:
-        existing = {incident.id for incident in self.world.incidents}
-        number = len(existing) + 1
-        while f"incident-{number}" in existing:
-            number += 1
-        return f"incident-{number}"
+        """One more than the highest number in use (seeded incidents may not start at 1)."""
+        numbers = [int(i.id.split("-")[-1]) for i in self.world.incidents if i.id.split("-")[-1].isdigit()]
+        return f"incident-{max(numbers, default=0) + 1}"
 
     # ----- planning and approval ----------------------------------------
 
@@ -613,7 +609,6 @@ class CommandService:
             votes = self.board.votes.get(lead.id, {})
             unmet = [line.replace("Incident ", "", 1) for line in proposal.plan.rationale if "left unassigned" in line]
             facts = {
-                "plan": proposal.id,
                 "recommended": {"incident": lead.id, "type": lead.kind, "location": places.get(lead.location),
                                 "people_at_risk": lead.people,
                                 "units": [f"{names[d.service_id]} (ETA {d.estimated_arrival:.1f} min)"
@@ -646,10 +641,10 @@ class CommandService:
             incidents = {i.id: i for i in self.world.incidents}
             served = sorted({d.incident_id for d in proposal.plan.assignments})
             facts = {
-                "approved_plan": proposal.id,
                 "responding_to": [{"type": incidents[i].kind, "location": places.get(incidents[i].location)}
                                   for i in served if i in incidents],
-                "closed_roads": sorted(r.id for r in self.world.city.roads if r.is_closed),
+                "closed_roads": sorted(self.scenario.road_names.get(r.id, r.id)
+                                       for r in self.world.city.roads if r.is_closed),
             }
             run_id = self.run_id
         areas = sorted({item["location"] for item in facts["responding_to"] if item["location"]})

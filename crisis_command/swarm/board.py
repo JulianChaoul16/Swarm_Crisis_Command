@@ -24,6 +24,7 @@ VOTE_CAST = "vote.cast"
 CONSENSUS_CHANGED = "consensus.changed"
 ROAD_CHANGED = "road.changed"
 FLOOD_CHANGED = "flood.changed"
+GAUGE_CHANGED = "gauge.changed"
 
 
 def _now() -> datetime:
@@ -92,6 +93,10 @@ class IncidentBoard:
     finals: dict[str, int] = field(default_factory=dict)
     # Shared observations agents publish for each other, e.g. flood cover per place.
     flood_cover: dict[str, dict[str, Any]] = field(default_factory=dict)
+    # River gauge reading (scenario value) and imagery results (masks, estimates) for the map.
+    gauge: dict[str, Any] = field(default_factory=dict)
+    imagery: list[dict[str, Any]] = field(default_factory=list)
+    transcripts: list[dict[str, Any]] = field(default_factory=list)
     activity: list[Activity] = field(default_factory=list)
     _lock: RLock = field(default_factory=RLock)
 
@@ -126,6 +131,14 @@ class IncidentBoard:
             self.log(agent, source, f"{place} now {cover['percent']}% flooded")
             self.bus.publish(FLOOD_CHANGED, {"place": place, "cover": cover})
 
+    def set_gauge(self, reading: dict[str, Any], source: str) -> None:
+        with self._lock:
+            before = self.gauge.get("value")
+            self.gauge = reading
+        if before != reading.get("value"):
+            self.log("River gauge", source, f"James River at Westham {reading['value']} ft, {reading.get('trend', '')}")
+            self.bus.publish(GAUGE_CHANGED, {"gauge": reading})
+
     def final(self, incident_id: str) -> int | None:
         with self._lock:
             return self.finals.get(incident_id)
@@ -136,5 +149,8 @@ class IncidentBoard:
                 "votes": {iid: dict(v) for iid, v in self.votes.items()},
                 "finals": dict(self.finals),
                 "flood_cover": dict(self.flood_cover),
+                "gauge": dict(self.gauge),
+                "imagery": list(self.imagery),
+                "transcripts": list(self.transcripts),
                 "activity": list(self.activity),
             }

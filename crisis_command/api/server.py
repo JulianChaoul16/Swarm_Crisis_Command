@@ -13,7 +13,8 @@ from pydantic import BaseModel, Field
 
 from ..operations import CommandError, StaleApprovalError
 from .serializers import serialize_event, serialize_state
-from .session import service
+from ..meta_api import hub_from_env
+from .session import demo, service
 
 app = FastAPI(title="Crisis Command API")
 
@@ -54,7 +55,8 @@ def value_error(_: Request, error: ValueError) -> JSONResponse:
 
 
 def _state() -> dict[str, Any]:
-    return serialize_state(service)
+    with service._lock:
+        return {**serialize_state(service), "demo": demo.status()}
 
 
 @app.get("/api/state")
@@ -68,8 +70,18 @@ def get_events(limit: int = 200) -> list[dict[str, Any]]:
     return [serialize_event(event) for event in reversed(events)]
 
 
+@app.post("/api/demo/start")
+def start_demo(record: bool = False) -> dict[str, Any]:
+    """START DEMO SCENARIO: reset to the seed and play the timeline through the pipeline,
+    replaying recorded model responses (`?record=true` calls the live model and re-records)."""
+    demo.start(record=record)
+    return _state()
+
+
 @app.post("/api/reset")
 def reset() -> dict[str, Any]:
+    demo.stop()
+    service.hub.mode = hub_from_env(service.client).mode
     service.reset()
     return _state()
 

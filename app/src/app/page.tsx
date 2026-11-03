@@ -130,6 +130,18 @@ function Recommendation({
           <div className="rec-action">
             Dispatch {leadDispatches.map((d) => units.get(d.service_id)).join(" + ")} to {lead.place ?? lead.id}: {lead.kind}
           </div>
+          {leadDispatches.some((d) => d.via.length) && (
+            <ul className="rec-route">
+              {leadDispatches.map((d) => (
+                <li key={d.service_id}>
+                  <b>{units.get(d.service_id)}</b> via {d.via.join(" → ") || "its current location"}
+                </li>
+              ))}
+              {world.roads.some((r) => r.is_closed) && (
+                <li className="muted">Avoiding closed: {world.roads.filter((r) => r.is_closed).map((r) => r.name ?? r.id).join(", ")}</li>
+              )}
+            </ul>
+          )}
           {others.length > 0 && (
             <div className="rec-also">
               Also: {others.map((incident) => {
@@ -175,6 +187,43 @@ function Recommendation({
       )}
       {plan.status === "approved" && <p className="approved">✓ Approved by {plan.decided_by}: units dispatched (simulated)</p>}
       <Alert alert={world.alerts[plan.id] ?? latestAlert(world)} />
+    </div>
+  );
+}
+
+function Timeline({ demo }: { demo: WorldState["demo"] }) {
+  if (demo.elapsed_s === null) return null;
+  return (
+    <div className="timeline" title={demo.errors.join("\n")}>
+      <span className="muted">T+{Math.floor(demo.elapsed_s)}s</span>
+      {demo.events.map((event) => (
+        <span key={event.at} className={`tl ${event.done ? "done" : ""}`}>T+{event.at}s {event.label}</span>
+      ))}
+      {demo.errors.length > 0 && <span className="bad">{demo.errors.length} error(s)</span>}
+    </div>
+  );
+}
+
+function Transcripts({ swarm }: { swarm: Swarm }) {
+  if (!swarm.transcripts.length) return null;
+  const last = swarm.transcripts[swarm.transcripts.length - 1];
+  return (
+    <div className="transcript">
+      <div className="rec-label">Listener Agent · transcript <Pill label={last.source} title={last.note} /></div>
+      <p>“{last.text}”</p>
+    </div>
+  );
+}
+
+function VisionBadge({ swarm }: { swarm: Swarm }) {
+  if (!swarm.imagery.length) return null;
+  const image = swarm.imagery[swarm.imagery.length - 1];
+  return (
+    <div className="vision-badge" title={image.note}>
+      <Pill label={image.mask_source} /> Water detected at {image.place}
+      <span className="sep">|</span>
+      <Pill label={image.estimate_source} /> Est. {image.estimate.depth_in} in,{" "}
+      <b>{image.estimate.passable ? "passable" : "impassable"}</b> ({Math.round(image.estimate.confidence * 100)}% sample confidence)
     </div>
   );
 }
@@ -250,6 +299,13 @@ export default function CommandScreen() {
     );
   }, [refresh]);
 
+  const demoRunning = Boolean(world?.demo.running);
+  useEffect(() => {
+    if (!demoRunning) return;
+    const timer = setInterval(() => refresh().catch(() => null), 1500);
+    return () => clearInterval(timer);
+  }, [demoRunning, refresh]);
+
   const queue = useMemo(() => (world ? rank(world.incidents, world.swarm) : []), [world]);
   const mapData: MapData | null = useMemo(
     () =>
@@ -259,6 +315,7 @@ export default function CommandScreen() {
         roads: world.roads,
         annotations: world.annotations,
         proposedRoutes: world.current_plan?.status === "proposed" ? world.current_plan.assignments : [],
+        floodMasks: world.swarm.imagery.map((image) => image.mask),
       },
     [world, queue],
   );
@@ -268,11 +325,15 @@ export default function CommandScreen() {
       <header className="topbar">
         <span className="sim">SIMULATION</span>
         <h1>Crisis Command Swarm <span className="muted">· Richmond Flood</span></h1>
-        <button className="start" disabled={busy} onClick={() => run(api.reset)} title="Resets the seeded scenario. The timed demo arrives in Phase 4.">
+        <button className="start" disabled={busy} onClick={() => run(api.startDemo)}
+          title="Replays the seeded Richmond timeline through the swarm, using recorded model responses (works offline).">
           ▶ START DEMO SCENARIO
         </button>
-        <div className="gauge" title="Scenario gauge value arrives with the seeded demo (Phase 4).">
-          James River gauge (Westham): <b>—</b> <span className="muted">scenario value pending</span>
+        {world && <Timeline demo={world.demo} />}
+        <div className="gauge" title={world?.swarm.gauge.site}>
+          James River gauge: {world?.swarm.gauge.value !== undefined
+            ? <><b>{world.swarm.gauge.value.toFixed(1)} ft {world.swarm.gauge.trend}</b> <span className="muted">({world.swarm.gauge.label})</span></>
+            : <span className="muted">no reading yet (start the demo)</span>}
         </div>
       </header>
 
@@ -283,11 +344,13 @@ export default function CommandScreen() {
         <main className="panels">
           <section className="panel left">
             <h2>Swarm Incident Queue</h2>
+            <Transcripts swarm={world.swarm} />
             <IncidentQueue incidents={queue} focus={queue[0]?.id ?? null} swarm={world.swarm} />
           </section>
 
           <section className="panel center">
             <CrisisMap data={mapData} basemap />
+            <VisionBadge swarm={world.swarm} />
             <div className="legend">
               <span><i className="ring open" /> Needs units</span>
               <span><i className="ring assigned" /> Dispatched</span>

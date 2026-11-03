@@ -13,7 +13,7 @@ from math import cos, hypot, radians
 from pathlib import Path
 
 from ..model import Coordinate
-from ..operations.scenario import FLOOD_PLACES, FLOOD_ROADS
+from ..operations.scenario import DEMO_EXTRA_ROADS, FLOOD_PLACES, FLOOD_ROADS
 
 ORIGIN_LNG = -77.4560
 ORIGIN_LAT = 37.5300
@@ -29,7 +29,7 @@ _PLACES: dict[Coordinate, list[float]] = {
 # road id -> (grid start, grid end, street polyline from start to end)
 _ROADS: dict[str, tuple[Coordinate, Coordinate, list[list[float]]]] = {
     road_id: (FLOOD_PLACES[start], FLOOD_PLACES[end], _GEOMETRY["roads"][road_id])
-    for road_id, start, end, _closed in FLOOD_ROADS
+    for road_id, start, end, _closed in FLOOD_ROADS + DEMO_EXTRA_ROADS
 }
 LABELS: dict[str, list[float]] = _GEOMETRY["labels"]
 

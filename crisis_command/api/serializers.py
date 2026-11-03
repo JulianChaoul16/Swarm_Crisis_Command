@@ -88,7 +88,23 @@ def serialize_road(road: Road) -> dict[str, Any]:
     }
 
 
-def serialize_proposal(proposal: PlanProposal) -> dict[str, Any]:
+def roads_on(route, city: City | None, names: dict[str, str]) -> list[str]:
+    """Readable names of the roads a route uses, in order."""
+    if city is None:
+        return []
+    found: list[str] = []
+    for a, b in zip(route, route[1:]):
+        road = next((r for r in city.roads if {r.start, r.end} == {a, b}), None)
+        if road is not None:
+            name = names.get(road.id, road.id)
+            if not found or found[-1] != name:
+                found.append(name)
+    return found
+
+
+def serialize_proposal(proposal: PlanProposal, city: City | None = None,
+                       road_names: dict[str, str] | None = None) -> dict[str, Any]:
+    road_names = road_names or {}
     plan = proposal.plan
     return {
         "id": proposal.id,
@@ -107,6 +123,7 @@ def serialize_proposal(proposal: PlanProposal) -> dict[str, Any]:
                 "service_id": dispatch.service_id,
                 "estimated_arrival": dispatch.estimated_arrival,
                 "route": to_line(dispatch.route),
+                "via": roads_on(dispatch.route, city, road_names),
             }
             for dispatch in plan.assignments
         ],
@@ -138,6 +155,9 @@ def serialize_swarm(board: IncidentBoard) -> dict[str, Any]:
             for incident_id, votes in data["votes"].items()
         },
         "flood_cover": data["flood_cover"],
+        "gauge": data["gauge"],
+        "imagery": data["imagery"],
+        "transcripts": data["transcripts"],
         # Newest first, capped for the UI.
         "activity": [
             {"at": item.at.isoformat(), "agent": item.agent, "source": item.source,
@@ -224,7 +244,8 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
             serialize_service(service_, incidents_by_id, world.city, place_names.get(service_.location))
             for service_ in services
         ],
-        "roads": [serialize_road(road) for road in world.city.roads] if world.city else [],
+        "roads": [{**serialize_road(road), "name": service.scenario.road_names.get(road.id, road.id)}
+                  for road in world.city.roads] if world.city else [],
         "places": sorted(service.scenario.places),
         "priority_rule": service.planner.priority_rule,
         # On the satellite map the real river is visible; only its name is drawn.
@@ -242,7 +263,8 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
             }
             for key, disruption in service.scenario.disruptions.items()
         ],
-        "current_plan": serialize_proposal(current) if current is not None else None,
+        "current_plan": serialize_proposal(current, world.city, service.scenario.road_names)
+        if current is not None else None,
         "swarm": serialize_swarm(service.board),
         "models": service.hub.status(),
         "explanation": _result(service.explanations.get(current.id)) if current is not None else None,
