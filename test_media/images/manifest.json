@@ -1,0 +1,83 @@
+{
+ "note": "AI-GENERATED TEST IMAGES (Muse Image), not real photos or real satellite imagery. intended_* fields are what each prompt asked for; the generated image may not match exactly. For testing the Vision models only.",
+ "images": [
+  {
+   "name": "01_dry_street",
+   "file": "01_dry_street.webp",
+   "kind": "dry",
+   "intended_depth_in": [
+    0,
+    0
+   ],
+   "intended_passable_for_cars": true,
+   "prompt": "Top-down satellite photograph, daytime, realistic, of a downtown riverside street block in an older US East Coast city with brick warehouses. The road is completely dry, normal traffic, no water anywhere.",
+   "model": "muse-image-1.0",
+   "seconds": 17.4
+  },
+  {
+   "name": "02_flood_shallow",
+   "file": "02_flood_shallow.webp",
+   "kind": "flood",
+   "intended_depth_in": [
+    2,
+    6
+   ],
+   "intended_passable_for_cars": true,
+   "prompt": "Top-down satellite photograph, daytime, realistic, of a downtown riverside street block in an older US East Coast city with brick warehouses. A thin sheet of shallow floodwater, a few inches deep, covers the road; cars are still driving through it and lane markings are visible through the water.",
+   "model": "muse-image-1.0",
+   "seconds": 17.0
+  },
+  {
+   "name": "03_flood_knee",
+   "file": "03_flood_knee.webp",
+   "kind": "flood",
+   "intended_depth_in": [
+    18,
+    24
+   ],
+   "intended_passable_for_cars": false,
+   "prompt": "Top-down satellite photograph, daytime, realistic, of a downtown riverside street block in an older US East Coast city with brick warehouses. Brown floodwater about knee deep covers the whole street; parked cars have water up to their wheel hubs; lane markings are no longer visible.",
+   "model": "muse-image-1.0",
+   "seconds": 17.0
+  },
+  {
+   "name": "04_flood_deep",
+   "file": "04_flood_deep.webp",
+   "kind": "flood",
+   "intended_depth_in": [
+    42,
+    54
+   ],
+   "intended_passable_for_cars": false,
+   "prompt": "Top-down satellite photograph, daytime, realistic, of a downtown riverside street block in an older US East Coast city with brick warehouses. Brown floodwater about chest deep fills the street; parked cars are submerged up to their windows and an empty city bus is stuck in the water.",
+   "model": "muse-image-1.0",
+   "seconds": 18.7
+  },
+  {
+   "name": "05_flood_severe",
+   "file": "05_flood_severe.webp",
+   "kind": "flood",
+   "intended_depth_in": [
+    96,
+    144
+   ],
+   "intended_passable_for_cars": false,
+   "prompt": "Top-down satellite photograph, daytime, realistic, of a downtown riverside street block in an older US East Coast city with brick warehouses. The whole riverfront block is inundated by the river; only the roofs of parked cars and the tops of first-floor windows show above the brown water.",
+   "model": "muse-image-1.0",
+   "seconds": 19.4
+  },
+  {
+   "name": "06_building_fire",
+   "file": "06_building_fire.webp",
+   "kind": "fire",
+   "intended_depth_in": [
+    0,
+    0
+   ],
+   "intended_passable_for_cars": true,
+   "prompt": "Top-down satellite photograph, daytime, realistic, of a downtown riverside street block in an older US East Coast city with brick warehouses. Firefighters are responding at one warehouse: grey smoke rises from its roof, and two red fire engines and a ladder truck are parked on the dry street with hoses laid out.",
+   "model": "muse-image-1.0",
+   "seconds": 11.3
+  }
+ ]
+}

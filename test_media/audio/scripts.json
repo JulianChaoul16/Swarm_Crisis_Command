@@ -1,0 +1,171 @@
+{
+ "note": "SYNTHESIZED TEST AUDIO (Windows built-in text-to-speech: Microsoft Zira as dispatcher, Microsoft David as callers and crews). Not recordings of real calls; all events are fictional. script holds the exact words; expected holds what the call should be read as.",
+ "clips": [
+  {
+   "file": "01_bus_shockoe.wav",
+   "description": "911 call: city bus taking on water in Shockoe Bottom",
+   "seconds": 36.6,
+   "script": [
+    {
+     "speaker": "dispatcher",
+     "voice": "Microsoft Zira Desktop",
+     "text": "Nine one one, what is the address of your emergency?"
+    },
+    {
+     "speaker": "caller/crew",
+     "voice": "Microsoft David Desktop",
+     "text": "I'm driving a city bus on East Eighteenth Street and Main, in Shockoe Bottom. Water is coming in through the front doors. It's already over the first step."
+    },
+    {
+     "speaker": "dispatcher",
+     "voice": "Microsoft Zira Desktop",
+     "text": "How many people are on the bus with you?"
+    },
+    {
+     "speaker": "caller/crew",
+     "voice": "Microsoft David Desktop",
+     "text": "Four passengers, plus me. One of them is in a wheelchair and can't get up the steps. The road outside is moving like a river. We can't get out."
+    },
+    {
+     "speaker": "dispatcher",
+     "voice": "Microsoft Zira Desktop",
+     "text": "Stay on the bus and keep everyone as high as you can. Help is being sent."
+    }
+   ],
+   "expected": {
+    "location": "Shockoe Bottom (E 18th St & E Main St)",
+    "people": 5,
+    "needs": [
+     "rescue",
+     "medical"
+    ],
+    "severity": "critical"
+   }
+  },
+  {
+   "file": "02_car_underpass.wav",
+   "description": "911 call: elderly man trapped in his car at the Hull St underpass",
+   "seconds": 25.6,
+   "script": [
+    {
+     "speaker": "dispatcher",
+     "voice": "Microsoft Zira Desktop",
+     "text": "Nine one one, what is your emergency?"
+    },
+    {
+     "speaker": "caller/crew",
+     "voice": "Microsoft David Desktop",
+     "text": "My dad is stuck in his car in the Hull Street underpass, right by the Mayo Bridge. The water is up to the windows and he can't open the door."
+    },
+    {
+     "speaker": "dispatcher",
+     "voice": "Microsoft Zira Desktop",
+     "text": "How old is he, and is he hurt?"
+    },
+    {
+     "speaker": "caller/crew",
+     "voice": "Microsoft David Desktop",
+     "text": "He's seventy eight. He has a heart condition. He's on the phone with me and he's panicking. Please send someone now."
+    }
+   ],
+   "expected": {
+    "location": "South Junction / Hull St underpass",
+    "people": 1,
+    "needs": [
+     "rescue",
+     "medical"
+    ],
+    "severity": "critical"
+   }
+  },
+  {
+   "file": "03_radio_swift_water.wav",
+   "description": "Radio: Swift Water Team 1 reports Riverside residents safe",
+   "seconds": 13.6,
+   "script": [
+    {
+     "speaker": "caller/crew",
+     "voice": "Microsoft David Desktop",
+     "text": "Swift Water Team One to dispatch. We are clear of Riverside Apartments. All five residents are out and safe, no injuries. We are heading back to the staging area and are available."
+    }
+   ],
+   "expected": {
+    "report_type": "resolution",
+    "incident": "Riverside Apartments",
+    "people": 5
+   }
+  },
+  {
+   "file": "04_hedged_bridge.wav",
+   "description": "Caller: unsure whether the Mayo Bridge is closed",
+   "seconds": 14.3,
+   "script": [
+    {
+     "speaker": "caller/crew",
+     "voice": "Microsoft David Desktop",
+     "text": "Hi, um, I'm not sure who to call. I think the Mayo Bridge might be closed? I saw police cars at Fourteenth Street with their lights on, but I didn't see any signs. Is it closed?"
+    }
+   ],
+   "expected": {
+    "report_type": "road_status",
+    "road": "14th St (Mayo) Bridge",
+    "closed": true,
+    "certainty": "possible"
+   }
+  },
+  {
+   "file": "05_road_authority_dock.wav",
+   "description": "Road authority: Dock Street closed",
+   "seconds": 13.1,
+   "script": [
+    {
+     "speaker": "dispatcher",
+     "voice": "Microsoft Zira Desktop",
+     "text": "Road authority to all units. Dock Street is closed between Fourteenth and Eighteenth Street. Water is over the road, about two feet deep. Use Broad Street to reach Shockoe Bottom."
+    }
+   ],
+   "expected": {
+    "report_type": "road_status",
+    "road": "Dock St",
+    "closed": true,
+    "certainty": "confirmed"
+   }
+  },
+  {
+   "file": "06_rooftop_family.wav",
+   "description": "911 call: family on a roof in Manchester, no count at first",
+   "seconds": 23.8,
+   "script": [
+    {
+     "speaker": "dispatcher",
+     "voice": "Microsoft Zira Desktop",
+     "text": "Nine one one, where are you?"
+    },
+    {
+     "speaker": "caller/crew",
+     "voice": "Microsoft David Desktop",
+     "text": "We're on the roof of our house, Seventh and Bainbridge, in Manchester. The water came up so fast. Please hurry."
+    },
+    {
+     "speaker": "dispatcher",
+     "voice": "Microsoft Zira Desktop",
+     "text": "How many people are with you?"
+    },
+    {
+     "speaker": "caller/crew",
+     "voice": "Microsoft David Desktop",
+     "text": "It's me, my wife, our two kids, and my mother. My mother can't walk, I had to carry her up."
+    }
+   ],
+   "expected": {
+    "location": "Manchester (7th St & Bainbridge St)",
+    "people": 5,
+    "needs": [
+     "rescue",
+     "medical"
+    ],
+    "severity": "critical"
+   }
+  }
+ ]
+}
