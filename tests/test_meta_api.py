@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 from crisis_command.agents.model_client import UnavailableModelClient
 from crisis_command.database import connection
-from crisis_command.meta_api import MUSE_GLIMMER, MUSE_SPARK, SAM, MetaHub
+from crisis_command.meta_api import MUSE_SPARK, PLAN_SEARCH, SAM, MetaHub
 from crisis_command.operations import CommandService
 from crisis_command.swarm.board import TRIAGE
 
@@ -88,7 +88,7 @@ class HubTests(unittest.TestCase):
 
     def test_guidance_cites_the_sample_knowledge_base(self) -> None:
         result = self.hub(UnavailableModelClient("offline")).guidance("stranded vehicles rescue water")
-        self.assertEqual((result.model, result.source), (MUSE_GLIMMER, "local"))
+        self.assertEqual((result.model, result.source), (PLAN_SEARCH, "local"))
         self.assertTrue(result.value and "Sample" in result.value[0]["citation"])
 
     def test_status_reports_only_spark_as_connected(self) -> None:

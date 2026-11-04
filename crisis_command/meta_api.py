@@ -7,7 +7,7 @@ it actually came from:
 - "cache": a response recorded from an earlier live call of the same model with the same
   input (`demo_cache/responses/`). Demo mode uses only these, so it works offline and every
   cached answer is a real one.
-- "local": code that runs on this machine (PII redaction rules, plan retrieval).
+- "local": code that runs on this machine (PII redaction, plan search); not a model.
 - "sample": hand-made data for a model this account is not connected to (e.g. SAM 3.1).
 - "fallback": rules used because the model call failed and nothing was cached.
 
@@ -35,19 +35,18 @@ SAMPLE_DIR = ROOT / "demo_cache" / "samples"
 # Display names, and whether this account can call each model. Only Muse Spark is wired to
 # a live endpoint; the others are named for the architecture and fall back as labelled.
 MUSE_SPARK = "Muse Spark"
-MUSE_SPARK_OPEN = "Muse Spark Open"
 MUSE_VOICE = "Muse Voice Transcribe"
 SAM = "SAM 3.1"
 MUSE_WONDER = "Muse Wonder"
-MUSE_GLIMMER = "Muse Glimmer"
+# Code that runs on this machine (no model).
+LOCAL_REDACTION = "Local redaction"
+PLAN_SEARCH = "Plan search"
 MUSE_IMAGE = "Muse Image"
 
 NOT_CONNECTED = {
-    MUSE_SPARK_OPEN: "open weights not installed; local redaction rules run instead",
     MUSE_VOICE: "no transcription endpoint configured; recorded sample transcripts are used",
     SAM: "no segmentation endpoint configured; sample masks are used",
     MUSE_WONDER: "no multimodal endpoint configured; sample estimates are used",
-    MUSE_GLIMMER: "open weights not installed; local retrieval over the sample knowledge base runs instead",
     MUSE_IMAGE: "no image endpoint configured; no alert graphic is generated",
 }
 
@@ -57,8 +56,6 @@ MODEL_SETTINGS = {
     MUSE_VOICE: "META_VOICE",
     SAM: "META_SAM",
     MUSE_WONDER: "META_WONDER",
-    MUSE_GLIMMER: "META_GLIMMER",
-    MUSE_SPARK_OPEN: "META_SPARK_OPEN",
     MUSE_IMAGE: "META_IMAGE",
 }
 
@@ -169,15 +166,15 @@ class MetaHub:
                                NOT_CONNECTED[MUSE_VOICE])
         return ModelResult(None, MUSE_VOICE, "sample", f"no sample transcript for {audio_id}")
 
-    # ----- 2. Muse Spark Open (local PII redaction) -------------------------
+    # ----- 2. Local PII redaction (code) ------------------------------------
 
     def redact(self, text: str) -> ModelResult:
-        """Redact personal data before any cloud call. Runs locally (rules stand in for Spark Open)."""
+        """Redact personal data before any cloud call. Plain code on this machine."""
         redacted = re.sub(r"\+?\d[\d\s().-]{7,}\d", "[PHONE]", text)
         redacted = re.sub(r"(?i)\b(my name is|this is|soy|me llamo)\s+[A-ZÁÉÍÓÚÑ][\w'-]+(\s+[A-ZÁÉÍÓÚÑ][\w'-]+)?",
                           lambda m: f"{m.group(1)} [NAME]", redacted)
         redacted = re.sub(r"[\w.+-]+@[\w-]+\.[\w.]+", "[EMAIL]", redacted)
-        return ModelResult(redacted, MUSE_SPARK_OPEN, "local", NOT_CONNECTED[MUSE_SPARK_OPEN])
+        return ModelResult(redacted, LOCAL_REDACTION, "local", "rules on this machine; nothing leaves it")
 
     # ----- 3. Muse Spark: triage --------------------------------------------
 
@@ -225,7 +222,7 @@ class MetaHub:
                                NOT_CONNECTED[MUSE_WONDER])
         return ModelResult(None, MUSE_WONDER, "sample", f"no sample estimate for {image_id}")
 
-    # ----- 6. Muse Glimmer (local retrieval) --------------------------------
+    # ----- 6. Plan search (local retrieval, code) ---------------------------
 
     def guidance(self, query: str, limit: int = 2) -> ModelResult:
         """Passages from the local knowledge base that match the query, with citations.
@@ -247,7 +244,7 @@ class MetaHub:
                     if overlap:
                         scored.append((overlap, {"text": line.strip(), "citation": f"{title}, {section}"}))
         passages = [item for _, item in sorted(scored, key=lambda pair: -pair[0])[:limit]]
-        return ModelResult(passages, MUSE_GLIMMER, "local", NOT_CONNECTED[MUSE_GLIMMER])
+        return ModelResult(passages, PLAN_SEARCH, "local", "keyword search over the sample knowledge base")
 
     # ----- 7. Muse Spark: recommendation and public alert -------------------
 

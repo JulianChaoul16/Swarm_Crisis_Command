@@ -685,7 +685,7 @@ class CommandService:
             with self._lock:
                 if run_id == self.run_id:
                     self.alerts[proposal.id] = {"text": text, "graphic": graphic}
-                    self.board.log("Comms Agent", text.label, f"Public alert for {proposal.id} written (EN/ES)")
+                    self.board.log("Command Agent", text.label, f"Public alert for {proposal.id} written (EN/ES)")
 
         self._in_background(work)
 

@@ -130,7 +130,7 @@ class ApprovalTests(CommandServiceTestCase):
     def test_every_seed_incident_gets_three_votes_and_a_consensus(self) -> None:
         board = self.service.board
         for incident in self.service.world.incidents:
-            self.assertEqual(set(board.votes[incident.id]), {"Triage Agent", "Vision Agent", "Logistics Agent"})
+            self.assertEqual(set(board.votes[incident.id]), {"Intake Agent", "Vision Agent", "Access check"})
             self.assertIsNotNone(board.final(incident.id))
 
     def test_approval_commits_dispatches_and_persists_atomically(self) -> None:

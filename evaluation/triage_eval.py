@@ -1,4 +1,4 @@
-"""Triage Agent eval: the Muse Spark triage call on the 20 hand-written test reports.
+"""Intake Agent triage eval: the Muse Spark triage call on the 20 hand-written test reports.
 
 Input is each report's raw text only. The 0-100 severity score is mapped to the rubric's
 severity class with bands fixed before running (they match the Triage rule scores:

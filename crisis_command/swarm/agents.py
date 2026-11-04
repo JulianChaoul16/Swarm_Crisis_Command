@@ -5,10 +5,10 @@ reads a frozen world snapshot and writes its vote to the board. Agents also reac
 other through the bus: a flood-cover change makes Vision and Logistics re-vote, and a road
 change makes Logistics re-vote. The coordinator re-plans when the consensus moves.
 
-Model calls go through `meta_api` and each vote records its real source: Triage asks Muse
-Spark (rules if it fails); Vision uses flood cover from SAM 3.1 sample data until a
-segmentation endpoint is connected; Logistics scores access with rules and cites the local
-knowledge base (the Muse Glimmer role, retrieval running locally).
+Three votes per incident, each recording its real source: the Intake Agent asks Muse Spark
+(rules if it fails); the Vision Agent votes on flood cover (SAM 3.1 sample data until a
+segmentation endpoint is connected); the access check is deterministic code that scores
+how fast units can get there and cites the sample flood plan.
 """
 
 from concurrent.futures import ThreadPoolExecutor

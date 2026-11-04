@@ -204,9 +204,9 @@ class DemoRunner:
         board.log("Listener Agent", transcript.label, f"Transcribed {event['audio_id']}: \"{text[:90]}...\"")
         report = self.service.submit_report(text, event["source"])
         if report.extraction_error:
-            board.log("Triage Agent", "intake", f"{report.id} could not be read: {report.extraction_error}")
+            board.log("Intake Agent", "intake", f"{report.id} could not be read: {report.extraction_error}")
             return
-        board.log("Triage Agent", report.extracted_by or "intake",
+        board.log("Intake Agent", report.extracted_by or "intake",
                   f"{report.id} read as {report.fields.kind} at {report.fields.location}, "
                   f"{report.fields.people} people ({report.status.value})")
         self._auto_confirm(report.id, "auto-apply (complete report)")

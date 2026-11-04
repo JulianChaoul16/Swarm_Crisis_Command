@@ -37,49 +37,43 @@ One screen, three panels:
 
 | Left: Swarm Incident Queue | Center: Live map of Richmond | Right: Recommendation + Activity |
 |---|---|---|
-| Ranked by swarm consensus; each card shows `Triage 95 · Vision 90 · Logistics 100 = Final 98` with each vote's source | Satellite basemap, incident rings, unit dots, recommended routes, closed roads in black, blue flood-water mask | RECOMMEND / WHY / CONFIDENCE (vote agreement) / TRADEOFF, Approve & Dispatch, then the English and Spanish public alert; below, a live log of every agent action |
+| Ranked by consensus; each card shows `Intake 95 · Vision 90 · Access 100 = Final 98` with each vote's source | Satellite basemap, incident rings, unit dots, recommended routes, closed roads in black, blue flood-water mask | RECOMMEND / WHY / CONFIDENCE (vote agreement) / TRADEOFF, Approve & Dispatch, then the English and Spanish public alert; below, a live log of every agent action |
 
-Every AI output carries a model pill showing where it really came from: `live`, `cache`
-(a recorded real response), `local` (runs on this machine) or `sample` (hand-made data for a
-model this account cannot reach).
+Above the panels, four agents (Listener, Intake, Vision, Command) can be clicked to see
+their role, models, current votes and activity. Every AI output carries a pill showing where
+it really came from: `live`, `cache` (a recorded real response), `local` (code on this
+machine) or `sample` (hand-made data for a model this account cannot reach).
 
 ## How it works: a swarm on a shared board
 
 ```mermaid
 flowchart LR
-  subgraph Inputs
-    A[911 audio] --> L[Listener<br/>Muse Voice Transcribe]
-    P[Citizen photo] --> V1[Vision<br/>SAM 3.1 + Muse Wonder]
-    G[River gauge]
-  end
-  L --> R[Local PII redaction<br/>Muse Spark Open role] --> X[Report reader<br/>Muse Spark]
-  X -->|confirmed incident| S[spawn_incident_swarm]
+  A[911 audio] --> L[Listener Agent<br/>Muse Voice Transcribe]
+  L --> R[Redaction<br/>code, on this machine]
+  T0[Text report] --> R
+  R --> I[Intake Agent<br/>Muse Spark: read + score]
+  P[Citizen photo] --> V[Vision Agent<br/>SAM 3.1 + Muse Wonder]
+  G[River gauge] --> AC
   subgraph Board[IncidentBoard + EventBus]
-    T[Triage Agent<br/>Muse Spark]
-    VA[Vision Agent]
-    LA[Logistics Agent<br/>rules + Muse Glimmer retrieval]
-    C((Consensus vote))
-    T --> C
-    VA --> C
-    LA --> C
+    I --> C((Consensus))
+    V --> C
+    AC[Access check<br/>code + plan search] --> C
   end
-  S --> T & VA & LA
-  V1 -->|flood cover, road impassable| Board
-  G -->|gauge.changed| LA
-  C -->|priority| O[Exact solver<br/>routing + assignment]
+  C -->|priority| O[Exact solver<br/>code]
   O --> K[Command Agent<br/>Muse Spark: why + tradeoff]
   K --> H{Operator<br/>Approve}
-  H --> M[Comms Agent<br/>Muse Spark: EN + ES alert]
+  H --> M[Command Agent<br/>Muse Spark: EN + ES alert]
 ```
 
 - **IncidentBoard** (`crisis_command/swarm/board.py`) is one shared store; agents write votes
   and observations to it, and the **EventBus** tells the others. There is no fixed pipeline:
-  a flood-cover change makes Vision and Logistics re-vote, a road closure or gauge change
-  makes Logistics re-vote, and any consensus change re-plans.
-- **`spawn_incident_swarm(incident_id)`** runs Triage, Vision and Logistics in parallel for
-  one incident.
-- **Consensus, not one model:** final severity is the median vote pulled halfway toward the
-  highest (82, 96, 91 → 94), so one alarmed agent raises priority but cannot set it alone.
+  a flood-cover change makes Vision and the access check re-vote; a road closure, gauge change,
+  dispatch or resolution makes the access check re-run; any consensus change re-plans.
+- **`spawn_incident_swarm(incident_id)`** runs the Intake vote, the Vision vote and the
+  access check in parallel for one incident.
+- **Consensus, not one model:** final severity is the median of three votes (Intake: Muse
+  Spark; Vision; the access check: code) pulled halfway toward the highest (82, 96, 91 → 94),
+  so no single voter, and no single model, sets the priority alone.
   CONFIDENCE is how closely the three votes agree, labelled as agreement, not a probability.
 - **Deterministic where it matters:** routes, unit assignment (an exact integer program),
   capacity, availability and feasibility checks are code, not model output. The AI reads,
@@ -92,16 +86,21 @@ flowchart LR
 All model calls live in one file, [`crisis_command/meta_api.py`](crisis_command/meta_api.py),
 with a cached fallback for each.
 
-| Agent | Model (brief) | What runs today | Status |
+Four agents; everything else is deliberately plain code.
+
+| Agent | Job | Meta model | Status |
 |---|---|---|---|
-| Listener | Muse Voice Transcribe | Sample transcript for the demo call | **sample**: no transcription endpoint configured |
-| Triage | Muse Spark (API) | Severity score, vulnerability, reasons from the report | **live** (recorded for demo replay) |
-| Triage (privacy) | Muse Spark Open (local) | Rule-based redaction of names, phones, emails on this machine before any cloud call | **local stand-in**: open weights not installed |
-| Report reader | Muse Spark | Messy text → strict JSON (type, location, people, needs) against the scenario's places and roads | **live** (recorded) |
-| Vision | SAM 3.1 + Muse Wonder | Flood mask and depth/passability for the demo photo | **sample**: hand-made mask (Dock St geometry, buffered) and estimate, each labelled "not model output" |
-| Logistics | Muse Glimmer (local RAG) | Rule-based access scoring plus passages retrieved locally from a sample knowledge base, cited | **local stand-in** for retrieval; generation not installed |
-| Command | Muse Spark | WHY and TRADEOFF for the solver's recommendation, from the agents' evidence | **live** (recorded) |
-| Comms | Muse Spark + Muse Image | English and Spanish alert after approval | Spark **live** (recorded); Muse Image **not connected**: no graphic is generated, and the UI says so |
+| Listener | 911/radio audio → text | Muse Voice Transcribe | **sample**: transcripts written for the demo |
+| Intake | Reads every report into strict JSON (type, location, people, needs) and votes urgency 0–100 | Muse Spark | **live** (recorded for demo replay) |
+| Vision | Flood mask and depth/passability from a photo | SAM 3.1 + Muse Wonder | **sample**: hand-made mask and estimate, each labelled "not model output" |
+| Command | Explains the solver's recommendation (why, tradeoff); writes the EN/ES alert after approval | Muse Spark (+ Muse Image for a graphic) | Spark **live**; Muse Image **not connected**, no graphic is faked |
+
+| Code (not agents) | What it does |
+|---|---|
+| Redaction | Strips names, phones and emails on this machine before any cloud call |
+| Access check | Scores how fast units can reach each incident over open roads (third vote); cites the sample flood plan via local keyword search |
+| Exact solver | Routes and unit assignment (integer program), capacity and availability checks |
+| Coordinator | Spawns the swarm, applies only confirmed changes, never dispatches without approval |
 
 **Record and replay.** In live mode every Muse Spark response is saved under
 `demo_cache/responses/`. START DEMO SCENARIO replays only those recordings, so the demo is
@@ -164,8 +163,8 @@ This is a proposal; we have not contacted or worked with the City.
   strict JSON schemas and `store: false`.
 - **Record/replay hub:** one file owns every model call; live answers become the offline
   demo, so judges see real model output without needing network access.
-- **Offline roles:** redaction and retrieval run locally, the roles the brief gives to
-  Muse Spark Open and Muse Glimmer, so the parts that should work without internet do.
+- **Offline by design:** redaction and plan search are code on this machine, so they work
+  without internet and send nothing anywhere.
 - **Clear labels:** models this account cannot reach are shown as such instead of being
   simulated as if they ran.
 

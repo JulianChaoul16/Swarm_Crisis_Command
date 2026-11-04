@@ -16,7 +16,8 @@ const rank = (incidents: Incident[], swarm: Swarm) => {
     .sort((a, b) => final(b) - final(a) || b.people - a.people || a.id.localeCompare(b.id));
 };
 
-const AGENTS: [string, string][] = [["Triage Agent", "Triage"], ["Vision Agent", "Vision"], ["Logistics Agent", "Logistics"]];
+// Two agents vote, plus a deterministic access check (code, not an agent).
+const AGENTS: [string, string][] = [["Intake Agent", "Intake"], ["Vision Agent", "Vision"], ["Access check", "Access"]];
 
 /** A model pill: the model's name and where this output really came from. */
 function Pill({ label, title }: { label: string; title?: string }) {

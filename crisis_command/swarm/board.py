@@ -13,9 +13,10 @@ from statistics import median
 from threading import RLock
 from typing import Any, Callable
 
-TRIAGE = "Triage Agent"
+TRIAGE = "Intake Agent"
 VISION = "Vision Agent"
-LOGISTICS = "Logistics Agent"
+# Not an agent: deterministic code that checks how fast units can reach an incident.
+LOGISTICS = "Access check"
 VOTERS = (TRIAGE, VISION, LOGISTICS)
 
 # Topics published on the bus.

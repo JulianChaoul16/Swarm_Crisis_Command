@@ -146,23 +146,17 @@ def _result(result: Any) -> dict[str, Any] | None:
 # names belong to it.
 AGENT_ROSTER = (
     ("Listener Agent", "Turns 911 and radio audio into text.", ("Muse Voice Transcribe",), ("Listener Agent",)),
-    ("Triage Agent", "Reads each report and votes how urgent it is (0-100). Personal details are redacted locally first.",
-     ("Muse Spark", "Muse Spark Open"), ("Triage Agent",)),
+    ("Intake Agent", "Reads every report (text or transcript) into structured fields and votes how urgent "
+     "it is (0-100). Personal details are redacted on this machine first.",
+     ("Muse Spark",), ("Intake Agent",)),
     ("Vision Agent", "Reads citizen photos: where the water is and whether a road is passable. Votes on flood exposure.",
      ("SAM 3.1", "Muse Wonder"), ("Vision Agent",)),
-    ("Logistics Agent", "Checks which units can reach each incident and how fast, votes on access, and cites the flood plan.",
-     ("Muse Glimmer",), ("Logistics Agent",)),
-    ("Command Agent", "Explains the solver's recommendation: why, and what it delays.", ("Muse Spark",), ("Command Agent",)),
-    ("Comms Agent", "Writes the public alert in English and Spanish after approval.", ("Muse Spark", "Muse Image"),
-     ("Comms Agent",)),
-    ("Coordinator", "Spawns the swarm, runs the exact solver, applies only confirmed changes, and never dispatches without approval.",
-     (), ("Coordinator", "Swarm consensus", "River gauge")),
+    ("Command Agent", "Explains the solver's recommendation (why, what it delays) and, after approval, writes "
+     "the public alert in English and Spanish.", ("Muse Spark", "Muse Image"), ("Command Agent",)),
 )
-VOTERS = {"Triage Agent", "Vision Agent", "Logistics Agent"}
+VOTERS = {"Intake Agent", "Vision Agent"}
 MODEL_STATUS_LABEL = {"live": "live", "cache (demo mode)": "recorded answers (demo)", "not connected": "not connected"}
 STAND_IN = {
-    "Muse Spark Open": "local stand-in: redaction rules on this machine",
-    "Muse Glimmer": "local stand-in: retrieval over the sample plan, plus access rules",
     "SAM 3.1": "sample data",
     "Muse Wonder": "sample data",
     "Muse Voice Transcribe": "sample data",

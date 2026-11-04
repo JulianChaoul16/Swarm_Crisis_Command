@@ -47,7 +47,7 @@ class DemoTests(unittest.TestCase):
         self.assertIn("14th St (Mayo) Bridge", via[0])
         self.assertNotIn("Dock St", via[0])
         self.assertEqual([a.text for a in service.board.activity if a.source == "fallback"], [])
-        self.assertEqual(service.board.votes["incident-14"]["Triage Agent"].source, "Muse Spark · cache")
+        self.assertEqual(service.board.votes["incident-14"]["Intake Agent"].source, "Muse Spark · cache")
 
     def test_approving_the_demo_plan_replays_the_recorded_bilingual_alert(self) -> None:
         service = self.run_demo()
