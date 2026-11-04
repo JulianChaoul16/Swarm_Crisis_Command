@@ -189,7 +189,8 @@ def serialize_agents(service: CommandService) -> list[dict[str, Any]]:
             "name": name,
             "role": role,
             "models": [{"model": m, "status": MODEL_STATUS_LABEL.get(status.get(m, ""), "") if m == "Muse Spark"
-                        else STAND_IN.get(m, status.get(m, ""))} for m in models]
+                        else STAND_IN.get(m, "") if status.get(m) == "not connected" else status.get(m, "")}
+                       for m in models]
                       or [{"model": "Exact solver (code)", "status": "deterministic"}],
             "actions": len(activity),
             "last": ({"at": activity[-1].at.isoformat(), "text": activity[-1].text} if activity else None),

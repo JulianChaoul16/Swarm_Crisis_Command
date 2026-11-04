@@ -25,7 +25,7 @@ from pathlib import Path
 import re
 from typing import Any, Callable
 
-from .agents.model_client import ModelClient, UnavailableModelClient, model_client_from_env
+from .agents.model_client import ModelClient, UnavailableModelClient, _env_file_values, model_client_from_env
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "demo_cache" / "responses"
@@ -50,6 +50,21 @@ NOT_CONNECTED = {
     MUSE_GLIMMER: "open weights not installed; local retrieval over the sample knowledge base runs instead",
     MUSE_IMAGE: "no image endpoint configured; no alert graphic is generated",
 }
+
+
+# .env settings naming each model's ID (and endpoint, if not META_BASE_URL).
+MODEL_SETTINGS = {
+    MUSE_VOICE: "META_VOICE",
+    SAM: "META_SAM",
+    MUSE_WONDER: "META_WONDER",
+    MUSE_GLIMMER: "META_GLIMMER",
+    MUSE_SPARK_OPEN: "META_SPARK_OPEN",
+    MUSE_IMAGE: "META_IMAGE",
+}
+
+
+def setting(name: str) -> str:
+    return (os.environ.get(name) or _env_file_values().get(name, "")).strip()
 
 
 @dataclass(frozen=True)
@@ -88,8 +103,12 @@ class MetaHub:
                  else "not connected")
         rows = [{"model": MUSE_SPARK, "status": spark,
                  "detail": f"{self.client.model_id} via Meta Responses API" if self.spark_live else ""}]
-        rows += [{"model": model, "status": "not connected", "detail": detail}
-                 for model, detail in NOT_CONNECTED.items()]
+        for model, detail in NOT_CONNECTED.items():
+            model_id = setting(f"{MODEL_SETTINGS[model]}_MODEL")
+            # Filling in an ID records it; the call itself still has to be written for that
+            # model's input type (audio, image), so it is not reported as connected.
+            rows.append({"model": model, "status": "configured, call not wired yet" if model_id else "not connected",
+                         "detail": f"{MODEL_SETTINGS[model]}_MODEL={model_id}" if model_id else detail})
         return rows
 
     # ----- record and replay ----------------------------------------------
@@ -273,5 +292,5 @@ class MetaHub:
 
 
 def hub_from_env(client: ModelClient | None = None) -> MetaHub:
-    mode = os.environ.get("META_MODE", "live").strip().lower()
+    mode = (setting("META_MODE") or "live").lower()
     return MetaHub(client or model_client_from_env(), mode="demo" if mode == "demo" else "live")
