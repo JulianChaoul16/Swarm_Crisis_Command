@@ -671,6 +671,30 @@ class Simulation:
             )
         ]
 
+        if plan.reroute:
+            # Committed units the plan neither keeps nor re-dispatches are released; an
+            # incident left with no units goes back to open for the next plan.
+            staying = {service_id for service_id, _ in plan.kept} | {d.service_id for d in plan.assignments}
+            for service in self.world.services:
+                if service.assigned_incident_id is None or service.id in staying:
+                    continue
+                pending_events.append((
+                    "service_released",
+                    (service.id, service.assigned_incident_id),
+                    "Approved reroute plan no longer uses this unit on its mission.",
+                    (),
+                ))
+                service.assigned_incident_id = None
+            for dispatch in plan.assignments:
+                previous = services_by_id[dispatch.service_id].assigned_incident_id
+                if previous not in (None, dispatch.incident_id):
+                    pending_events.append((
+                        "service_rerouted",
+                        (dispatch.service_id, previous, dispatch.incident_id),
+                        f"Moved from {previous} to higher-priority {dispatch.incident_id}.",
+                        (),
+                    ))
+
         for dispatch in plan.assignments:
             service = services_by_id[dispatch.service_id]
             service.assigned_incident_id = dispatch.incident_id
@@ -691,6 +715,12 @@ class Simulation:
                     ),
                 )
             )
+
+        if plan.reroute:
+            covered = {service.assigned_incident_id for service in self.world.services}
+            for incident in self.world.incidents:
+                if incident.status == IncidentStatus.ASSIGNED and incident.id not in covered:
+                    incident.status = IncidentStatus.OPEN
         return pending_events
 
     def _progress(

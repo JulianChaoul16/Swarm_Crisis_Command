@@ -39,6 +39,11 @@ class ResponsePlan:
     claim_resolutions: tuple[ClaimResolution, ...] = ()
     rationale: tuple[str, ...] = ()
     unknown_road_ids: tuple[str, ...] = ()
+    # Reroute plans also cover committed missions: `kept` lists the (service id, incident id)
+    # missions left as they are. On approval a committed unit that is neither kept nor in
+    # `assignments` is released, and an incident left with no units goes back to open.
+    reroute: bool = False
+    kept: tuple[tuple[str, str], ...] = ()
 
 
 def default_priority(incident: Incident) -> tuple[object, ...]:
@@ -49,6 +54,9 @@ DEFAULT_PRIORITY_RULE = "severity (critical first), then people affected, then i
 SEVERITY_WEIGHT = {Severity.LOW: 1, Severity.MEDIUM: 2, Severity.HIGH: 4, Severity.CRITICAL: 8}
 # Tie-breaker cost per dispatched unit, so a unit with zero ETA is not sent when unneeded.
 UNIT_COST = 1e-3
+# Reroute plans: extra cost (severity-weighted ETA minutes) for moving a unit off its committed
+# mission, so units are only pulled away when that buys a real gain. A simulator setting.
+SWITCH_COST = 5.0
 
 
 class Planner:
@@ -58,6 +66,9 @@ class Planner:
     then units are chosen to minimize severity-weighted ETA. The findings test showed the
     earlier greedy pass missed the best plan in 20% of scenarios. The priority rule is a
     simulator setting, not validated triage doctrine; pass `priority_key` and `priority_rule`.
+
+    With `reroute=True` committed missions are planned again too: a more urgent incident can
+    take a unit from a lower-priority one, and moving a unit costs `SWITCH_COST`.
     """
 
     def __init__(
@@ -66,9 +77,11 @@ class Planner:
         state_agent: AuthoritativeStateAgent | None = None,
         priority_key: Callable[[Incident], tuple[object, ...]] = default_priority,
         priority_rule: str = DEFAULT_PRIORITY_RULE,
+        reroute: bool = False,
     ) -> None:
         self.priority_key = priority_key
         self.priority_rule = priority_rule
+        self.reroute = reroute
         if evidence_arbitrator is not None and state_agent is not None:
             if evidence_arbitrator is not state_agent.arbitrator:
                 raise ValueError(
@@ -149,8 +162,9 @@ class Planner:
                 bounds = trial
 
         cost = np.zeros(size)
-        for p, (index, _, _, _, eta) in enumerate(pairs):
-            cost[p] = SEVERITY_WEIGHT[incidents[index].severity] * eta + UNIT_COST
+        for p, (index, service, _, _, eta) in enumerate(pairs):
+            moved = service.assigned_incident_id not in (None, incidents[index].id)
+            cost[p] = SEVERITY_WEIGHT[incidents[index].severity] * eta + UNIT_COST + (SWITCH_COST if moved else 0)
         values = solve(bounds, cost)
         if values is None:
             raise RuntimeError("Assignment solver failed on a feasible served set.")
@@ -165,13 +179,13 @@ class Planner:
             for incident_id, chosen in solution.items()
         }
 
-    def _unmet_reason(self, incident, services, solution, higher, route_for, effective_city) -> str:
+    def _unmet_reason(self, incident, services, solution, higher, route_for, effective_city, pool) -> str:
         if effective_city is None and incident.severity >= Severity.HIGH:
             return "safety-critical routing is blocked because road status is unknown"
         planned = {service.id: incident_id for incident_id, chosen in solution.items()
                    for service, _ in chosen}
         reachable = [service for service in services
-                     if service.available and route_for(service, incident) is not None]
+                     if service.id in pool and route_for(service, incident) is not None]
         if not incident.required_services and incident.people == 0 and not reachable:
             return "no available service has a reachable route"
 
@@ -244,11 +258,17 @@ class Planner:
             city,
             state_review.resolutions,
         )
+        active = (IncidentStatus.OPEN, IncidentStatus.ASSIGNED) if self.reroute else (IncidentStatus.OPEN,)
         open_incidents = sorted(
-            (incident for incident in incidents if incident.status == IncidentStatus.OPEN),
+            (incident for incident in incidents if incident.status in active),
             key=self.priority_key,
         )
-        available = {service.id: service for service in services if service.available}
+        active_ids = {incident.id for incident in open_incidents}
+        available = {
+            service.id: service for service in services
+            if service.available or (self.reroute and service.assigned_incident_id in active_ids)
+        }
+        kept: list[tuple[str, str]] = []
         assignments: list[Dispatch] = []
         unassigned: list[str] = []
         rationale: list[str] = [f"Priority rule: {self.priority_rule}."]
@@ -336,11 +356,20 @@ class Planner:
             if chosen is None:
                 unassigned.append(incident.id)
                 reason = self._unmet_reason(
-                    incident, services, solution, higher, route_for, effective_city
+                    incident, services, solution, higher, route_for, effective_city, available
                 )
                 rationale.append(f"Incident {incident.id} left unassigned; {reason}.")
             else:
                 for service, (route, distance) in chosen:
+                    if service.assigned_incident_id == incident.id:
+                        kept.append((service.id, incident.id))
+                        rationale.append(f"Kept service {service.id} on incident {incident.id}.")
+                        continue
+                    if service.assigned_incident_id is not None:
+                        rationale.append(
+                            f"Rerouted service {service.id} from incident {service.assigned_incident_id} "
+                            f"to higher-priority incident {incident.id}."
+                        )
                     eta = distance / service.speed
                     assignments.append(Dispatch(incident.id, service.id, eta, route))
                     rationale.append(
@@ -358,6 +387,8 @@ class Planner:
             claim_resolutions=state_review.resolutions,
             rationale=tuple(rationale),
             unknown_road_ids=state_review.unknown_road_ids,
+            reroute=self.reroute,
+            kept=tuple(kept),
         )
 
 

@@ -36,6 +36,8 @@ class Scenario:
     # Street-level descriptions for the report reader, and readable road names for the UI.
     place_notes: dict[str, str] = field(default_factory=dict)
     road_names: dict[str, str] = field(default_factory=dict)
+    # Let approvals move committed units to more urgent incidents (see Planner.reroute).
+    reroute: bool = False
 
 
 def build_demo_world() -> World:
@@ -350,4 +352,5 @@ LIVE_RICHMOND_SCENARIO = Scenario(
     places=FLOOD_PLACES,
     place_notes=DEMO_PLACE_NOTES,
     road_names=DEMO_ROAD_NAMES,
+    reroute=True,
 )

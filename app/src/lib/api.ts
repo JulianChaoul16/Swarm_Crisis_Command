@@ -38,6 +38,7 @@ export const api = {
     post<WorldState>("/reports", { content, source, fields }),
   confirmReport: (id: string) => post<WorldState>(`/reports/${id}/confirm`),
   rejectReport: (id: string, reason: string) => post<WorldState>(`/reports/${id}/reject`, { reason }),
+  resolveIncident: (id: string) => post<WorldState>(`/incidents/${id}/resolve`),
   propose: () => post<WorldState>("/plans/propose"),
   approve: (planId: string, worldVersion: number) =>
     post<WorldState>(`/plans/${planId}/approve`, { world_version: worldVersion }),

@@ -53,6 +53,8 @@ def check_plan(
 ) -> tuple[Check, ...]:
     incidents_by_id = {incident.id: incident for incident in incidents}
     services_by_id = {service.id: service for service in services}
+    active = (IncidentStatus.OPEN, IncidentStatus.ASSIGNED) if plan.reroute else (IncidentStatus.OPEN,)
+    active_ids = {incident.id for incident in incidents_by_id.values() if incident.status in active}
     problems: dict[str, list[str]] = {
         rule: []
         for rule in (
@@ -70,6 +72,19 @@ def check_plan(
     seen: set[str] = set()
     coverage: dict[str, set[str]] = {}
     carried: dict[str, int] = {}
+    # A reroute plan may send committed units and add units to dispatched incidents; the
+    # missions it keeps count toward coverage and against double booking.
+    for service_id, incident_id in plan.kept:
+        incident = incidents_by_id.get(incident_id)
+        service = services_by_id.get(service_id)
+        if incident is None or service is None:
+            problems["references_exist"].append(f"kept {service_id} -> {incident_id} references an unknown entity")
+            continue
+        if service.assigned_incident_id != incident_id:
+            problems["references_exist"].append(f"{service_id} is not on {incident_id}, so it cannot be kept there")
+        seen.add(service_id)
+        coverage.setdefault(incident_id, set()).update(service.capabilities)
+        carried[incident_id] = carried.get(incident_id, 0) + service.capacity
     for dispatch in plan.assignments:
         incident = incidents_by_id.get(dispatch.incident_id)
         service = services_by_id.get(dispatch.service_id)
@@ -81,9 +96,9 @@ def check_plan(
         if dispatch.service_id in seen:
             problems["no_double_booking"].append(f"{service.id} is assigned more than once")
         seen.add(service.id)
-        if incident.status != IncidentStatus.OPEN:
+        if incident.status not in active:
             problems["incidents_open"].append(f"{incident.id} is {incident.status.value}")
-        if not service.available:
+        if not service.available and not (plan.reroute and service.assigned_incident_id in active_ids):
             problems["resources_available"].append(
                 f"{service.id} is already on {service.assigned_incident_id}"
             )
@@ -112,10 +127,7 @@ def check_plan(
                 f"{incident_id} units carry {carried[incident_id]} of {people} people"
             )
 
-    open_ids = {
-        incident.id for incident in incidents_by_id.values() if incident.status == IncidentStatus.OPEN
-    }
-    unaccounted = open_ids - set(coverage) - set(plan.unassigned_incident_ids)
+    unaccounted = active_ids - set(coverage) - set(plan.unassigned_incident_ids)
     if unaccounted:
         problems["unmet_needs_reported"].append(
             f"open incidents missing from the plan: {', '.join(sorted(unaccounted))}"

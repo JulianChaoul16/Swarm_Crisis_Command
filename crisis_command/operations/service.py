@@ -163,7 +163,8 @@ class CommandService:
             # Plan id -> numbers in the model's explanation that are not in its facts.
             self.unverified: dict[str, list[str]] = {}
             self.alerts: dict[str, Any] = {}
-            self.planner = Planner(priority_key=self._swarm_priority, priority_rule=SWARM_PRIORITY_RULE)
+            self.planner = Planner(priority_key=self._swarm_priority, priority_rule=SWARM_PRIORITY_RULE,
+                                   reroute=self.scenario.reroute)
             self.simulation = Simulation(self.world, self.planner)
             self._reports: dict[str, Report] = {}
             self._plans: dict[str, PlanProposal] = {}

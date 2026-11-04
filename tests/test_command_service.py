@@ -11,6 +11,7 @@ from crisis_command.database import connection
 from crisis_command.model import IncidentStatus
 from crisis_command.operations import (
     DEMO_SCENARIO,
+    LIVE_RICHMOND_SCENARIO,
     CommandService,
     ConflictError,
     PlanStatus,
@@ -260,3 +261,64 @@ class FeasibilityTests(CommandServiceTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LiveRerouteTests(CommandServiceTestCase):
+    """Live intake: approvals can move committed units to a more urgent incident."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.service = CommandService(scenario=LIVE_RICHMOND_SCENARIO, client=OFFLINE, agent_timeout=2)
+
+    def rescue(self, place: str, severity: str, people: int) -> str:
+        fields = {"report_type": "incident", "kind": "people trapped by water", "severity": severity,
+                  "location": place, "required_services": ["rescue"], "people": people}
+        report = self.service.submit_report(f"People trapped at {place}", "test", fields=fields)
+        return self.service.confirm_report(report.id).linked_incident_id
+
+    def approve_current(self) -> None:
+        plan = self.service.current_plan
+        self.service.approve(plan.id, plan.world_version)
+
+    def test_a_more_urgent_incident_takes_a_committed_team_and_the_old_one_reopens(self) -> None:
+        first = self.rescue("Shockoe Bottom", "medium", 1)
+        self.approve_current()
+        second = self.rescue("Manchester", "medium", 1)
+        self.approve_current()
+        urgent = self.rescue("East Junction", "critical", 4)
+
+        proposal = self.service.current_plan
+        self.assertTrue(proposal.valid)
+        moved = [d for d in proposal.plan.assignments if d.incident_id == urgent]
+        self.assertEqual(len(moved), 1)
+        team = next(s for s in self.service.world.services if s.id == moved[0].service_id)
+        self.assertIn(team.assigned_incident_id, (first, second))
+        # Only two swift teams: one of the medium calls has to wait.
+        (dropped,) = proposal.plan.unassigned_incident_ids
+        self.assertIn(dropped, (first, second))
+
+        self.approve_current()
+
+        statuses = {i.id: i.status for i in self.service.world.incidents}
+        self.assertEqual(statuses[urgent], IncidentStatus.ASSIGNED)
+        self.assertEqual(statuses[dropped], IncidentStatus.OPEN)
+        self.assertEqual(statuses[({first, second} - {dropped}).pop()], IncidentStatus.ASSIGNED)
+        self.assertEqual(team.assigned_incident_id, urgent)
+        self.assertIn("service_rerouted", [e.kind for e in self.service.world.event_log])
+
+        # Approving again: resolving the urgent call frees the team for the call it left.
+        self.service.resolve_incident(urgent, "operator", "marked resolved from the dashboard")
+        self.assertIn(dropped, {d.incident_id for d in self.service.current_plan.plan.assignments})
+        self.approve_current()
+        self.assertEqual({i.id: i.status for i in self.service.world.incidents}[dropped], IncidentStatus.ASSIGNED)
+
+    def test_a_less_urgent_incident_does_not_pull_committed_units(self) -> None:
+        self.rescue("Shockoe Bottom", "critical", 4)
+        self.approve_current()
+        self.rescue("Manchester", "critical", 4)
+        self.approve_current()
+        low = self.rescue("East Junction", "low", 1)
+
+        plan = self.service.current_plan.plan
+        self.assertEqual(plan.assignments, ())
+        self.assertIn(low, plan.unassigned_incident_ids)

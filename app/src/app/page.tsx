@@ -144,7 +144,13 @@ function Votes({ entry }: { entry: Swarm["incidents"][string] | undefined }) {
 
 const time = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
-function IncidentQueue({ incidents, focus, swarm }: { incidents: Incident[]; focus: string | null; swarm: Swarm }) {
+function IncidentQueue({ incidents, focus, swarm, busy, onResolve }: {
+  incidents: Incident[];
+  focus: string | null;
+  swarm: Swarm;
+  busy: boolean;
+  onResolve: (id: string) => void;
+}) {
   if (!incidents.length) return <p className="empty">No open incidents.</p>;
   return (
     <ol className="queue">
@@ -164,6 +170,12 @@ function IncidentQueue({ incidents, focus, swarm }: { incidents: Incident[]; foc
           </div>
           <Votes entry={swarm.incidents[incident.id]} />
           <Source evidence={incident.evidence} />
+          {incident.status === "assigned" && (
+            <button className="ghost resolve" disabled={busy} onClick={() => onResolve(incident.id)}
+              title="The crew reports this incident done: free its units and re-plan.">
+              Mark resolved
+            </button>
+          )}
         </li>
       ))}
     </ol>
@@ -186,6 +198,13 @@ function Recommendation({
   if (!plan) return <p className="empty">No recommendation yet.</p>;
   const incidents = new Map(world.incidents.map((incident) => [incident.id, incident]));
   const units = new Map(world.services.map((service) => [service.id, service.name]));
+  // A unit already on another mission is being rerouted, not newly dispatched.
+  const movedFrom = new Map(world.services.flatMap((service) => {
+    const current = service.assigned_incident_id;
+    return current ? [[service.id, incidents.get(current)?.place ?? current] as const] : [];
+  }));
+  const unitLabel = ({ service_id: id, incident_id }: { service_id: string; incident_id: string }) =>
+    `${units.get(id)}${movedFrom.has(id) && movedFrom.get(id) !== (incidents.get(incident_id)?.place ?? incident_id) ? ` (rerouted from ${movedFrom.get(id)})` : ""}`;
   // Lead with the most urgent incident the plan serves.
   const served = rank(plan.assignments.map((d) => incidents.get(d.incident_id)!).filter(Boolean), world.swarm)
     .filter((incident, index, all) => all.findIndex((other) => other.id === incident.id) === index);
@@ -212,7 +231,7 @@ function Recommendation({
         <>
           <div className="rec-label">Recommend</div>
           <div className="rec-action">
-            Dispatch {leadDispatches.map((d) => units.get(d.service_id)).join(" + ")} to {lead.place ?? lead.id}: {lead.kind}
+            Dispatch {leadDispatches.map(unitLabel).join(" + ")} to {lead.place ?? lead.id}: {lead.kind}
           </div>
           {leadDispatches.some((d) => d.via.length) && (
             <ul className="rec-route">
@@ -234,7 +253,7 @@ function Recommendation({
           {others.length > 0 && (
             <div className="rec-also">
               Also: {others.map((incident) => {
-                const names = plan.assignments.filter((d) => d.incident_id === incident.id).map((d) => units.get(d.service_id));
+                const names = plan.assignments.filter((d) => d.incident_id === incident.id).map(unitLabel);
                 return `${names.join(" + ")} → ${incident.place ?? incident.id}`;
               }).join(" · ")}
             </div>
@@ -259,7 +278,11 @@ function Recommendation({
           </div>
         </>
       ) : (
-        <div className="rec-action">No new dispatches needed.</div>
+        <div className="rec-action">
+          {unmet.length
+            ? `No free unit can take the ${unmet.length} waiting incident${unmet.length > 1 ? "s" : ""}. Mark a dispatched incident resolved to free its units.`
+            : "No new dispatches needed."}
+        </div>
       )}
       <div className="rec-label">Tradeoff</div>
       <ul className="rec-why">
@@ -720,7 +743,8 @@ export default function CommandScreen() {
             )}
             <Transcripts swarm={world.swarm} />
             <PhotoCard swarm={world.swarm} />
-            <IncidentQueue incidents={queue} focus={queue[0]?.id ?? null} swarm={world.swarm} />
+            <IncidentQueue incidents={queue} focus={queue[0]?.id ?? null} swarm={world.swarm} busy={busy}
+              onResolve={(id) => run(() => api.resolveIncident(id))} />
           </section>
 
           <section className="panel center">

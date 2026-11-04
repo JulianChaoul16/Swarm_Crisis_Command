@@ -215,6 +215,13 @@ def reject_report(report_id: str, payload: Decision) -> dict[str, Any]:
     return _state()
 
 
+@app.post("/api/incidents/{incident_id}/resolve")
+def resolve_incident(incident_id: str) -> dict[str, Any]:
+    """The operator marks a dispatched incident done: its units are freed and the solver re-plans."""
+    service.resolve_incident(incident_id, "operator", "marked resolved from the dashboard")
+    return _state()
+
+
 @app.post("/api/plans/propose")
 def propose() -> dict[str, Any]:
     if service.propose() is None:

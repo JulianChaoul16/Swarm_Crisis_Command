@@ -112,6 +112,10 @@ class DemoRunner:
         with self._lock:
             if self.started:
                 self.approvals += 1
+                # The scripted story is recorded without rerouting; once it is over, later
+                # reports (e.g. from a phone) may move committed units. A restart resets this.
+                if len(self.done) == len(self.timeline["events"]) and self.approvals >= 2:
+                    self.service.planner.reroute = True
 
     def _awaiting_approval(self) -> bool:
         plan = self.service.current_plan

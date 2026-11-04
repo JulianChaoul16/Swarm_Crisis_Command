@@ -42,6 +42,7 @@ button {
 }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 button.ghost { background: transparent; }
+button.resolve { margin-top: 6px; padding: 3px 10px; font-size: 12px; }
 
 .muted { color: var(--muted); font-weight: 400; }
 .bad { color: var(--bad); }
