@@ -169,7 +169,7 @@ class Swarm:
 
     def spawn_incident_swarm(self, incident_id: str) -> None:
         """Run all three agents for one incident in parallel; returns when all have voted."""
-        self.board.log("Coordinator", "swarm", f"Spawned swarm for {incident_id}: Triage, Vision, Logistics", incident_id)
+        self.board.log("Coordinator", "swarm", f"Spawned swarm for {incident_id}: {TRIAGE}, {VISION}, {LOGISTICS}", incident_id)
         self.look(incident_id)
         with ThreadPoolExecutor(max_workers=3) as pool:
             for future in [pool.submit(agent, incident_id) for agent in (self.triage, self.vision, self.logistics)]:

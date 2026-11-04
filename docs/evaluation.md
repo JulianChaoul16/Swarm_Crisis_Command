@@ -18,8 +18,8 @@ Raw results: [`docs/evaluation/results.json`](evaluation/results.json) (generate
 | Configuration | Status |
 | --- | --- |
 | 1. Deterministic planner given correct structured input | **Run** |
-| 2. One AI agent (Muse Spark 1.3) on the same decisions | **Run separately**: `findings/` on the `findings` branch |
-| 3. Agent swarm (Triage, Vision, Logistics) | Triage scored in `evaluation/triage_eval.py`; see README |
+| 2. One AI agent (Muse Spark 1.3) on the same decisions | **Run separately**: see [`findings/`](../findings/README.md) |
+| 3. Agent swarm (Listener, Intake, Vision) | Scored in `evaluation/voice_eval.py`, `triage_eval.py` and `vision_eval.py`; see the README |
 
 Configuration 1 used operator-entered structured fields and pins an offline model client, so
 its numbers are deterministic and cost nothing to rerun.

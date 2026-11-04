@@ -60,9 +60,11 @@ python -m findings.score
 - **Triage**: the rubric's sort order. This is a definition, so the rule scores 100% by
   construction. The task measures whether a person or an AI applies a fixed rule reliably.
 
-## Results so far
+## Results
 
-Algorithm arm only. Full table: `results/summary.md`.
+### Algorithm arm
+
+Full table: `results/summary.md`.
 
 - **Routing**: Dijkstra and A* found the shortest route on all 60 queries. Fewest-hops search
   found it on 83%.
@@ -161,11 +163,7 @@ Scored on the quiz subset; the algorithms are scored on the same subset in `resu
 
 ## Next steps
 
-1. Human arm: run `python -m findings.arms.human`, then `python -m findings.score`.
-2. AI arm: `arms/ai_agent.py`.
-   - Same rubric and cases; JSON output.
-   - Three runs per case, to measure consistency.
-3. Holdout reports for the AI-versus-rules comparison:
+1. Holdout reports for the AI-versus-rules comparison:
    - Freeze the rules first.
    - Then someone other than the rule author writes about 10 new reports with answer keys.
    - The rules and the AI are scored on them.

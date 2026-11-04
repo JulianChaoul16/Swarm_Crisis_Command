@@ -70,7 +70,7 @@
    "explain": "Swift Water Team 1 reports the Riverside residents are safe, so that incident closes and its boat and ambulance are free again. The swarm re-plans: the most urgent waiting request now gets them. Press ▶ for the next step."
   }
  ],
- "intro": "Five incidents are already open. Each card shows three agent votes (Triage, Vision, Logistics) and their consensus; the queue is ranked by it. The right panel is the swarm's current recommendation. Watch the next event arrive. Press ▶ (or the → key) to bring in the first report.",
+ "intro": "Five incidents are already open. Each card shows three votes (Intake, Vision, Access check) and their consensus; the queue is ranked by it. The right panel is the swarm's current recommendation. Watch the next event arrive. Press ▶ (or the → key) to bring in the first report.",
  "outro": "Your turn. Read the recommendation on the right (what, why, confidence, tradeoff) and press Approve & Dispatch. The English and Spanish public alert appears below it. Then press ▶ for the next report.",
  "approved": "Approved: units are dispatched (they move on the map) and the alert is out. Press ▶ for the next report.",
  "outro_2": "Your turn again. A freed team can now reach the waiting call. Review the new recommendation and press Approve & Dispatch.",
