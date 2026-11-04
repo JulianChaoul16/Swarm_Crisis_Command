@@ -13,8 +13,8 @@ from pydantic import BaseModel, Field
 
 from ..operations import CommandError, StaleApprovalError
 from .serializers import serialize_event, serialize_state
-from ..meta_api import ROOT, hub_from_env
-from .session import demo, service
+from ..meta_api import ROOT, hub_from_env, setting
+from .session import DEMO_ENABLED, connectors, demo, service
 
 app = FastAPI(title="Crisis Command API")
 
@@ -56,7 +56,21 @@ def value_error(_: Request, error: ValueError) -> JSONResponse:
 
 def _state() -> dict[str, Any]:
     with service._lock:
-        return {**serialize_state(service), "demo": demo.status()}
+        return {**serialize_state(service), "demo": demo.status() if demo else None,
+                "mode": {"demo_enabled": DEMO_ENABLED,
+                         "connectors": [{"name": name, **status} for name, status in connectors.status.items()]
+                                       or [{"name": c.name, "received": 0, "error": None} for c in connectors.connectors]}}
+
+
+def _require_demo():
+    if demo is None:
+        raise HTTPException(404, "Demo is disabled (set DEMO_ENABLED=true in .env to enable it).")
+    return demo
+
+
+@app.on_event("startup")
+def _start_connectors() -> None:
+    connectors.start()
 
 
 @app.get("/api/state")
@@ -85,6 +99,23 @@ def _report_summary(report) -> dict[str, Any]:
             "read_as": {"type": fields.report_type, "kind": fields.kind, "location": fields.location,
                         "people": fields.people, "needs": list(fields.required_services or []),
                         "severity": fields.severity}}
+
+
+class ExternalReport(BaseModel):
+    text: str = Field(min_length=3, max_length=4000)
+    source: str = Field(min_length=1, max_length=80)
+    external_id: str | None = Field(default=None, max_length=120)
+
+
+@app.post("/api/intake")
+def intake_external(payload: ExternalReport, request: Request) -> dict[str, Any]:
+    """For other systems (911/CAD, radio logs): one report per call. If INTAKE_TOKEN is set in
+    .env, send it as `Authorization: Bearer <token>`."""
+    token = setting("INTAKE_TOKEN")
+    if token and request.headers.get("authorization", "") != f"Bearer {token}":
+        raise HTTPException(401, "Missing or wrong intake token.")
+    source = payload.source.strip() + (f" [{payload.external_id}]" if payload.external_id else "")
+    return {"report": _report_summary(service.intake_message(payload.text.strip(), source))}
 
 
 @app.post("/api/intake/text")
@@ -135,25 +166,26 @@ def media(folder: str, name: str) -> FileResponse:
 def start_demo(record: bool = False) -> dict[str, Any]:
     """START DEMO SCENARIO: reset to the seed and play the timeline through the pipeline,
     replaying recorded model responses (`?record=true` calls the live model and re-records)."""
-    demo.start(record=record)
+    _require_demo().start(record=record)
     return _state()
 
 
 @app.post("/api/demo/pause")
 def pause_demo() -> dict[str, Any]:
-    demo.pause()
+    _require_demo().pause()
     return _state()
 
 
 @app.post("/api/demo/resume")
 def resume_demo() -> dict[str, Any]:
-    demo.resume()
+    _require_demo().resume()
     return _state()
 
 
 @app.post("/api/reset")
 def reset() -> dict[str, Any]:
-    demo.stop()
+    if demo:
+        demo.stop()
     service.hub.mode = hub_from_env(service.client).mode
     service.reset()
     return _state()

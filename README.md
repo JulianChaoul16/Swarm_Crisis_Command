@@ -112,6 +112,25 @@ is recorded, the report is shown as unread rather than invented.
 and gauge triggers written for this exercise. They are marked as exercise documents, not
 City of Richmond material; citations say "Sample Richmond Flood Response Plan".
 
+## Modes: live intake (default) and demo
+
+Set in `crisis_command/agents/.env` (copy `.env.example`):
+
+- `DEMO_ENABLED=false` (default): **live intake.** Richmond's roads and units start with no
+  incidents. Reports come in from three places:
+  1. the `/report` page (typed or spoken)
+  2. `POST /api/intake` for other systems, e.g.
+     `{"text": "...", "source": "CAD", "external_id": "C-123"}`; if `INTAKE_TOKEN` is set,
+     send it as `Authorization: Bearer <token>`
+  3. a **database connector** that polls a table with columns `id`, `text` and `source`
+     (`CONNECTOR_SQL_URL=sqlite:///path.db` or `postgresql://...` with `pip install psycopg`;
+     `CONNECTOR_SQL_TABLE`, `CONNECTOR_POLL_SECONDS`). Each new row is read once.
+
+  Every report is read by the Intake Agent, scored by the swarm and planned. A dispatcher
+  approves each plan.
+- `DEMO_ENABLED=true`: the seeded Richmond flood and START DEMO SCENARIO (recorded model
+  answers, works offline).
+
 ## Send a report from another device
 
 The top-right corner of the dashboard shows the report address: `http://localhost:3000/report`,

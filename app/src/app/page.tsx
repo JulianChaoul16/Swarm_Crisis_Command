@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CrisisMap, { type MapData } from "@/components/CrisisMap";
 import { ApiError, api } from "@/lib/api";
-import type { Agent, Incident, Proposal, Swarm, WorldState } from "@/lib/types";
+import type { Agent, Incident, Proposal, Swarm, WorldState, DemoStatus } from "@/lib/types";
 
 // One screen, three panels: incident queue | map | recommendation + activity.
 // Workflow: Detect -> Prioritize -> Decide -> Dispatch -> Communicate.
@@ -279,7 +279,7 @@ function Recommendation({
 }
 
 function DemoButton({ demo, busy, run }: {
-  demo: WorldState["demo"] | undefined;
+  demo: DemoStatus | null | undefined;
   busy: boolean;
   run: (action: () => Promise<unknown>) => void;
 }) {
@@ -301,7 +301,7 @@ function DemoButton({ demo, busy, run }: {
 }
 
 /** Plain-language narration of what the demo is doing now, and what to do. */
-function DemoGuide({ demo }: { demo: WorldState["demo"] }) {
+function DemoGuide({ demo }: { demo: DemoStatus }) {
   if (!demo.guide)
     return (
       <div className="guide">
@@ -321,7 +321,7 @@ function DemoGuide({ demo }: { demo: WorldState["demo"] }) {
   );
 }
 
-function Timeline({ demo }: { demo: WorldState["demo"] }) {
+function Timeline({ demo }: { demo: DemoStatus }) {
   if (demo.elapsed_s === null) return null;
   return (
     <div className="timeline" title={demo.errors.join("\n")}>
@@ -440,6 +440,25 @@ function ActivityFeed({ activity }: { activity: Swarm["activity"] }) {
   );
 }
 
+/** Live intake mode: which inputs are connected. */
+function LiveIntakeBadge({ mode }: { mode: WorldState["mode"] }) {
+  const feeds = mode?.connectors ?? [];
+  return (
+    <div className="live-intake" title="Report page, POST /api/intake, and configured database connectors">
+      <span className="live-dot" /> LIVE INTAKE
+      <span className="muted">
+        {" "}· report page · intake API
+        {feeds.map((feed) => (
+          <span key={feed.name} className={feed.error ? "bad" : ""} title={feed.error ?? undefined}>
+            {" "}· {feed.name} ({feed.error ? "error" : `${feed.received} received`})
+          </span>
+        ))}
+        {feeds.length === 0 && " · no database connector configured"}
+      </span>
+    </div>
+  );
+}
+
 /** Where to send a report from: this computer, or a phone on the same Wi-Fi. */
 function ConnectCorner() {
   const [lanIp, setLanIp] = useState<string | null>(null);
@@ -493,12 +512,14 @@ export default function CommandScreen() {
     );
   }, [refresh]);
 
-  const demoRunning = Boolean(world?.demo.running);
+  const demoRunning = Boolean(world?.demo?.running);
+  const liveIntake = world ? !world.mode?.demo_enabled : false;
   useEffect(() => {
-    if (!demoRunning) return;
-    const timer = setInterval(() => refresh().catch(() => null), 1500);
+    // Poll while the demo plays, and always in live intake (reports arrive from outside).
+    if (!demoRunning && !liveIntake) return;
+    const timer = setInterval(() => refresh().catch(() => null), demoRunning ? 1500 : 3000);
     return () => clearInterval(timer);
-  }, [demoRunning, refresh]);
+  }, [demoRunning, liveIntake, refresh]);
 
   const queue = useMemo(() => (world ? rank(world.incidents, world.swarm) : []), [world]);
   const mapData: MapData | null = useMemo(
@@ -519,17 +540,28 @@ export default function CommandScreen() {
       <header className="topbar">
         <span className="sim">SIMULATION</span>
         <h1>Crisis Command Swarm <span className="muted">· Richmond Flood</span></h1>
-        <DemoButton demo={world?.demo} busy={busy} run={run} />
-        {world && <Timeline demo={world.demo} />}
+        {world?.demo ? (
+          <>
+            <DemoButton demo={world.demo} busy={busy} run={run} />
+            <Timeline demo={world.demo} />
+          </>
+        ) : world && <LiveIntakeBadge mode={world.mode} />}
         <div className="gauge" title={world?.swarm.gauge.site}>
           James River gauge: {world?.swarm.gauge.value !== undefined
             ? <><b>{world.swarm.gauge.value.toFixed(1)} ft {world.swarm.gauge.trend}</b> <span className="muted">({world.swarm.gauge.label})</span></>
-            : <span className="muted">no reading yet (start the demo)</span>}
+            : <span className="muted">{world?.demo ? "no reading yet (start the demo)" : "no gauge feed connected"}</span>}
         </div>
         <ConnectCorner />
       </header>
 
-      {world && <DemoGuide demo={world.demo} />}
+      {world?.demo && <DemoGuide demo={world.demo} />}
+      {world && !world.demo && world.incidents.length === 0 && (
+        <div className="guide">
+          <b>Waiting for reports.</b> Incidents arrive from the report page (top right), from other systems
+          via <code>POST /api/intake</code>, and from any database connector set in <code>.env</code>. Each
+          one is read by the Intake Agent, scored by the swarm and planned; a dispatcher approves every plan.
+        </div>
+      )}
       {world && <AgentStrip agents={world.agents} open={agentOpen} onOpen={setAgentOpen} />}
       {world && agentOpen && world.agents.find((a) => a.name === agentOpen) && (
         <AgentPanel agent={world.agents.find((a) => a.name === agentOpen)!} onClose={() => setAgentOpen(null)} />

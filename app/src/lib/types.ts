@@ -102,6 +102,16 @@ export type Report = {
   decision_reason: string | null;
 };
 
+export type DemoStatus = {
+  running: boolean;
+  paused: boolean;
+  finished: boolean;
+  elapsed_s: number | null;
+  events: { at: number; label: string; done: boolean }[];
+  guide: { now: string; your_turn: boolean; next?: string | null; next_in_s?: number | null } | null;
+  errors: string[];
+};
+
 export type WorldState = {
   simulation: true;
   run_id: string;
@@ -123,15 +133,8 @@ export type WorldState = {
   swarm: Swarm;
   models: { model: string; status: string; detail: string }[];
   agents: Agent[];
-  demo: {
-    running: boolean;
-    paused: boolean;
-    finished: boolean;
-    elapsed_s: number | null;
-    events: { at: number; label: string; done: boolean }[];
-    guide: { now: string; your_turn: boolean; next?: string | null; next_in_s?: number | null } | null;
-    errors: string[];
-  };
+  demo: DemoStatus | null;
+  mode: { demo_enabled: boolean; connectors: { name: string; received: number; error: string | null }[] };
   explanation: (ModelResult<{ why: string[]; tradeoff: string }> & { unverified: string[] }) | null;
   alerts: Record<string, {
     text: ModelResult<{ english: string; spanish: string }> | null;

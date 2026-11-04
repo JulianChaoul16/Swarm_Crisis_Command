@@ -334,3 +334,20 @@ DEMO_FLOOD_SCENARIO = Scenario(
     place_notes=DEMO_PLACE_NOTES,
     road_names=DEMO_ROAD_NAMES,
 )
+
+
+def build_richmond_live_world() -> World:
+    """The Richmond road graph and units with no incidents: everything arrives through intake."""
+    seeded = build_richmond_demo_world()
+    return World(incidents=[], services=list(seeded.services), city=seeded.city)
+
+
+LIVE_RICHMOND_SCENARIO = Scenario(
+    name="richmond-live-intake",
+    description="Richmond roads and units; incidents arrive only from the report page, the intake API "
+                "and database connectors.",
+    build_world=build_richmond_live_world,
+    places=FLOOD_PLACES,
+    place_notes=DEMO_PLACE_NOTES,
+    road_names=DEMO_ROAD_NAMES,
+)
