@@ -20,7 +20,9 @@ const rank = (incidents: Incident[], swarm: Swarm) => {
 const AGENTS: [string, string][] = [["Intake Agent", "Intake"], ["Vision Agent", "Vision"], ["Access check", "Access"]];
 
 /** A model pill: the model's name and where this output really came from. */
-function Pill({ label, title }: { label: string; title?: string }) {
+function Pill({ label, title }: { label?: string | null; title?: string }) {
+  // Labels come from the API; tolerate a missing one (e.g. while the app and API update).
+  if (!label) return null;
   const [model, source] = label.split(" · ");
   const kind = source === "live" ? "live" : source === "cache" ? "cache" : source === "local" ? "local" : source ? "sample" : "rules";
   return (
@@ -317,6 +319,7 @@ function Transcripts({ swarm }: { swarm: Swarm }) {
 function VisionBadge({ swarm }: { swarm: Swarm }) {
   if (!swarm.imagery.length) return null;
   const image = swarm.imagery[swarm.imagery.length - 1];
+  if (!image.objects || !image.estimate) return null;
   const counts = Object.entries(image.objects).map(([prompt, boxes]) => `${boxes.length} × ${prompt}`).join(", ");
   return (
     <div className="vision-badge" title={image.note}>
@@ -335,6 +338,7 @@ function PhotoCard({ swarm }: { swarm: Swarm }) {
   const [open, setOpen] = useState(false);
   if (!swarm.imagery.length) return null;
   const image = swarm.imagery[swarm.imagery.length - 1];
+  if (!image.objects || !image.size || !image.estimate) return null;
   const [width, height] = image.size;
   const prompts = Object.keys(image.objects);
   return (
@@ -455,7 +459,7 @@ export default function CommandScreen() {
         roads: world.roads,
         annotations: world.annotations,
         proposedRoutes: world.current_plan?.status === "proposed" ? world.current_plan.assignments : [],
-        floodMasks: world.swarm.imagery.flatMap((image) => image.map_features),
+        floodMasks: world.swarm.imagery.flatMap((image) => image.map_features ?? []),
       },
     [world, queue],
   );
