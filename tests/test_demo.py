@@ -58,28 +58,27 @@ class DemoTests(unittest.TestCase):
         self.assertEqual(alert.source, "cache")
         self.assertTrue(alert.value["english"] and alert.value["spanish"])
 
-    def test_pause_stops_the_clock_and_the_demo_continues_after_each_approval(self) -> None:
-        import time
+    def test_presenter_steps_through_and_stage_two_waits_for_approval(self) -> None:
         service = CommandService(scenario=DEMO_FLOOD_SCENARIO, client=OFFLINE)
-        demo = DemoRunner(service, speed=20)  # T+15s arrives after 0.75 s
+        demo = DemoRunner(service)
+        self.assertFalse(demo.step())  # nothing before START
         demo.start()
-        demo.pause()
-        time.sleep(1.2)
         status = demo.status()
-        self.assertTrue(status["paused"])
-        self.assertFalse(any(e["done"] for e in status["events"]))
+        self.assertEqual(status["step"], 0)  # START plays nothing by itself
         self.assertIn("Five incidents", status["guide"]["now"])
-        demo.resume()
-        time.sleep(3)
+        stage1 = sum(1 for e in demo.timeline["events"] if e.get("stage", 1) == 1)
+        for _ in range(stage1):
+            self.assertTrue(demo.step(wait=True))
         status = demo.status()
-        stage1 = [e["done"] for e in status["events"] if e["stage"] == 1]
-        stage2 = [e["done"] for e in status["events"] if e["stage"] == 2]
-        self.assertTrue(all(stage1) and not any(stage2))  # stage 2 waits for the operator
-        self.assertTrue(status["guide"]["your_turn"] and not status["finished"])
+        self.assertEqual(status["step"], stage1)
+        self.assertFalse(status["can_step"])
+        self.assertIn("Approve", status["blocked"])
+        self.assertTrue(status["guide"]["your_turn"])
 
         plan = service.current_plan
         service.approve(plan.id, plan.world_version)
-        time.sleep(2.5)
+        while demo.step(wait=True):
+            pass
         status = demo.status()
         self.assertTrue(all(e["done"] for e in status["events"]))
         self.assertTrue(status["guide"]["your_turn"])  # a freed team can take the new call

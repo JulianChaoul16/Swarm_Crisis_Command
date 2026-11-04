@@ -175,21 +175,16 @@ def media(folder: str, name: str) -> FileResponse:
 
 @app.post("/api/demo/start")
 def start_demo(record: bool = False) -> dict[str, Any]:
-    """START DEMO SCENARIO: reset to the seed and play the timeline through the pipeline,
-    replaying recorded model responses (`?record=true` calls the live model and re-records)."""
+    """START: reset to the seed; the presenter then steps through the timeline with ▶.
+    Replays recorded model responses (`?record=true` calls the live model and re-records)."""
     _require_demo().start(record=record)
     return _state()
 
 
-@app.post("/api/demo/pause")
-def pause_demo() -> dict[str, Any]:
-    _require_demo().pause()
-    return _state()
-
-
-@app.post("/api/demo/resume")
-def resume_demo() -> dict[str, Any]:
-    _require_demo().resume()
+@app.post("/api/demo/step")
+def step_demo() -> dict[str, Any]:
+    """The presenter's ▶: play the next demo event."""
+    _require_demo().step()
     return _state()
 
 

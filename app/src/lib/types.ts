@@ -183,11 +183,15 @@ export type Roster = {
 
 export type DemoStatus = {
   running: boolean;
-  paused: boolean;
   finished: boolean;
-  elapsed_s: number | null;
-  events: { at: number; label: string; done: boolean }[];
-  guide: { now: string; your_turn: boolean; next?: string | null; next_in_s?: number | null } | null;
+  busy: boolean;
+  step: number;
+  total: number;
+  can_step: boolean;
+  blocked: string | null;
+  events: { stage: number; label: string; done: boolean }[];
+  approvals: number;
+  guide: { now: string; your_turn: boolean; next?: string | null } | null;
   errors: string[];
 };
 

@@ -16,7 +16,7 @@
    "label": "911 call from a bus in Shockoe Bottom",
    "audio_id": "call_0141",
    "source": "911 call (transcribed)",
-   "explain": "A 911 call from a bus in Shockoe Bottom. The Listener shows the transcript (left), Muse Spark reads it into a new incident, the three agents vote and it becomes #1 in the queue. The recommendation now sends a swift water team and an ambulance there.",
+   "explain": "A 911 call from a bus in Shockoe Bottom. The Listener shows the transcript (left), Muse Spark reads it into a new incident, the three agents vote and it becomes #1 in the queue. The recommendation now sends a swift water team and an ambulance there. Press ▶ for the next step.",
    "audio_file": "test_media/audio/01_bus_shockoe.wav"
   },
   {
@@ -26,7 +26,7 @@
    "image_id": "dock_st_photo",
    "place": "Shockoe Bottom",
    "road_id": "dock-street",
-   "explain": "A citizen photo of Dock St. SAM 3.1 outlines the flooded street and counts the vehicles in the water (boxes on the photo, blue area on the map); Muse Wonder judges the depth and that cars cannot get through, so Dock St closes (black). The swarm re-votes and the route changes to cross the 14th St (Mayo) Bridge instead.",
+   "explain": "A citizen photo of Dock St. SAM 3.1 outlines the flooded street and counts the vehicles in the water (boxes on the photo, blue area on the map); Muse Wonder judges the depth and that cars cannot get through, so Dock St closes (black). The swarm re-votes and the route changes to cross the 14th St (Mayo) Bridge instead. Press ▶ for the next step.",
    "image_file": "test_media/images/03_flood_knee.webp",
    "prompts": {
     "water": "flooded street",
@@ -46,7 +46,7 @@
    "label": "River gauge update",
    "value": 11.8,
    "trend": "rising",
-   "explain": "The river gauge rises to 11.8 ft, near the 12 ft sample trigger. Logistics re-votes the low-lying incidents and the plan is recomputed.",
+   "explain": "The river gauge rises to 11.8 ft, near the 12 ft sample trigger. Logistics re-votes the low-lying incidents and the plan is recomputed. Press ▶ for the next step.",
    "scenario_hour": 1
   },
   {
@@ -56,7 +56,7 @@
    "label": "911 call: man trapped in his car at Hull St",
    "audio_id": "call_0142",
    "source": "911 call (transcribed)",
-   "explain": "A new 911 call: a man trapped in his car in the Hull St underpass. The agents score it as critical, but every rescue team is already on a mission, so the recommendation shows it as waiting, with the reason. Watch what happens when a team frees up.",
+   "explain": "A new 911 call: a man trapped in his car in the Hull St underpass. The agents score it as critical, but every rescue team is already on a mission, so the recommendation shows it as waiting, with the reason. Watch what happens when a team frees up. Press ▶ for the next step.",
    "audio_file": "test_media/audio/02_car_underpass.wav"
   },
   {
@@ -67,13 +67,13 @@
    "unit_name": "Swift Water Team 1",
    "incident_id": "incident-9",
    "text": "All five residents at Riverside Apartments are out and safe.",
-   "explain": "Swift Water Team 1 reports the Riverside residents are safe, so that incident closes and its boat and ambulance are free again. The swarm re-plans: the most urgent waiting request now gets them."
+   "explain": "Swift Water Team 1 reports the Riverside residents are safe, so that incident closes and its boat and ambulance are free again. The swarm re-plans: the most urgent waiting request now gets them. Press ▶ for the next step."
   }
  ],
- "intro": "Five incidents are already open. Each card shows three agent votes (Triage, Vision, Logistics) and their consensus; the queue is ranked by it. The right panel is the swarm's current recommendation. Watch the next event arrive.",
- "outro": "Your turn. Read the recommendation on the right (what, why, confidence, tradeoff) and press Approve & Dispatch. The English and Spanish public alert appears below it. The demo then keeps going: new reports keep arriving.",
- "approved": "Approved: units are dispatched (they move on the map) and the alert is out. Operations continue: more reports are on the way.",
+ "intro": "Five incidents are already open. Each card shows three agent votes (Triage, Vision, Logistics) and their consensus; the queue is ranked by it. The right panel is the swarm's current recommendation. Watch the next event arrive. Press ▶ (or the → key) to bring in the first report.",
+ "outro": "Your turn. Read the recommendation on the right (what, why, confidence, tradeoff) and press Approve & Dispatch. The English and Spanish public alert appears below it. Then press ▶ for the next report.",
+ "approved": "Approved: units are dispatched (they move on the map) and the alert is out. Press ▶ for the next report.",
  "outro_2": "Your turn again. A freed team can now reach the waiting call. Review the new recommendation and press Approve & Dispatch.",
- "final": "That is the full loop: detect, prioritize, decide, dispatch, communicate, and again when new information arrives. Press RESTART DEMO to run it again.",
+ "final": "That is the full loop: detect, prioritize, decide, dispatch, communicate, and again when new information arrives. Press Restart to run it again.",
  "gauge_time_note": "Each gauge reading carries the scenario hour it represents; the 50-second demo compresses about an hour of river rise."
 }

@@ -364,3 +364,33 @@ button.start.pause { background: var(--warn); border-color: var(--warn); color: 
 .panel.center .vision-badge { position: static; transform: none; margin: 2px 10px; }
 .layers summary { cursor: pointer; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
 .layers[open] summary { margin-bottom: 4px; }
+
+/* ---------- Top navigation: brand | tabs | demo, report, organisation ---------- */
+
+.nav { display: flex; align-items: stretch; gap: 18px; padding: 0 16px; min-height: 52px; background: var(--panel); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 800; letter-spacing: 0.01em; white-space: nowrap; }
+.brand-mark { color: var(--critical); }
+.brand .sim { font-size: 9.5px; padding: 2px 6px; }
+.nav .tabs { display: flex; align-items: stretch; gap: 2px; padding: 0; border: 0; }
+.nav .tab { border: 0; border-radius: 0; border-bottom: 3px solid transparent; padding: 0 14px; background: transparent; color: var(--muted); font-weight: 600; }
+.nav .tab:hover { color: var(--text); }
+.nav .tab.on { color: var(--text); background: transparent; border-bottom-color: var(--solver); }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 14px; white-space: nowrap; }
+.org { font-weight: 700; font-size: 13.5px; padding-left: 14px; border-left: 1px solid var(--border); }
+.demo-start { font-size: 12px; font-weight: 700; padding: 4px 12px; }
+.demo-stepper { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.step-btn { font-size: 15px; line-height: 1; padding: 5px 12px; background: var(--solver); border-color: var(--solver); color: #04122b; font-weight: 800; }
+.icon { padding: 3px 8px; font-size: 14px; line-height: 1; }
+.live-intake { font-size: 12px; font-weight: 600; }
+.report-link { position: relative; font-size: 12px; }
+.report-link summary { cursor: pointer; color: var(--solver); list-style: none; }
+.report-link summary::-webkit-details-marker { display: none; }
+.report-pop { position: absolute; right: 0; top: 26px; z-index: 40; padding: 8px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); }
+.gauge-chip { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 5; font-size: 12px; padding: 4px 10px; border-radius: 14px; background: rgba(10, 15, 28, 0.88); border: 1px solid var(--border); white-space: nowrap; }
+.demo-note { position: absolute; left: 10px; bottom: 34px; z-index: 6; max-width: min(460px, 70%); padding: 8px 26px 8px 10px; font-size: 12.5px; border-radius: 8px; background: rgba(15, 23, 42, 0.94); border: 1px solid var(--border); }
+.demo-note.your-turn { border-color: var(--approve); }
+.demo-note .close { position: absolute; top: 2px; right: 2px; border: 0; }
+.tab-page + .agent-strip, .agent-strip { padding: 8px 16px 0; }
+@media (max-width: 900px) { .org { display: none; } .nav .tab { padding: 8px 10px; } }
+.gauge-chip { left: auto; right: 52px; transform: none; }
+.demo-note { max-width: min(400px, 64%); font-size: 12px; }

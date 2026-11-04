@@ -33,8 +33,7 @@ export const api = {
   events: (limit = 200) => request<WorldEvent[]>(`/events?limit=${limit}`),
   reset: () => post<WorldState>("/reset"),
   startDemo: () => post<WorldState>("/demo/start"),
-  pauseDemo: () => post<WorldState>("/demo/pause"),
-  resumeDemo: () => post<WorldState>("/demo/resume"),
+  stepDemo: () => post<WorldState>("/demo/step"),
   submitReport: (content: string, source: string, fields?: Partial<ReportFields>) =>
     post<WorldState>("/reports", { content, source, fields }),
   confirmReport: (id: string) => post<WorldState>(`/reports/${id}/confirm`),

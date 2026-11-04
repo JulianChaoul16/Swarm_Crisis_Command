@@ -281,58 +281,43 @@ function Recommendation({
   );
 }
 
-function DemoButton({ demo, busy, run }: {
-  demo: DemoStatus | null | undefined;
+/** Small demo control in the nav: START, then ▶ plays one step (also the → key). */
+function DemoStepper({ demo, busy, run }: {
+  demo: DemoStatus;
   busy: boolean;
   run: (action: () => Promise<unknown>) => void;
 }) {
-  if (demo?.running && !demo.paused)
-    return <button className="start pause" disabled={busy} onClick={() => run(api.pauseDemo)}>⏸ PAUSE DEMO</button>;
-  if (demo?.running && demo.paused)
+  if (!demo.running && !demo.finished)
     return (
-      <>
-        <button className="start" disabled={busy} onClick={() => run(api.resumeDemo)}>▶ RESUME DEMO</button>
-        <button className="ghost" disabled={busy} onClick={() => run(api.startDemo)}>Restart</button>
-      </>
+      <button className="demo-start" disabled={busy} onClick={() => run(api.startDemo)}
+        title="Reset to the seeded Richmond flood. Then press ▶ (or →) to bring in each report.">
+        Demo
+      </button>
     );
   return (
-    <button className="start" disabled={busy} onClick={() => run(api.startDemo)}
-      title="Plays a 50-second seeded Richmond flood through the swarm, using recorded model responses (works offline).">
-      ▶ {demo?.finished ? "RESTART DEMO" : "START DEMO SCENARIO"}
-    </button>
-  );
-}
-
-/** Plain-language narration of what the demo is doing now, and what to do. */
-function DemoGuide({ demo }: { demo: DemoStatus }) {
-  if (!demo.guide)
-    return (
-      <div className="guide">
-        <b>How to use the demo:</b> press <b>START DEMO SCENARIO</b>. For about 50 seconds a flash flood
-        unfolds on its own: a 911 call, a photo of a flooded street, a rising river. Watch the queue
-        (left), map (center) and recommendation (right) change as the agents react. When it ends, it is
-        your turn to approve the recommended dispatch. You can pause at any time.
-      </div>
-    );
-  return (
-    <div className={`guide ${demo.guide.your_turn ? "your-turn" : ""} ${demo.paused ? "paused" : ""}`}>
-      <b>{demo.paused ? "Paused" : demo.guide.your_turn ? "Your turn" : "Now"}:</b> {demo.guide.now}
-      {!demo.guide.your_turn && demo.guide.next && (
-        <span className="muted"> · Next: {demo.guide.next}{demo.paused ? " (paused)" : ` in ${demo.guide.next_in_s}s`}</span>
-      )}
+    <div className="demo-stepper">
+      <span className="muted">Demo {demo.step}/{demo.total}</span>
+      <button className="step-btn" disabled={busy || !demo.can_step} onClick={() => run(api.stepDemo)}
+        title={demo.can_step ? "Next step (→)" : demo.blocked ?? ""} aria-label="Next demo step">
+        {demo.busy ? "…" : "▶"}
+      </button>
+      <button className="ghost icon" disabled={busy} onClick={() => run(api.startDemo)} title="Restart the demo">↺</button>
     </div>
   );
 }
 
-function Timeline({ demo }: { demo: DemoStatus }) {
-  if (demo.elapsed_s === null) return null;
+/** Presenter note for the current demo step, small, over the bottom of the map. */
+function DemoNote({ demo }: { demo: DemoStatus }) {
+  const [hidden, setHidden] = useState(false);
+  const text = demo.guide?.now;
+  useEffect(() => setHidden(false), [text]);
+  if (!demo.guide || hidden) return null;
   return (
-    <div className="timeline" title={demo.errors.join("\n")}>
-      <span className="muted">T+{Math.floor(demo.elapsed_s)}s</span>
-      {demo.events.map((event) => (
-        <span key={event.at} className={`tl ${event.done ? "done" : ""}`}>T+{event.at}s {event.label}</span>
-      ))}
-      {demo.errors.length > 0 && <span className="bad">{demo.errors.length} error(s)</span>}
+    <div className={`demo-note ${demo.guide.your_turn ? "your-turn" : ""}`}>
+      <button className="ghost icon close" onClick={() => setHidden(true)} aria-label="Hide note">×</button>
+      <b>{demo.guide.your_turn ? "Your turn" : `Step ${demo.step}/${demo.total}`}:</b> {demo.guide.now}
+      {demo.guide.next && <div className="muted small">Next (▶): {demo.guide.next}{demo.blocked && !demo.busy ? ` · ${demo.blocked}` : ""}</div>}
+      {demo.errors.length > 0 && <div className="bad small">{demo.errors.join("; ")}</div>}
     </div>
   );
 }
@@ -446,37 +431,42 @@ function ActivityFeed({ activity }: { activity: Swarm["activity"] }) {
 /** Live intake mode: which inputs are connected. */
 function LiveIntakeBadge({ mode }: { mode: WorldState["mode"] }) {
   const feeds = mode?.connectors ?? [];
+  const detail = ["report page", "intake API", ...feeds.map((f) => `${f.name}: ${f.error ? `error (${f.error})` : `${f.received} received`}`)]
+    .join(" · ") + (feeds.length ? "" : " · no database connector configured");
   return (
-    <div className="live-intake" title="Report page, POST /api/intake, and configured database connectors">
-      <span className="live-dot" /> LIVE INTAKE
-      <span className="muted">
-        {" "}· report page · intake API
-        {feeds.map((feed) => (
-          <span key={feed.name} className={feed.error ? "bad" : ""} title={feed.error ?? undefined}>
-            {" "}· {feed.name} ({feed.error ? "error" : `${feed.received} received`})
-          </span>
-        ))}
-        {feeds.length === 0 && " · no database connector configured"}
-      </span>
-    </div>
+    <span className={`live-intake ${feeds.some((f) => f.error) ? "bad" : ""}`} title={detail}>
+      <span className="live-dot" /> Live intake
+    </span>
   );
 }
 
 /** Where to send a report from: this computer, or a phone on the same Wi-Fi. */
-function ConnectCorner() {
+function ReportLink() {
   const [lanIp, setLanIp] = useState<string | null>(null);
   const [port, setPort] = useState("3000");
   useEffect(() => {
     setPort(window.location.port || "80");
     fetch("/api/connect").then((r) => r.json()).then((d) => setLanIp(d.lan_ip ?? null)).catch(() => setLanIp(null));
   }, []);
-  const local = `http://localhost:${port}/report`;
-  const network = lanIp ? `http://${lanIp}:${port}/report` : null;
   return (
-    <div className="connect" title="Open this address to send an incident report into the swarm">
-      <span className="connect-label">Send a report</span>
-      <a href="/report" target="_blank" rel="noreferrer">{local}</a>
-      {network && <span className="connect-lan">Phone on same Wi-Fi: <b>{network}</b></span>}
+    <details className="report-link">
+      <summary>Send a report</summary>
+      <div className="report-pop">
+        <a href="/report" target="_blank" rel="noreferrer">http://localhost:{port}/report</a>
+        {lanIp && <div className="muted small">Phone on the same Wi-Fi: <b>http://{lanIp}:{port}/report</b></div>}
+      </div>
+    </details>
+  );
+}
+
+/** River gauge, shown over the top of the map. */
+function GaugeChip({ swarm, demo }: { swarm: Swarm; demo: boolean }) {
+  const gauge = swarm.gauge;
+  return (
+    <div className="gauge-chip" title={gauge.site}>
+      James River: {gauge.value !== undefined
+        ? <><b>{gauge.value.toFixed(1)} ft {gauge.trend}</b> <span className="muted">({gauge.label})</span></>
+        : <span className="muted">{demo ? "no reading (press Demo)" : "no gauge feed connected"}</span>}
     </div>
   );
 }
@@ -614,7 +604,7 @@ export default function CommandScreen() {
     );
   }, [refresh]);
 
-  const demoRunning = Boolean(world?.demo?.running);
+  const demoRunning = Boolean(world?.demo?.running || world?.demo?.busy);
   const liveIntake = world ? !world.mode?.demo_enabled : false;
   useEffect(() => {
     // Poll while the demo plays, and always in live intake (reports arrive from outside).
@@ -664,6 +654,20 @@ export default function CommandScreen() {
     };
   }, [world, queue, layers, pastFrame, futureFrame, shownFrame]);
 
+  // The → key is the presenter's ▶ (ignored while typing in a field).
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (event.key !== "ArrowRight" || target?.closest("input, textarea, select, [contenteditable]")) return;
+      if (world?.demo?.can_step && !busy) {
+        event.preventDefault();
+        run(api.stepDemo);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [world?.demo?.can_step, busy, run]);
+
   // Keep the scrubber's history fresh while the map tab is open.
   useEffect(() => {
     if (tab !== "map") return;
@@ -674,51 +678,46 @@ export default function CommandScreen() {
 
   return (
     <div className="screen">
-      <header className="topbar">
-        <span className="sim">SIMULATION</span>
-        <h1>Crisis Command Swarm <span className="muted">· Richmond Flood</span></h1>
-        {world?.demo ? (
-          <>
-            <DemoButton demo={world.demo} busy={busy} run={run} />
-            <Timeline demo={world.demo} />
-          </>
-        ) : world && <LiveIntakeBadge mode={world.mode} />}
-        <div className="gauge" title={world?.swarm.gauge.site}>
-          James River gauge: {world?.swarm.gauge.value !== undefined
-            ? <><b>{world.swarm.gauge.value.toFixed(1)} ft {world.swarm.gauge.trend}</b> <span className="muted">({world.swarm.gauge.label})</span></>
-            : <span className="muted">{world?.demo ? "no reading yet (start the demo)" : "no gauge feed connected"}</span>}
+      <header className="nav">
+        <div className="brand">
+          <span className="brand-mark">◆</span> Crisis Command <span className="sim">SIMULATION</span>
         </div>
-        <ConnectCorner />
+        {world && (
+          <nav className="tabs" role="tablist">
+            {([["map", "Operations map"], ["personnel", `Personnel (${world.roster.units.length})`], ["agents", "Agents & decisions"]] as const).map(([key, label]) => (
+              <button key={key} role="tab" aria-selected={tab === key} className={tab === key ? "tab on" : "tab"} onClick={() => setTab(key)}>
+                {label}
+              </button>
+            ))}
+          </nav>
+        )}
+        <div className="nav-right">
+          {world?.demo ? <DemoStepper demo={world.demo} busy={busy} run={run} /> : world && <LiveIntakeBadge mode={world.mode} />}
+          <ReportLink />
+          <span className="org">City of Richmond Operations</span>
+        </div>
       </header>
-
-      {world?.demo && <DemoGuide demo={world.demo} />}
-      {world && !world.demo && world.incidents.length === 0 && (
-        <div className="guide">
-          <b>Waiting for reports.</b> Incidents arrive from the report page (top right), from other systems
-          via <code>POST /api/intake</code>, and from any database connector set in <code>.env</code>. Each
-          one is read by the Intake Agent, scored by the swarm and planned; a dispatcher approves every plan.
-        </div>
-      )}
-      {world && (
-        <nav className="tabs" role="tablist">
-          {([["map", "Operations map"], ["personnel", `Personnel (${world.roster.units.length})`], ["agents", "Agents & decisions"]] as const).map(([key, label]) => (
-            <button key={key} role="tab" aria-selected={tab === key} className={tab === key ? "tab on" : "tab"} onClick={() => setTab(key)}>
-              {label}
-            </button>
-          ))}
-          {tab === "agents" && <AgentStrip agents={world.agents} open={agentOpen} onOpen={setAgentOpen} />}
-        </nav>
-      )}
       {error && <div className="banner">{error}</div>}
 
       {world && tab === "personnel" && <PersonnelTab world={world} />}
-      {world && tab === "agents" && <AgentsTab world={world} queue={queue} focus={agentOpen} />}
+      {world && tab === "agents" && (
+        <>
+          <AgentStrip agents={world.agents} open={agentOpen} onOpen={setAgentOpen} />
+          <AgentsTab world={world} queue={queue} focus={agentOpen} />
+        </>
+      )}
 
       {world && tab === "map" && (
         <main className="panels">
           <section className="panel left">
             <h2>Swarm Incident Queue</h2>
             {shownFrame && <AffectedCard frame={shownFrame} label={pastFrame ? "recorded" : "now"} />}
+            {!world.demo && world.incidents.length === 0 && (
+              <p className="empty">
+                Waiting for reports: from the report page, <code>POST /api/intake</code>, or a database connector in
+                <code> .env</code>. Each is read by the Intake Agent, scored by the swarm and planned; a dispatcher approves every plan.
+              </p>
+            )}
             <Transcripts swarm={world.swarm} />
             <PhotoCard swarm={world.swarm} />
             <IncidentQueue incidents={queue} focus={queue[0]?.id ?? null} swarm={world.swarm} />
@@ -729,6 +728,8 @@ export default function CommandScreen() {
               <CrisisMap data={mapData} basemap />
               <LayerControl layers={layers} onChange={setLayers} sources={world.gis.layer_sources} />
               <ScrubBanner scrub={scrub} frames={frames} projection={world.gis.projection} />
+              <GaugeChip swarm={world.swarm} demo={!!world.demo} />
+              {world.demo && scrub.kind === "live" && <DemoNote demo={world.demo} />}
             </div>
             <Scrubber frames={frames} projection={world.gis.projection} scrub={scrub} onScrub={setScrub} onOpen={loadHistory} />
             <VisionBadge swarm={world.swarm} />

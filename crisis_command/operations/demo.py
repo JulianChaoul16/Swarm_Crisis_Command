@@ -9,8 +9,7 @@ responses in demo mode, labelled sample data for models this account cannot reac
 
 import json
 from pathlib import Path
-from threading import Event, Lock, Thread
-from time import monotonic
+from threading import Lock, Thread
 from typing import Any
 
 from ..meta_api import ROOT
@@ -25,43 +24,37 @@ def load_timeline(path: Path = SCENARIO_FILE) -> dict[str, Any]:
 
 
 class DemoRunner:
-    def __init__(self, service: Any, timeline: dict[str, Any] | None = None, speed: float = 1.0) -> None:
+    """Presenter-controlled: START resets to the seed; each step() plays the next event.
+
+    Stage-2 events (new reports after the first dispatch) wait for an operator approval so
+    the story stays in order."""
+
+    def __init__(self, service: Any, timeline: dict[str, Any] | None = None) -> None:
         self.service = service
         self.timeline = timeline or load_timeline()
-        self.speed = speed  # >1 plays faster (tests)
         self._lock = Lock()
-        self._stop = Event()
         self._generation = 0
-        self.started: float | None = None
-        # Pausing stops the demo clock; events already running finish.
-        self._paused_at: float | None = None
-        self._paused_total = 0.0
+        self.started = False
+        self.busy = False
         self.done: list[int] = []
         self.errors: list[str] = []
-        # Demo clock time of each operator approval; stage 2 events count from the first.
-        self.approvals: list[float] = []
+        self.approvals = 0
         service.approval_listeners.append(self._approved)
 
     # ----- control -------------------------------------------------------
 
     def start(self, record: bool = False) -> None:
-        """Reset to the seed, set the opening gauge, then play the timed events.
-
+        """Reset to the seed and the opening gauge reading; nothing plays until step().
         Replays recorded model responses (demo mode) so the run is reliable offline;
         `record=True` calls the live model instead and records fresh responses."""
         self.service.hub.mode = "live" if record else "demo"
         self.service.hub.overwrite = record
         with self._lock:
             self._generation += 1
-            generation = self._generation
-            self._stop.set()
-            self._stop = Event()
-            self.done, self.errors, self.approvals = [], [], []
+            self.done, self.errors, self.approvals, self.busy = [], [], 0, False
         self.prepare()
         with self._lock:
-            self.started = monotonic()
-            self._paused_at, self._paused_total = None, 0.0
-        Thread(target=self._play, args=(generation, self._stop), daemon=True).start()
+            self.started = True
 
     def prepare(self) -> None:
         """T+0: the seeded world and the opening gauge reading."""
@@ -73,100 +66,97 @@ class DemoRunner:
     def stop(self) -> None:
         with self._lock:
             self._generation += 1
-            self._stop.set()
-            self.started, self._paused_at = None, None
+            self.started, self.busy = False, False
 
-    def pause(self) -> None:
+    def _next(self) -> tuple[int | None, str | None]:
+        """The next event to play, or why none can play now. Call under the lock."""
+        events = self.timeline["events"]
+        pending = [i for i in range(len(events)) if i not in self.done]
+        if not self.started:
+            return None, "Press START first."
+        if self.busy:
+            return None, "Still playing the last step."
+        if not pending:
+            return None, "All steps played."
+        if events[pending[0]].get("stage", 1) == 2 and not self.approvals:
+            return None, "Approve the recommended dispatch first."
+        return pending[0], None
+
+    def step(self, wait: bool = False) -> bool:
+        """Play the next event in the background (or inline with wait=True)."""
         with self._lock:
-            if self.started is not None and self._paused_at is None:
-                self._paused_at = monotonic()
+            index, _ = self._next()
+            if index is None:
+                return False
+            self.busy = True
+            generation = self._generation
+        if wait:
+            self._run(index, generation)
+        else:
+            Thread(target=self._run, args=(index, generation), daemon=True).start()
+        return True
 
-    def resume(self) -> None:
+    def _run(self, index: int, generation: int) -> None:
+        event = self.timeline["events"][index]
+        try:
+            getattr(self, f"_{event['type']}")(event)
+        except Exception as error:  # noqa: BLE001 - shown in the UI; the demo continues
+            with self._lock:
+                self.errors.append(f"{event['label']}: {error}")
         with self._lock:
-            if self._paused_at is not None:
-                self._paused_total += monotonic() - self._paused_at
-                self._paused_at = None
-
-    def _clock(self) -> float:
-        """Demo seconds since start, not counting time spent paused. Call under the lock."""
-        now = self._paused_at or monotonic()
-        return (now - self.started - self._paused_total) * self.speed
+            if generation == self._generation:
+                self.done.append(index)
+                self.busy = False
 
     def _approved(self, proposal: Any) -> None:
         with self._lock:
-            if self.started is not None:
-                self.approvals.append(self._clock())
-
-    def _due(self, event: dict[str, Any]) -> float | None:
-        """Demo time an event is due; stage 2 counts from the first approval. Under the lock."""
-        if event.get("stage", 1) == 1:
-            return event["at"]
-        return self.approvals[0] + event["at"] if self.approvals else None
+            if self.started:
+                self.approvals += 1
 
     def _awaiting_approval(self) -> bool:
         plan = self.service.current_plan
         return bool(plan and plan.status.value == "proposed" and plan.plan.assignments)
 
     def _guide(self, finished: bool) -> dict[str, Any]:
-        """What the presenter is looking at now, and what comes next."""
+        """What the presenter is looking at now, and what the next step is."""
         events = self.timeline["events"]
         stage1 = [i for i, e in enumerate(events) if e.get("stage", 1) == 1]
-        if finished:
-            return {"now": self.timeline["final"], "your_turn": False}
-        if all(i in self.done for i in stage1) and not self.approvals:
-            return {"now": self.timeline["outro"], "your_turn": True}
         pending = [i for i in range(len(events)) if i not in self.done]
+        upcoming = events[pending[0]]["label"] if pending else None
+        if finished:
+            return {"now": self.timeline["final"], "your_turn": False, "next": None}
+        if self.busy:
+            playing = events[pending[0]]["label"] if pending else ""
+            return {"now": f"Playing: {playing}...", "your_turn": False, "next": None}
+        if all(i in self.done for i in stage1) and not self.approvals:
+            return {"now": self.timeline["outro"], "your_turn": True, "next": upcoming}
         if not pending:
-            return {"now": self.timeline["outro_2"], "your_turn": self._awaiting_approval()}
-        current = self.timeline["intro"] if not self.done else events[max(self.done)]["explain"]
-        if self.approvals and max(self.done, default=-1) in stage1:
+            return {"now": self.timeline["outro_2"], "your_turn": self._awaiting_approval(), "next": None}
+        current = self.timeline["intro"] if not self.done else events[self.done[-1]]["explain"]
+        if self.approvals and self.done and self.done[-1] in stage1:
             current = self.timeline["approved"]
-        upcoming = events[pending[0]]
-        due = self._due(upcoming)
-        return {"now": current, "your_turn": False, "next": upcoming["label"],
-                "next_in_s": max(0, round(due - self._clock())) if due is not None else None}
+        return {"now": current, "your_turn": False, "next": upcoming}
 
     def status(self) -> dict[str, Any]:
         with self._lock:
-            started = self.started is not None
             # Finished once every event has played and the last recommendation was approved.
-            finished = (started and len(self.done) == len(self.timeline["events"])
-                        and len(self.approvals) >= 2 and not self._awaiting_approval())
+            finished = (self.started and len(self.done) == len(self.timeline["events"])
+                        and self.approvals >= 2 and not self._awaiting_approval())
+            _, blocked = self._next()
             return {
-                "running": started and not finished,
-                "paused": self._paused_at is not None,
+                "running": self.started and not finished,
                 "finished": finished,
-                "elapsed_s": round(self._clock(), 1) if started else None,
-                "events": [{"at": e["at"], "stage": e.get("stage", 1), "label": e["label"], "done": i in self.done}
+                "busy": self.busy,
+                "step": len(self.done),
+                "total": len(self.timeline["events"]),
+                "can_step": blocked is None,
+                "blocked": blocked,
+                "events": [{"stage": e.get("stage", 1), "label": e["label"], "done": i in self.done}
                            for i, e in enumerate(self.timeline["events"])],
-                "approvals": len(self.approvals),
-                "guide": self._guide(finished) if started else None,
+                "approvals": self.approvals,
+                "guide": self._guide(finished) if self.started else None,
                 "errors": list(self.errors),
             }
-
-    def _play(self, generation: int, stop: Event) -> None:
-        for index, event in enumerate(self.timeline["events"]):
-            while True:
-                with self._lock:
-                    if generation != self._generation:
-                        return
-                    when = self._due(event)
-                    due = when is not None and self._clock() >= when
-                if due:
-                    break
-                if stop.wait(0.2):
-                    return
-            with self._lock:
-                if generation != self._generation:
-                    return
-            try:
-                getattr(self, f"_{event['type']}")(event)
-            except Exception as error:  # noqa: BLE001 - shown in the UI; the demo continues
-                with self._lock:
-                    self.errors.append(f"{event['label']}: {error}")
-            with self._lock:
-                if generation == self._generation:
-                    self.done.append(index)
 
     def play_all_now(self, approve: bool = False) -> None:
         """Run every event immediately (tests and recording); optionally approve at each
