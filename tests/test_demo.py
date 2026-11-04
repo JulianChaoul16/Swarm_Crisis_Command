@@ -56,6 +56,24 @@ class DemoTests(unittest.TestCase):
         self.assertEqual(alert.source, "cache")
         self.assertTrue(alert.value["english"] and alert.value["spanish"])
 
+    def test_pause_stops_the_clock_and_resume_continues(self) -> None:
+        import time
+        service = CommandService(scenario=DEMO_FLOOD_SCENARIO, client=OFFLINE)
+        demo = DemoRunner(service, speed=20)  # T+15s arrives after 0.75 s
+        demo.start()
+        demo.pause()
+        time.sleep(1.2)
+        status = demo.status()
+        self.assertTrue(status["paused"])
+        self.assertFalse(any(e["done"] for e in status["events"]))
+        self.assertIn("Five incidents", status["guide"]["now"])
+        demo.resume()
+        time.sleep(3)
+        status = demo.status()
+        self.assertTrue(all(e["done"] for e in status["events"]))
+        self.assertTrue(status["finished"] and status["guide"]["your_turn"])
+        demo.stop()
+
     def test_sample_imagery_and_transcript_are_labelled_as_samples(self) -> None:
         state = serialize_state(self.run_demo())
         image = state["swarm"]["imagery"][0]

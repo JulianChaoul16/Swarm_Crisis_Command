@@ -14,7 +14,8 @@
    "type": "audio_report",
    "label": "911 call from a bus in Shockoe Bottom",
    "audio_id": "call_0141",
-   "source": "911 call (transcribed)"
+   "source": "911 call (transcribed)",
+   "explain": "A 911 call from a bus in Shockoe Bottom. The Listener shows the transcript (left), Muse Spark reads it into a new incident, the three agents vote and it becomes #1 in the queue. The recommendation now sends a swift water team and an ambulance there."
   },
   {
    "at": 30,
@@ -22,14 +23,18 @@
    "label": "Citizen photo of Dock St",
    "image_id": "dock_st_photo",
    "place": "Shockoe Bottom",
-   "road_id": "dock-street"
+   "road_id": "dock-street",
+   "explain": "A citizen photo of Dock St. The blue overlay on the map is the flood-water mask; the Vision badge reads it as impassable, so Dock St closes (black). The agents re-vote and the route changes to cross the 14th St (Mayo) Bridge instead."
   },
   {
    "at": 45,
    "type": "gauge",
    "label": "River gauge update",
    "value": 11.8,
-   "trend": "rising"
+   "trend": "rising",
+   "explain": "The river gauge rises to 11.8 ft, near the 12 ft sample trigger. Logistics re-votes the low-lying incidents and the plan is recomputed."
   }
- ]
+ ],
+ "intro": "Five incidents are already open. Each card shows three agent votes (Triage, Vision, Logistics) and their consensus; the queue is ranked by it. The right panel is the swarm's current recommendation. Watch the next event arrive.",
+ "outro": "Your turn. Read the recommendation on the right (what, why, confidence, tradeoff) and press Approve & Dispatch. The English and Spanish public alert appears below it. Nothing is dispatched until you approve."
 }

@@ -78,6 +78,18 @@ def start_demo(record: bool = False) -> dict[str, Any]:
     return _state()
 
 
+@app.post("/api/demo/pause")
+def pause_demo() -> dict[str, Any]:
+    demo.pause()
+    return _state()
+
+
+@app.post("/api/demo/resume")
+def resume_demo() -> dict[str, Any]:
+    demo.resume()
+    return _state()
+
+
 @app.post("/api/reset")
 def reset() -> dict[str, Any]:
     demo.stop()

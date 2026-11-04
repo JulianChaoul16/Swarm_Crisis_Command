@@ -33,6 +33,9 @@ class DemoRunner:
         self._stop = Event()
         self._generation = 0
         self.started: float | None = None
+        # Pausing stops the demo clock; events already running finish.
+        self._paused_at: float | None = None
+        self._paused_total = 0.0
         self.done: list[int] = []
         self.errors: list[str] = []
 
@@ -53,6 +56,7 @@ class DemoRunner:
         self.prepare()
         with self._lock:
             self.started = monotonic()
+            self._paused_at, self._paused_total = None, 0.0
         Thread(target=self._play, args=(generation, self._stop), daemon=True).start()
 
     def prepare(self) -> None:
@@ -66,23 +70,61 @@ class DemoRunner:
         with self._lock:
             self._generation += 1
             self._stop.set()
+            self.started, self._paused_at = None, None
+
+    def pause(self) -> None:
+        with self._lock:
+            if self.started is not None and self._paused_at is None:
+                self._paused_at = monotonic()
+
+    def resume(self) -> None:
+        with self._lock:
+            if self._paused_at is not None:
+                self._paused_total += monotonic() - self._paused_at
+                self._paused_at = None
+
+    def _clock(self) -> float:
+        """Demo seconds since start, not counting time spent paused. Call under the lock."""
+        now = self._paused_at or monotonic()
+        return (now - self.started - self._paused_total) * self.speed
+
+    def _guide(self, finished: bool) -> dict[str, Any]:
+        """What the presenter is looking at now, and what comes next."""
+        events = self.timeline["events"]
+        if finished:
+            return {"now": self.timeline["outro"], "your_turn": True}
+        current = self.timeline["intro"] if not self.done else events[max(self.done)]["explain"]
+        upcoming = next((e for i, e in enumerate(events) if i not in self.done), None)
+        return {"now": current, "your_turn": False,
+                "next": upcoming["label"] if upcoming else None,
+                "next_in_s": max(0, round(upcoming["at"] - self._clock())) if upcoming else None}
 
     def status(self) -> dict[str, Any]:
         with self._lock:
-            elapsed = (monotonic() - self.started) * self.speed if self.started else None
+            started = self.started is not None
+            finished = started and len(self.done) == len(self.timeline["events"])
             return {
-                "running": self.started is not None and len(self.done) < len(self.timeline["events"]),
-                "elapsed_s": round(elapsed, 1) if elapsed is not None else None,
+                "running": started and not finished,
+                "paused": self._paused_at is not None,
+                "finished": finished,
+                "elapsed_s": round(self._clock(), 1) if started else None,
                 "events": [{"at": e["at"], "label": e["label"], "done": i in self.done}
                            for i, e in enumerate(self.timeline["events"])],
+                "guide": self._guide(finished) if started else None,
                 "errors": list(self.errors),
             }
 
     def _play(self, generation: int, stop: Event) -> None:
         for index, event in enumerate(self.timeline["events"]):
-            wait = event["at"] / self.speed - (monotonic() - self.started)
-            if wait > 0 and stop.wait(wait):
-                return
+            while True:
+                with self._lock:
+                    if generation != self._generation:
+                        return
+                    due = self._clock() >= event["at"]
+                if due:
+                    break
+                if stop.wait(0.2):
+                    return
             with self._lock:
                 if generation != self._generation:
                     return

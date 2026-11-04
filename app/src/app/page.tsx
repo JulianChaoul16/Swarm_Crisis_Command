@@ -191,6 +191,49 @@ function Recommendation({
   );
 }
 
+function DemoButton({ demo, busy, run }: {
+  demo: WorldState["demo"] | undefined;
+  busy: boolean;
+  run: (action: () => Promise<unknown>) => void;
+}) {
+  if (demo?.running && !demo.paused)
+    return <button className="start pause" disabled={busy} onClick={() => run(api.pauseDemo)}>⏸ PAUSE DEMO</button>;
+  if (demo?.running && demo.paused)
+    return (
+      <>
+        <button className="start" disabled={busy} onClick={() => run(api.resumeDemo)}>▶ RESUME DEMO</button>
+        <button className="ghost" disabled={busy} onClick={() => run(api.startDemo)}>Restart</button>
+      </>
+    );
+  return (
+    <button className="start" disabled={busy} onClick={() => run(api.startDemo)}
+      title="Plays a 50-second seeded Richmond flood through the swarm, using recorded model responses (works offline).">
+      ▶ {demo?.finished ? "RESTART DEMO" : "START DEMO SCENARIO"}
+    </button>
+  );
+}
+
+/** Plain-language narration of what the demo is doing now, and what to do. */
+function DemoGuide({ demo }: { demo: WorldState["demo"] }) {
+  if (!demo.guide)
+    return (
+      <div className="guide">
+        <b>How to use the demo:</b> press <b>START DEMO SCENARIO</b>. For about 50 seconds a flash flood
+        unfolds on its own: a 911 call, a photo of a flooded street, a rising river. Watch the queue
+        (left), map (center) and recommendation (right) change as the agents react. When it ends, it is
+        your turn to approve the recommended dispatch. You can pause at any time.
+      </div>
+    );
+  return (
+    <div className={`guide ${demo.guide.your_turn ? "your-turn" : ""} ${demo.paused ? "paused" : ""}`}>
+      <b>{demo.paused ? "Paused" : demo.guide.your_turn ? "Your turn" : "Now"}:</b> {demo.guide.now}
+      {!demo.guide.your_turn && demo.guide.next && (
+        <span className="muted"> · Next: {demo.guide.next}{demo.paused ? " (paused)" : ` in ${demo.guide.next_in_s}s`}</span>
+      )}
+    </div>
+  );
+}
+
 function Timeline({ demo }: { demo: WorldState["demo"] }) {
   if (demo.elapsed_s === null) return null;
   return (
@@ -325,10 +368,7 @@ export default function CommandScreen() {
       <header className="topbar">
         <span className="sim">SIMULATION</span>
         <h1>Crisis Command Swarm <span className="muted">· Richmond Flood</span></h1>
-        <button className="start" disabled={busy} onClick={() => run(api.startDemo)}
-          title="Replays the seeded Richmond timeline through the swarm, using recorded model responses (works offline).">
-          ▶ START DEMO SCENARIO
-        </button>
+        <DemoButton demo={world?.demo} busy={busy} run={run} />
         {world && <Timeline demo={world.demo} />}
         <div className="gauge" title={world?.swarm.gauge.site}>
           James River gauge: {world?.swarm.gauge.value !== undefined
@@ -337,6 +377,7 @@ export default function CommandScreen() {
         </div>
       </header>
 
+      {world && <DemoGuide demo={world.demo} />}
       {world && <ModelStrip models={world.models} />}
       {error && <div className="banner">{error}</div>}
 

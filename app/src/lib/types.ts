@@ -118,7 +118,15 @@ export type WorldState = {
   reports: Report[];
   swarm: Swarm;
   models: { model: string; status: string; detail: string }[];
-  demo: { running: boolean; elapsed_s: number | null; events: { at: number; label: string; done: boolean }[]; errors: string[] };
+  demo: {
+    running: boolean;
+    paused: boolean;
+    finished: boolean;
+    elapsed_s: number | null;
+    events: { at: number; label: string; done: boolean }[];
+    guide: { now: string; your_turn: boolean; next?: string | null; next_in_s?: number | null } | null;
+    errors: string[];
+  };
   explanation: ModelResult<{ why: string[]; tradeoff: string }> | null;
   alerts: Record<string, { text: ModelResult<{ english: string; spanish: string }> | null; graphic: ModelResult<unknown> | null }>;
 };

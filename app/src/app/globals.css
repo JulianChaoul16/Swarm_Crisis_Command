@@ -218,3 +218,10 @@ button.approve { font-weight: 800; background: var(--approve); border-color: var
 }
 .vision-badge .sep { margin: 0 6px; color: var(--muted); }
 .rec-route { margin: 4px 0 0; padding-left: 18px; font-size: 13px; display: grid; gap: 2px; }
+
+/* ---------- Demo controls and guide ---------- */
+
+button.start.pause { background: var(--warn); border-color: var(--warn); color: #1f1300; }
+.guide { margin: 8px 16px 0; padding: 9px 12px; border-radius: 8px; font-size: 14px; line-height: 1.45; background: rgba(37, 99, 235, 0.14); border: 1px solid rgba(37, 99, 235, 0.5); }
+.guide.paused { background: rgba(251, 191, 36, 0.12); border-color: rgba(251, 191, 36, 0.5); }
+.guide.your-turn { background: rgba(52, 211, 153, 0.14); border-color: var(--approve); font-size: 15px; }
