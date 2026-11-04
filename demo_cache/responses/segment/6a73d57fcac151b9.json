@@ -2,7 +2,7 @@
  "function": "segment",
  "model": "SAM 3.1",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T16:24:37.583241+00:00",
+ "recorded_at": "2026-11-04T16:32:14.472139+00:00",
  "input": {
   "image_sha256": "78ca1231d6845b58",
   "prompt": "car"
@@ -58,7 +58,7 @@
     759
    ],
    [
-    1522,
+    1521,
     918,
     1584,
     943

@@ -112,6 +112,14 @@ is recorded, the report is shown as unread rather than invented.
 and gauge triggers written for this exercise. They are marked as exercise documents, not
 City of Richmond material; citations say "Sample Richmond Flood Response Plan".
 
+## Send a report from another device
+
+The top-right corner of the dashboard shows the report address: `http://localhost:3000/report`,
+plus this computer's network address for a phone on the same Wi-Fi. Reports can be typed, or
+spoken (Muse Voice Transcribe). They go through normal intake: the Intake Agent reads them, the
+agents score them and the planner re-plans. Dispatch still needs approval. Browsers only
+allow the microphone on `localhost` or https, so on a phone over plain http use the typed form.
+
 ## Trust: no invented facts
 
 - **Grounding rule** in every Muse Spark prompt: never invent a shelter, capacity, road status,

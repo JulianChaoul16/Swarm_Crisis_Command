@@ -70,6 +70,55 @@ def get_events(limit: int = 200) -> list[dict[str, Any]]:
     return [serialize_event(event) for event in reversed(events)]
 
 
+class PublicReport(BaseModel):
+    text: str = Field(min_length=3, max_length=2000)
+    source: str = Field(default="public report page", max_length=80)
+
+
+def _report_summary(report) -> dict[str, Any]:
+    if report is None:
+        return {"status": "not_read"}
+    fields = report.fields
+    return {"id": report.id, "status": report.status.value, "error": report.extraction_error,
+            "missing": list(report.missing_fields), "incident_id": report.linked_incident_id,
+            "road_id": report.linked_road_id,
+            "read_as": {"type": fields.report_type, "kind": fields.kind, "location": fields.location,
+                        "people": fields.people, "needs": list(fields.required_services or []),
+                        "severity": fields.severity}}
+
+
+@app.post("/api/intake/text")
+def intake_text(payload: PublicReport) -> dict[str, Any]:
+    """The report page: a typed incident report through normal intake."""
+    return {"report": _report_summary(service.intake_message(payload.text.strip(), payload.source.strip() or "public report page"))}
+
+
+@app.post("/api/intake/audio")
+async def intake_audio(request: Request, source: str = "public report page (voice)") -> dict[str, Any]:
+    """The report page: 24 kHz 16-bit mono PCM from the browser microphone."""
+    pcm = await request.body()
+    if len(pcm) < 24000 or len(pcm) > 24000 * 2 * 120:
+        raise HTTPException(422, "Recording must be between 0.5 s and 2 minutes.")
+    from starlette.concurrency import run_in_threadpool
+    text, report = await run_in_threadpool(service.intake_audio, pcm, source)
+    return {"transcript": text, "report": _report_summary(report)}
+
+
+@app.get("/api/connect")
+def connect_info() -> dict[str, Any]:
+    """This machine's network address, so a phone on the same Wi-Fi can open the report page."""
+    import socket
+    address = None
+    try:
+        probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        probe.connect(("10.255.255.255", 1))  # no packet is sent; this only picks the outgoing interface
+        address = probe.getsockname()[0]
+        probe.close()
+    except OSError:
+        pass
+    return {"lan_ip": address}
+
+
 MEDIA_DIRS = {"images", "audio"}
 
 

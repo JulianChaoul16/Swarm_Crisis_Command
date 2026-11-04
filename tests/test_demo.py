@@ -111,13 +111,30 @@ class DemoTests(unittest.TestCase):
         self.assertFalse(image["estimate"]["passable_for_cars"])
         self.assertIn("AI-generated test image", image["note"])
         self.assertIn("assumed footprint", image["note"])
-        self.assertEqual(state["swarm"]["transcripts"][0]["source"], "Muse Voice Transcribe · sample")
+        self.assertEqual(state["swarm"]["transcripts"][0]["source"], "Muse Voice Transcribe · cache")
+        self.assertIn("text-to-speech", state["swarm"]["transcripts"][0]["note"])
 
     def test_without_recordings_the_call_is_not_invented(self) -> None:
         with patch("crisis_command.meta_api.CACHE_DIR", Path(self.tmp.name) / "empty"):
             service = self.run_demo()
         self.assertNotIn("incident-14", [i.id for i in service.world.incidents])
-        self.assertTrue(any("could not be read" in a.text for a in service.board.activity))
+        self.assertTrue(any("could not be read" in a.text or "No transcript" in a.text for a in service.board.activity))
+
+    def test_spoken_report_replays_the_recorded_transcript(self) -> None:
+        from crisis_command.meta_api import ROOT, wav_to_pcm24k
+        service = CommandService(scenario=DEMO_FLOOD_SCENARIO, client=OFFLINE)
+        service.hub.mode = "demo"
+        text, _ = service.intake_audio(wav_to_pcm24k(ROOT / "test_media/audio/02_car_underpass.wav"), "test")
+        self.assertIn("Hull Street underpass", text)
+        self.assertEqual(service.board.transcripts[-1]["source"], "Muse Voice Transcribe · cache")
+
+    def test_unheard_audio_is_not_invented(self) -> None:
+        service = CommandService(scenario=DEMO_FLOOD_SCENARIO, client=OFFLINE)
+        service.hub.mode = "demo"
+        text, report = service.intake_audio(bytes(48000), "test")
+        self.assertEqual((text, report), (None, None))
+        self.assertEqual(len(service.reports), 0)
+        self.assertTrue(any("No transcript" in a.text for a in service.board.activity))
 
 
 if __name__ == "__main__":

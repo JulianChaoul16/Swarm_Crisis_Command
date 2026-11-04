@@ -2,7 +2,7 @@
  "function": "public_alert",
  "model": "Muse Spark",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T16:25:25.875044+00:00",
+ "recorded_at": "2026-11-04T16:33:36.755617+00:00",
  "input": {
   "responding_to": [
    {
@@ -16,7 +16,7 @@
   ]
  },
  "output": {
-  "english": "This is a practice flood alert for Richmond. Crews are helping a man trapped in flood water in South Junction. Please avoid Dock St and Lee Bridge and let crews work.",
-  "spanish": "Esta es una alerta de inundación de práctica para Richmond. Los equipos están ayudando a un hombre atrapado en agua en South Junction. Evite Dock St y Lee Bridge y deje trabajar a los equipos."
+  "english": "This is only a test flood alert. Stay away from Dock St and Lee Bridge in South Junction. Do not drive through flood water.",
+  "spanish": "Esta es solo una prueba de alerta de inundación. Manténgase lejos de Dock St y Lee Bridge en South Junction. No conduzca por el agua."
  }
 }

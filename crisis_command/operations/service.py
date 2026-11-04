@@ -594,6 +594,33 @@ class CommandService:
             )
         return proposal
 
+    def intake_message(self, text: str, source: str) -> Report:
+        """A report from outside (the report page): read by the Intake Agent, applied if it is
+        complete, then the swarm votes and the solver re-plans. Dispatch still needs approval."""
+        report = self.submit_report(text, source)
+        if report.extraction_error:
+            self.board.log("Intake Agent", "intake", f"{report.id} could not be read: {report.extraction_error}")
+            return report
+        self.board.log("Intake Agent", report.extracted_by or "intake",
+                       f"{report.id} from {source} read as {report.fields.kind} at {report.fields.location}, "
+                       f"{report.fields.people} people ({report.status.value})")
+        if report.status == ReportStatus.READY:
+            report = self.confirm_report(report.id, actor="auto-apply (complete report)")
+        return report
+
+    def intake_audio(self, pcm: bytes, source: str) -> tuple[str | None, Report | None]:
+        """A spoken report: the Listener Agent transcribes it, then it goes through intake."""
+        self.board.log("Listener Agent", "Muse Voice Transcribe", f"Listening to a report from {source}")
+        result = self.hub.transcribe(pcm)
+        if result.value is None:
+            self.board.log("Listener Agent", result.label, f"No transcript: {result.note}")
+            return None, None
+        text = result.value["text"]
+        self.board.transcripts.append({"audio_id": f"report-{len(self.board.transcripts) + 1}", "text": text,
+                                       "source": result.label, "note": f"Spoken report from {source}"})
+        self.board.log("Listener Agent", result.label, f"Transcribed: \"{text[:90]}\"")
+        return text, self.intake_message(text, f"{source} (transcribed)")
+
     def resolve_incident(self, incident_id: str, reported_by: str, text: str) -> tuple[str, ...]:
         """A field unit reports an incident resolved: close it, free its units, re-plan."""
         with self._atomic():

@@ -173,7 +173,6 @@ AGENT_ROSTER = (
 VOTERS = {"Intake Agent", "Vision Agent"}
 MODEL_STATUS_LABEL = {"live": "live", "cache (demo mode)": "recorded answers (demo)", "not connected": "not connected"}
 STAND_IN = {
-    "Muse Voice Transcribe": "sample data",
     "Muse Image": "not connected: no graphic is generated",
 }
 
@@ -196,7 +195,7 @@ def serialize_agents(service: CommandService) -> list[dict[str, Any]]:
         agents.append({
             "name": name,
             "role": role,
-            "models": [{"model": m, "status": MODEL_STATUS_LABEL.get(status.get(m, ""), "") if m in ("Muse Spark", "SAM 3.1", "Muse Wonder")
+            "models": [{"model": m, "status": MODEL_STATUS_LABEL.get(status.get(m, ""), "") if m in ("Muse Spark", "SAM 3.1", "Muse Wonder", "Muse Voice Transcribe")
                         else STAND_IN.get(m, "") if status.get(m) == "not connected" else status.get(m, "")}
                        for m in models]
                       or [{"model": "Exact solver (code)", "status": "deterministic"}],

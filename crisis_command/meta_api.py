@@ -105,8 +105,56 @@ MODEL_SETTINGS = {
 }
 
 
-# Image models with a live call implemented here.
-WIRED = {SAM, MUSE_WONDER}
+# Models with a live call implemented here (besides Muse Spark).
+WIRED = {SAM, MUSE_WONDER, MUSE_VOICE}
+ASR_URL = "wss://api.meta.ai/v1/asr/realtime"
+
+
+def wav_to_pcm24k(path: Path) -> bytes:
+    """16-bit mono PCM at 24 kHz, the format the realtime ASR expects."""
+    import wave
+    from math import gcd
+
+    import numpy as np
+    from scipy.signal import resample_poly
+
+    with wave.open(str(path)) as clip:
+        rate, channels = clip.getframerate(), clip.getnchannels()
+        samples = np.frombuffer(clip.readframes(clip.getnframes()), dtype=np.int16).astype(np.float32)
+    if channels > 1:
+        samples = samples.reshape(-1, channels).mean(axis=1)
+    if rate != 24000:
+        g = gcd(24000, rate)
+        samples = resample_poly(samples, 24000 // g, rate // g)
+    return np.clip(samples, -32768, 32767).astype(np.int16).tobytes()
+
+
+async def _stream_asr(pcm: bytes, key: str, model: str, pace_s: float = 0.2) -> str:
+    """Stream PCM to the realtime ASR at real-time pace; return the last cumulative transcript."""
+    import asyncio
+
+    import websockets
+
+    async with websockets.connect(ASR_URL, open_timeout=30) as ws:
+        await ws.send(json.dumps({"authorization": {"accessToken": f"Bearer {key}"}, "audioEncoding": "PCM_24KHZ",
+                                  "model": model, "mode": "PUSH_TO_TALK", "partialMode": "CUMULATIVE",
+                                  "emitAudioProgress": False}))
+        await ws.recv()  # handshake: {"sessionId": ...}
+        chunk = int(24000 * 2 * pace_s)
+        for i in range(0, len(pcm), chunk):
+            await ws.send(pcm[i:i + chunk])
+            await asyncio.sleep(pace_s)
+        transcript = ""
+        try:
+            while True:
+                message = json.loads(await asyncio.wait_for(ws.recv(), timeout=6))
+                if message.get("type") == "transcript":
+                    transcript = message.get("transcript", "")
+                    if message.get("final"):
+                        break
+        except asyncio.TimeoutError:
+            pass  # push-to-talk without an end signal: keep the last cumulative text
+        return transcript.strip()
 
 
 def _mime(path: Path) -> str:
@@ -232,13 +280,36 @@ class MetaHub:
 
     # ----- 1. Muse Voice Transcribe ----------------------------------------
 
-    def transcribe(self, audio_id: str) -> ModelResult:
-        """Transcript of a 911/radio clip. Not connected: returns the recorded sample transcript."""
-        path = SAMPLE_DIR / "transcripts" / f"{audio_id}.json"
-        if path.exists():
-            return ModelResult(json.loads(path.read_text(encoding="utf-8")), MUSE_VOICE, "sample",
-                               NOT_CONNECTED[MUSE_VOICE])
-        return ModelResult(None, MUSE_VOICE, "sample", f"no sample transcript for {audio_id}")
+    def transcribe(self, pcm: bytes) -> ModelResult:
+        """Muse Voice Transcribe over the realtime WebSocket (24 kHz 16-bit mono PCM), with the
+        same record/replay as the other models; the value is {"text": ...}."""
+        import asyncio
+
+        payload = {"pcm_sha256": hashlib.sha256(pcm).hexdigest()[:16], "seconds": round(len(pcm) / 48000, 1)}
+        failure = None
+        if self.mode == "live" and self.wired(MUSE_VOICE):
+            started = datetime.now(timezone.utc)
+            try:
+                text = asyncio.run(_stream_asr(pcm, setting("META_API_KEY"), setting("META_VOICE_MODEL")))
+                if not text:
+                    raise ValueError("empty transcript")
+                self._record("transcribe", payload, MUSE_VOICE, {"text": text})
+                ms = round((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+                self.calls.append({"function": "transcribe", "source": "live", "ms": ms})
+                return ModelResult({"text": text}, MUSE_VOICE, "live", latency_ms=ms)
+            except Exception as error:  # noqa: BLE001 - reported, then the recording
+                failure = f"transcribe live call failed ({type(error).__name__}: {str(error)[:120]})"
+        cached = self._cached("transcribe", payload)
+        if cached is not None:
+            if failure and self.on_fallback:
+                self.on_fallback(MUSE_VOICE, f"{failure}; used recorded transcript")
+            return ModelResult(cached["output"], MUSE_VOICE, "cache", f"recorded {cached['recorded_at'][:16]}")
+        if self.on_fallback:
+            self.on_fallback(MUSE_VOICE, failure or "transcribe: no live model and no recorded transcript")
+        return ModelResult(None, MUSE_VOICE, "fallback", failure or "no live model and no recorded transcript")
+
+    def transcribe_file(self, path: Path) -> ModelResult:
+        return self.transcribe(wav_to_pcm24k(path))
 
     # ----- 2. Local PII redaction (code) ------------------------------------
 

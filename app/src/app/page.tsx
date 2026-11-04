@@ -440,6 +440,25 @@ function ActivityFeed({ activity }: { activity: Swarm["activity"] }) {
   );
 }
 
+/** Where to send a report from: this computer, or a phone on the same Wi-Fi. */
+function ConnectCorner() {
+  const [lanIp, setLanIp] = useState<string | null>(null);
+  const [port, setPort] = useState("3000");
+  useEffect(() => {
+    setPort(window.location.port || "80");
+    fetch("/api/connect").then((r) => r.json()).then((d) => setLanIp(d.lan_ip ?? null)).catch(() => setLanIp(null));
+  }, []);
+  const local = `http://localhost:${port}/report`;
+  const network = lanIp ? `http://${lanIp}:${port}/report` : null;
+  return (
+    <div className="connect" title="Open this address to send an incident report into the swarm">
+      <span className="connect-label">Send a report</span>
+      <a href="/report" target="_blank" rel="noreferrer">{local}</a>
+      {network && <span className="connect-lan">Phone on same Wi-Fi: <b>{network}</b></span>}
+    </div>
+  );
+}
+
 export default function CommandScreen() {
   const [world, setWorld] = useState<WorldState | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -507,6 +526,7 @@ export default function CommandScreen() {
             ? <><b>{world.swarm.gauge.value.toFixed(1)} ft {world.swarm.gauge.trend}</b> <span className="muted">({world.swarm.gauge.label})</span></>
             : <span className="muted">no reading yet (start the demo)</span>}
         </div>
+        <ConnectCorner />
       </header>
 
       {world && <DemoGuide demo={world.demo} />}

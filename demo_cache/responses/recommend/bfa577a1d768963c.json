@@ -1,0 +1,54 @@
+{
+ "function": "recommend",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T16:34:32.458667+00:00",
+ "input": {
+  "recommended": {
+   "incident": "incident-9",
+   "type": "residents trapped by rising water",
+   "location": "Riverside Apartments",
+   "people_at_risk": 5,
+   "units": [
+    "Swift Water Team 1 (ETA 0.0 min)",
+    "Ambulance 2 (ETA 0.9 min)"
+   ]
+  },
+  "swarm_votes": {
+   "Vision Agent": {
+    "score": 86,
+    "reasons": [
+     "80% of the area around it is flooded"
+    ]
+   },
+   "Access check": {
+    "score": 89,
+    "reasons": [
+     "nearest medical unit 0.9 min away",
+     "nearest rescue unit 0.0 min away",
+     "water still rising around access routes",
+     "Per Sample Richmond Flood Response Plan (exercise document, not an official City of Richmond plan), 3.1 Life safety first: Rescue of people in moving water, trapped on roofs or in vehicles takes priority over property and infrastructure incidents."
+    ]
+   },
+   "Intake Agent": {
+    "score": 95,
+    "reasons": [
+     "reported_severity is critical",
+     "5 people trapped by rising water with needs medical, rescue at Riverside Apartments"
+    ]
+   }
+  },
+  "consensus": 92,
+  "unmet": [
+   "incident-11 left unassigned; medical units that can reach it are committed to higher-priority incident-14, incident-9."
+  ]
+ },
+ "output": {
+  "tradeoff": "Leaves incident-11 unassigned because medical units that can reach it are committed to higher-priority incident-14 and incident-9.",
+  "why": [
+   "5 people trapped by rising water at Riverside Apartments with reported_severity critical [Intake Agent]",
+   "80% of the area around it is flooded [Vision Agent]",
+   "Nearest rescue 0.0 min and medical 0.9 min away with water still rising around access routes, life safety rescue takes priority [Access check]"
+  ]
+ }
+}

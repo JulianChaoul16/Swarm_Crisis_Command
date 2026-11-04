@@ -2,7 +2,7 @@
  "function": "triage",
  "model": "Muse Spark",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T16:24:03.654942+00:00",
+ "recorded_at": "2026-11-04T16:30:49.083465+00:00",
  "input": {
   "incident": "incident-12",
   "type": "downed power lines across road",
@@ -16,11 +16,11 @@
  },
  "output": {
   "reasons": [
-   "reported severity is medium",
-   "people_at_risk is 0"
+   "downed power lines across road at East Junction",
+   "reported_severity medium with people_at_risk 0"
   ],
   "severity_score": 40,
-  "summary": "Downed power lines across road in East Junction, needs police, 0 people at risk.",
+  "summary": "Downed power lines across road at East Junction, medium severity, 0 people at risk.",
   "vulnerable": false
  }
 }

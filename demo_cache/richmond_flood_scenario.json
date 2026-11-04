@@ -15,7 +15,8 @@
    "label": "911 call from a bus in Shockoe Bottom",
    "audio_id": "call_0141",
    "source": "911 call (transcribed)",
-   "explain": "A 911 call from a bus in Shockoe Bottom. The Listener shows the transcript (left), Muse Spark reads it into a new incident, the three agents vote and it becomes #1 in the queue. The recommendation now sends a swift water team and an ambulance there."
+   "explain": "A 911 call from a bus in Shockoe Bottom. The Listener shows the transcript (left), Muse Spark reads it into a new incident, the three agents vote and it becomes #1 in the queue. The recommendation now sends a swift water team and an ambulance there.",
+   "audio_file": "test_media/audio/01_bus_shockoe.wav"
   },
   {
    "at": 30,
@@ -53,7 +54,8 @@
    "label": "911 call: man trapped in his car at Hull St",
    "audio_id": "call_0142",
    "source": "911 call (transcribed)",
-   "explain": "A new 911 call: a man trapped in his car in the Hull St underpass. The agents score it as critical, but every rescue team is already on a mission, so the recommendation shows it as waiting, with the reason. Watch what happens when a team frees up."
+   "explain": "A new 911 call: a man trapped in his car in the Hull St underpass. The agents score it as critical, but every rescue team is already on a mission, so the recommendation shows it as waiting, with the reason. Watch what happens when a team frees up.",
+   "audio_file": "test_media/audio/02_car_underpass.wav"
   },
   {
    "at": 25,

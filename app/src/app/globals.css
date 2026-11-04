@@ -271,3 +271,23 @@ button.start.pause { background: var(--warn); border-color: var(--warn); color: 
 
 .source { margin-top: 4px; font-size: 11px; color: var(--muted); }
 .unverified { margin: 6px 0 0; padding: 5px 8px; border-radius: 6px; font-size: 12.5px; color: #fde68a; background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.45); }
+
+/* ---------- Report address in the corner, and the report page ---------- */
+
+.connect { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 1px; padding: 4px 10px; border: 1px dashed var(--border); border-radius: 8px; font-size: 12px; }
+.connect-label { color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; }
+.connect a { color: var(--solver); }
+.connect-lan { color: var(--muted); }
+.connect-lan b { color: var(--text); font-weight: 600; user-select: all; }
+
+.report-page { max-width: 640px; margin: 0 auto; padding: 24px 16px 48px; }
+.report-page h1 { margin: 10px 0 6px; font-size: 22px; }
+.report-field { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; font-size: 14px; }
+.report-field input, .report-field textarea { font: inherit; color: var(--text); background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+.report-examples { margin-top: 8px; font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.report-examples .link { all: unset; cursor: pointer; color: var(--solver); text-decoration: underline; }
+.report-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 16px; }
+.report-result { margin-top: 18px; padding: 12px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--border); }
+.report-error { color: var(--bad); }
+.recording { color: var(--bad); font-weight: 600; }
+.small { font-size: 12.5px; }

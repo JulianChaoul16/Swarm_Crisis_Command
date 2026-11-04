@@ -194,13 +194,15 @@ class DemoRunner:
     def _audio_report(self, event: dict[str, Any]) -> None:
         """A 911 call: Listener transcribes, the report goes through normal intake."""
         board, hub = self.service.board, self.service.hub
-        transcript = hub.transcribe(event["audio_id"])
+        board.log("Listener Agent", "Muse Voice Transcribe", f"Listening to {event['audio_id']} ({event['label']})")
+        transcript = hub.transcribe_file(ROOT / event["audio_file"])
         if transcript.value is None:
             board.log("Listener Agent", transcript.label, f"No transcript for {event['audio_id']}: {transcript.note}")
             return
         text = transcript.value["text"]
         board.transcripts.append({"audio_id": event["audio_id"], "text": text, "source": transcript.label,
-                                  "note": transcript.note})
+                                  "note": "Synthesized test call (Windows text-to-speech), transcribed by Muse Voice Transcribe.",
+                                  "audio_url": f"/api/media/audio/{Path(event['audio_file']).name}"})
         board.log("Listener Agent", transcript.label, f"Transcribed {event['audio_id']}: \"{text[:90]}...\"")
         report = self.service.submit_report(text, event["source"])
         if report.extraction_error:
