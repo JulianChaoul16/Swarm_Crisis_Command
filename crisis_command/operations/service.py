@@ -1,6 +1,6 @@
 """Command service: the only writer of authoritative state.
 
-Flow: a confirmed change lands -> the incident swarm (Triage, Vision, Logistics) votes on the
+Flow: a confirmed change lands -> the incident swarm (Intake, Vision, Access check) votes on the
 shared IncidentBoard, reacting to each other through the event bus -> the exact solver plans
 with the swarm's consensus severity as priority -> feasibility checks -> proposal for human
 review -> approval bound to plan ID and world version -> atomic in-memory commit plus SQLite
@@ -20,7 +20,7 @@ from ..agents.model_client import ModelClient, ModelUnavailableError, model_clie
 from ..meta_api import MetaHub, hub_from_env, unsupported_numbers
 from ..model import Incident, IncidentStatus, Severity
 from ..swarm.agents import SEVERITY_BASE, Swarm
-from ..swarm.board import ROAD_CHANGED, UNITS_CHANGED, IncidentBoard
+from ..swarm.board import CONSENSUS_CHANGED, ROAD_CHANGED, UNITS_CHANGED, IncidentBoard
 from ..planner import Planner
 from ..simulation import Simulation, World
 from .feasibility import all_passed, check_plan
@@ -117,6 +117,12 @@ class StaleApprovalError(ConflictError):
         self.replacement_plan_id = replacement_plan_id
 
 
+def _same_decisions(a, b) -> bool:
+    """Two plans make the same decisions for the same reasons, priority order included."""
+    return (a.assignments == b.assignments and set(a.kept) == set(b.kept)
+            and a.unassigned_incident_ids == b.unassigned_incident_ids and a.rationale == b.rationale)
+
+
 def _now() -> datetime:
     return datetime.now(timezone.utc)
 
@@ -134,6 +140,7 @@ class CommandService:
         self.client = client or model_client_from_env()
         self.hub: MetaHub = hub_from_env(self.client)
         self.hub.timeout = agent_timeout
+        self.hub.city, self.hub.city_short, self.hub.hazard = scenario.city, scenario.city_short, scenario.hazard
         # When on, the recommendation text and public alert are written in a background
         # thread and attach when ready; the plan itself never waits for them.
         self.background_models = background_models
@@ -154,6 +161,7 @@ class CommandService:
             # The shared blackboard for this run; a reset replaces it, so late writes from
             # the old run's agents land on a board nobody reads.
             self.board = IncidentBoard(self.run_id)
+            self.board.bus.subscribe(CONSENSUS_CHANGED, self._on_consensus)
             place_names = {point: name for name, point in self.scenario.places.items()}
             self.hub.on_fallback = lambda model, text: self.board.log(model, "fallback", text)
             self.swarm = Swarm(self.board, self._snapshot, lambda point: place_names.get(point, "unknown"),
@@ -163,6 +171,8 @@ class CommandService:
             # Plan id -> numbers in the model's explanation that are not in its facts.
             self.unverified: dict[str, list[str]] = {}
             self.alerts: dict[str, Any] = {}
+            # Resolved incidents, oldest first: who closed them and which units they freed.
+            self.resolutions: list[dict[str, Any]] = []
             self.planner = Planner(priority_key=self._swarm_priority, priority_rule=SWARM_PRIORITY_RULE,
                                    reroute=self.scenario.reroute)
             self.simulation = Simulation(self.world, self.planner)
@@ -288,7 +298,12 @@ class CommandService:
         )
         notes = self.scenario.place_notes
         places = ", ".join(f"{name} ({notes[name]})" if name in notes else name for name in sorted(context.places))
-        roads = ", ".join(f"{road} ({notes[road]})" if road in notes else road for road in sorted(context.road_ids))
+        # Name each road as people say it (e.g. upriver-bridge = Lee Bridge), plus any note.
+        names = self.scenario.road_names
+        roads = ", ".join(
+            f"{road} ({'; '.join(p for p in (names.get(road), notes.get(road)) if p)})" if road in names or road in notes else road
+            for road in sorted(context.road_ids)
+        )
         result = self.hub.extract(
             report.source,
             report.content,
@@ -443,9 +458,20 @@ class CommandService:
                     )
                     self._commit()
                     continue
+                current = self.current_plan
+                if (current is not None and current.status == PlanStatus.PROPOSED
+                        and current.state_signature == snapshot.state_signature
+                        and _same_decisions(current.plan, plan)):
+                    return current  # nothing would change; keep the plan (and its explanation)
                 proposal = self._store_proposal(plan, snapshot, findings)
             self._explain(proposal)
             return proposal
+
+    def _on_consensus(self, payload: dict[str, Any]) -> None:
+        """An agent re-voted and the consensus moved: priorities changed, so re-plan. A first
+        consensus (a new incident) is planned by whoever filed it."""
+        if payload.get("previous") is not None and self.current_plan_id is not None:
+            self.propose()
 
         with self._lock:
             self.world._append_event(
@@ -623,15 +649,24 @@ class CommandService:
         return text, self.intake_message(text, f"{source} (transcribed)")
 
     def resolve_incident(self, incident_id: str, reported_by: str, text: str) -> tuple[str, ...]:
-        """A field unit reports an incident resolved: close it, free its units, re-plan."""
+        """An incident is resolved (field unit or operator): close it, free its units, tell
+        every agent and the freed crews, re-plan."""
         with self._atomic():
+            incident = next((i for i in self.world.incidents if i.id == incident_id), None)
+            if incident is None:
+                raise NotFoundError(f"Unknown incident {incident_id}.")
+            if incident.status == IncidentStatus.RESOLVED:
+                raise ConflictError(f"{incident_id} is already resolved.")
             try:
                 freed = self.world.resolve_incident(incident_id, f"{reported_by}: {text}")
             except ValueError as error:
                 raise ConflictError(str(error)) from error
             self._mark_stale_locked()
             self._commit(plans=self._plans.values())
+            self.resolutions.append({"at": _now(), "incident_id": incident_id, "by": reported_by,
+                                     "text": text, "freed": freed})
         names = {s.id: s.name for s in self.world.services}
+        self.board.retire(incident_id, reported_by)
         self.board.bus.publish(UNITS_CHANGED, {"why": f"{', '.join(names[f] for f in freed) or 'no units'} freed by {incident_id} resolving"})
         self.board.log("Coordinator", "field report",
                        f"{incident_id} resolved ({reported_by}); free again: "
@@ -705,10 +740,16 @@ class CommandService:
         areas = sorted({item["location"] for item in facts["responding_to"] if item["location"]})
 
         def fallback() -> dict[str, Any]:
-            where = ", ".join(areas) or "flooded areas"
+            where = ", ".join(areas) or "the affected areas"
+            city = self.scenario.city_short
+            if self.scenario.hazard == "flood":
+                return {
+                    "english": f"Flooding in {city}. Stay away from {where}. Do not drive through water; follow official instructions.",
+                    "spanish": f"Inundaciones en {city}. Manténgase lejos de {where}. No maneje por el agua; siga las instrucciones oficiales.",
+                }
             return {
-                "english": f"Flooding in Richmond. Stay away from {where}. Do not drive through water; follow official instructions.",
-                "spanish": f"Inundaciones en Richmond. Manténgase lejos de {where}. No maneje por el agua; siga las instrucciones oficiales.",
+                "english": f"Emergency in {city}. Stay away from {where}; follow official instructions.",
+                "spanish": f"Emergencia en {city}. Manténgase lejos de {where}; siga las instrucciones oficiales.",
             }
 
         def work() -> None:

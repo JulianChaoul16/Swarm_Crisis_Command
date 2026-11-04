@@ -4,3 +4,9 @@ __pycache__/
 !.env.example
 context/
 crisis_command/data/*.db
+node_modules/
+.venv/
+venv/
+*.log
+.DS_Store
+Thumbs.db

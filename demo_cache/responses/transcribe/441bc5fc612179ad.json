@@ -2,12 +2,12 @@
  "function": "transcribe",
  "model": "Muse Voice Transcribe",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T16:33:13.826459+00:00",
+ "recorded_at": "2026-11-04T20:22:50.340151+00:00",
  "input": {
   "pcm_sha256": "24c5252ffdfc811f",
   "seconds": 25.6
  },
  "output": {
-  "text": "911, what is your emergency? My dad is stuck in his car in the Hull Street underpass, right by the Mayo Bridge. The water is up to the windows and he can't open the door. How old is he, and is he hurt? He's 78. He has a heart condition. He's on the phone with me and he's panicking. Please send someone now."
+  "text": "911, what is your emergency? My dad is stuck in his car in the Hull Street underpass, right by the Mayo Bridge. The water is up to the windows and he can't open the door. How old is he? And is he hurt? He's 78. He has a heart condition. he's on the phone with me and he's panicking please send someone now"
  }
 }

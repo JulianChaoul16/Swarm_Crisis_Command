@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CrisisMap, { type MapData } from "@/components/CrisisMap";
-import { ALL_LAYERS, AffectedCard, LayerControl, ScrubBanner, Scrubber, type Layers, type Scrub } from "@/components/Gis";
+import { ALL_LAYERS, AffectedCard, LayerControl, ProjectionCard, ScrubBanner, Scrubber, type Layers, type Scrub } from "@/components/Gis";
 import { ApiError, api } from "@/lib/api";
 import type { Agent, GisFrame, Incident, Proposal, Swarm, WorldState, DemoStatus } from "@/lib/types";
 
@@ -170,12 +170,10 @@ function IncidentQueue({ incidents, focus, swarm, busy, onResolve }: {
           </div>
           <Votes entry={swarm.incidents[incident.id]} />
           <Source evidence={incident.evidence} />
-          {incident.status === "assigned" && (
-            <button className="ghost resolve" disabled={busy} onClick={() => onResolve(incident.id)}
-              title="The crew reports this incident done: free its units and re-plan.">
-              Mark resolved
-            </button>
-          )}
+          <button className="ghost resolve" disabled={busy} onClick={() => onResolve(incident.id)}
+            title="Close this incident: it leaves the queue, its units are freed and told to stand down, every agent drops it, and the plan is redone.">
+            ✓ Resolved
+          </button>
         </li>
       ))}
     </ol>
@@ -220,12 +218,24 @@ function Recommendation({
     return `${incident?.place ?? id} (${incident?.kind ?? ""}) waits: ${reason ?? "no units available"}`;
   });
   const live = plan.status === "proposed";
+  const placeOf = (id: string) => incidents.get(id)?.place ?? id;
+  // Against what crews are doing now: new dispatches, reroutes, and calls that lose their units.
+  const changes = [
+    ...plan.assignments.map((d) => movedFrom.has(d.service_id) && movedFrom.get(d.service_id) !== placeOf(d.incident_id)
+      ? `${units.get(d.service_id)}: reroute ${movedFrom.get(d.service_id)} → ${placeOf(d.incident_id)}`
+      : `${units.get(d.service_id)}: dispatch to ${placeOf(d.incident_id)}`),
+    ...plan.unassigned_incident_ids.filter((id) => incidents.get(id)?.status === "assigned")
+      .map((id) => `${placeOf(id)} loses its units and waits`),
+  ];
 
   return (
-    <div className={`rec ${live ? "" : "rec-done"}`}>
+    <div key={plan.id} className={`rec rec-flash ${live ? "" : "rec-done"}`}>
       <div className="rec-head">
         <span className="pill pill-solver">Exact solver</span>
-        <span className="muted">Plan {plan.id} · world v{plan.world_version} · {plan.status}</span>
+        <span className="muted">
+          Plan {plan.id} · {plan.status} · updated {time(plan.created_at)}
+          {plan.previous_plan_id ? ` · replaces ${plan.previous_plan_id}` : ""}
+        </span>
       </div>
       {lead ? (
         <>
@@ -258,6 +268,14 @@ function Recommendation({
               }).join(" · ")}
             </div>
           )}
+          {live && changes.length > 0 && (
+            <>
+              <div className="rec-label">What changes if approved</div>
+              <ul className="rec-why rec-changes">
+                {changes.map((line) => <li key={line}>{line}</li>)}
+              </ul>
+            </>
+          )}
           <div className="rec-label">
             Why {world.explanation ? <Pill label={world.explanation.label} title={world.explanation.note} /> : <span className="muted">(writing…)</span>}
           </div>
@@ -280,7 +298,7 @@ function Recommendation({
       ) : (
         <div className="rec-action">
           {unmet.length
-            ? `No free unit can take the ${unmet.length} waiting incident${unmet.length > 1 ? "s" : ""}. Mark a dispatched incident resolved to free its units.`
+            ? `No free unit can take the ${unmet.length} waiting incident${unmet.length > 1 ? "s" : ""}. Mark a dispatched incident Resolved to free its units.`
             : "No new dispatches needed."}
         </div>
       )}
@@ -299,7 +317,7 @@ function Recommendation({
         </div>
       )}
       {plan.status === "approved" && <p className="approved">✓ Approved by {plan.decided_by}: units dispatched (simulated)</p>}
-      <Alert alert={world.alerts[plan.id] ?? latestAlert(world)} />
+      <Alert {...(world.alerts[plan.id] ? { alert: world.alerts[plan.id], planId: plan.id } : latestAlert(world))} />
     </div>
   );
 }
@@ -313,7 +331,7 @@ function DemoStepper({ demo, busy, run }: {
   if (!demo.running && !demo.finished)
     return (
       <button className="demo-start" disabled={busy} onClick={() => run(api.startDemo)}
-        title="Reset to the seeded Richmond flood. Then press ▶ (or →) to bring in each report.">
+        title="Reset to the seeded demo scenario. Then press ▶ (or →) to bring in each report.">
         Demo
       </button>
     );
@@ -414,14 +432,15 @@ function PhotoCard({ swarm }: { swarm: Swarm }) {
 
 function latestAlert(world: WorldState) {
   const ids = Object.keys(world.alerts).sort();
-  return ids.length ? world.alerts[ids[ids.length - 1]] : undefined;
+  const planId = ids[ids.length - 1];
+  return planId ? { alert: world.alerts[planId], planId } : {};
 }
 
-function Alert({ alert }: { alert: WorldState["alerts"][string] | undefined }) {
+function Alert({ alert, planId }: { alert?: WorldState["alerts"][string]; planId?: string }) {
   if (!alert) return null;
   return (
     <div className="alert">
-      <div className="rec-label">Public alert {alert.text && <Pill label={alert.text.label} title={alert.text.note} />}</div>
+      <div className="rec-label">Public alert · sent with {planId} {alert.text && <Pill label={alert.text.label} title={alert.text.note} />}</div>
       {alert.text ? (
         <>
           <p><b>EN</b> {alert.text.value.english}</p>
@@ -518,7 +537,7 @@ function PersonnelTab({ world }: { world: WorldState }) {
             <ol className="feed">
               {unit.messages.map((m, i) => (
                 <li key={`${m.plan_id}${i}`}>
-                  <span className="t">[{time(m.at)}]</span> <span className="src">{m.plan_id} · {m.from}</span> {m.text}
+                  <span className="t">[{time(m.at)}]</span> <span className="src">{m.plan_id ? `${m.plan_id} · ` : ""}{m.from}</span> {m.text}
                 </li>
               ))}
               {!unit.messages.length && <li className="muted">No orders yet. Orders appear when a dispatcher approves a plan.</li>}
@@ -593,6 +612,8 @@ export default function CommandScreen() {
   const [agentOpen, setAgentOpen] = useState<string | null>(null);
   const [tab, setTab] = useState<"map" | "personnel" | "agents">("map");
   const [layers, setLayers] = useState<Layers>(ALL_LAYERS);
+  // Projection hour drawn (dashed) over the live map, whatever the scrubber shows.
+  const [horizon, setHorizon] = useState(2);
   const [scrub, setScrub] = useState<Scrub>({ kind: "live" });
   const [frames, setFrames] = useState<GisFrame[]>([]);
   const loadHistory = useCallback(() => {
@@ -643,7 +664,14 @@ export default function CommandScreen() {
   const shownFrame: GisFrame | null = pastFrame ?? world?.gis ?? null;
   const mapData: MapData | null = useMemo(() => {
     if (!world) return null;
-    const zones = (futureFrame?.zones ?? shownFrame?.zones ?? []).filter((z) => (z.type === "flood" ? layers.flood : layers.fire));
+    const projected = !futureFrame && layers.projection
+      ? (world.gis.projection.frames.find((f) => f.hours === horizon) ?? world.gis.projection.frames.at(-1))?.zones
+          .filter((z) => z.projected && z.type === "flood") ?? []
+      : [];
+    const zones = [
+      ...(futureFrame?.zones ?? shownFrame?.zones ?? []).filter((z) => (z.type === "flood" ? layers.flood : layers.fire)),
+      ...projected,
+    ];
     const closed = new Set((shownFrame?.closed_roads ?? []).map((r) => r.id));
     const base: MapData = pastFrame
       ? {
@@ -675,7 +703,7 @@ export default function CommandScreen() {
       outages: layers.power ? shownFrame?.outages ?? [] : [],
       facilities: layers.hospitals ? shownFrame?.facilities ?? [] : [],
     };
-  }, [world, queue, layers, pastFrame, futureFrame, shownFrame]);
+  }, [world, queue, layers, pastFrame, futureFrame, shownFrame, horizon]);
 
   // The → key is the presenter's ▶ (ignored while typing in a field).
   useEffect(() => {
@@ -717,7 +745,7 @@ export default function CommandScreen() {
         <div className="nav-right">
           {world?.demo ? <DemoStepper demo={world.demo} busy={busy} run={run} /> : world && <LiveIntakeBadge mode={world.mode} />}
           <ReportLink />
-          <span className="org">City of Richmond Operations</span>
+          <span className="org">{world?.place.operations_label}</span>
         </div>
       </header>
       {error && <div className="banner">{error}</div>}
@@ -756,6 +784,8 @@ export default function CommandScreen() {
               {world.demo && scrub.kind === "live" && <DemoNote demo={world.demo} />}
             </div>
             <Scrubber frames={frames} projection={world.gis.projection} scrub={scrub} onScrub={setScrub} onOpen={loadHistory} />
+            <ProjectionCard projection={world.gis.projection} horizon={horizon} onHorizon={setHorizon}
+              shown={layers.projection && scrub.kind !== "future"} />
             <VisionBadge swarm={world.swarm} />
             <div className="legend">
               <span><i className="ring open" /> Needs units</span>
@@ -763,6 +793,7 @@ export default function CommandScreen() {
               <span><i className="line proposed" /> Recommended route</span>
               <span><i className="line closed" /> Road closed</span>
               <span><i className="swatch swatch-flood" /> Flood (darker = more cover)</span>
+              <span><i className="swatch swatch-projection" /> Projected flood +{horizon} h (dashed)</span>
               <span><i className="swatch swatch-fire" /> Fire area</span>
               <span><i className="dot outage" /> Outage reported</span>
               <span><i className="dot hospital" /> Hospital (beds: no feed)</span>

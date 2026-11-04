@@ -1,0 +1,42 @@
+{
+ "function": "public_alert",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T20:22:16.824996+00:00",
+ "input": {
+  "responding_to": [
+   {
+    "type": "transformer fire",
+    "location": "Downtown Junction"
+   },
+   {
+    "type": "dialysis patient cut off from clinic",
+    "location": "Manchester"
+   },
+   {
+    "type": "downed power lines across road",
+    "location": "East Junction"
+   },
+   {
+    "type": "vehicle fire at flooded intersection",
+    "location": "Broad & 3rd"
+   },
+   {
+    "type": "bus trapped by floodwater with passengers",
+    "location": "Shockoe Bottom"
+   },
+   {
+    "type": "residents trapped by rising water",
+    "location": "Riverside Apartments"
+   }
+  ],
+  "closed_roads": [
+   "Dock St",
+   "Lee Bridge"
+  ]
+ },
+ "output": {
+  "english": "This is a simulated flood alert exercise for Richmond, VA. Floodwater is trapping a bus in Shockoe Bottom and residents at Riverside Apartments, and Dock St and Lee Bridge are closed. Avoid these areas and never drive through floodwater.",
+  "spanish": "Este es un ejercicio simulado de alerta de inundación para Richmond, VA. El agua está atrapando un autobús en Shockoe Bottom y a residentes en Riverside Apartments, y Dock St y Lee Bridge están cerradas. Evite estas áreas y nunca conduzca por calles inundadas."
+ }
+}

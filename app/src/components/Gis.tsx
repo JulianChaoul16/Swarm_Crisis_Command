@@ -4,6 +4,7 @@ import type { GisFrame, Projection } from "@/lib/types";
 
 export const LAYERS = [
   ["flood", "Flood zones"],
+  ["projection", "Projected flood (trend)"],
   ["fire", "Fire areas"],
   ["units", "Units (simulated GPS)"],
   ["roads", "Closed roads"],
@@ -13,7 +14,7 @@ export const LAYERS = [
 
 export type LayerKey = (typeof LAYERS)[number][0];
 export type Layers = Record<LayerKey, boolean>;
-export const ALL_LAYERS: Layers = { flood: true, fire: true, units: true, roads: true, power: true, hospitals: true };
+export const ALL_LAYERS: Layers = { flood: true, projection: true, fire: true, units: true, roads: true, power: true, hospitals: true };
 
 /** Where the map is in time: live, a recorded frame, or a projection hour. */
 export type Scrub = { kind: "live" } | { kind: "past"; index: number } | { kind: "future"; hours: number };
@@ -125,6 +126,46 @@ export function AffectedCard({ frame, label }: { frame: GisFrame; label: string 
           ))}
         </ul>
       )}
+    </div>
+  );
+}
+
+/** Always on screen: where the gauge trend points over the next hours, and which hour the
+ *  dashed "projected flood" layer shows. Says why when there is no projection yet. */
+export function ProjectionCard({ projection, horizon, onHorizon, shown }: {
+  projection: Projection;
+  horizon: number;
+  onHorizon: (hours: number) => void;
+  shown: boolean;
+}) {
+  if (!projection.available) {
+    return (
+      <div className="projection" title={projection.note}>
+        <span className="rec-label">Flood trend projection</span>
+        <span className="muted">{projection.reason ?? "No projection yet."}</span>
+      </div>
+    );
+  }
+  const rate = projection.rate_ft_per_h ?? 0;
+  return (
+    <div className="projection" title={projection.note}>
+      <span className="rec-label">Flood trend projection</span>
+      <span className="muted">
+        {rate > 0 ? "rising" : rate < 0 ? "falling" : "steady"} {Math.abs(rate).toFixed(2)} ft/h · trend, not a forecast
+      </span>
+      <div className="projection-hours" role="group" aria-label="Projection hour shown on the map">
+        {projection.frames.map((frame) => (
+          <button
+            key={frame.hours}
+            className={`${frame.hours === horizon ? "on" : ""} ${frame.above_trigger ? "over" : ""}`}
+            onClick={() => onHorizon(frame.hours)}
+            title={frame.above_trigger && projection.trigger_ft ? `Above the ${projection.trigger_ft} ft sample trigger` : undefined}
+          >
+            +{frame.hours} h <b>{frame.gauge_ft.toFixed(1)} ft</b>{frame.above_trigger ? " ⚠" : ""}
+          </button>
+        ))}
+      </div>
+      <span className="muted small">{shown ? `Dashed on the map: +${horizon} h` : "Turn on “Projected flood” in Layers to see it on the map"}</span>
     </div>
   );
 }

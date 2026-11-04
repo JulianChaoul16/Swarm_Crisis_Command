@@ -261,6 +261,15 @@ def roster(service: CommandService) -> dict[str, Any]:
             current_order[unit_id] = assignment["incident_id"]
             messages.setdefault(unit_id, []).append({"at": when, "plan_id": proposal.id, "from": f"Dispatch ({by})",
                                                      "text": text})
+    for resolution in service.resolutions:
+        incident = incidents.get(resolution["incident_id"])
+        where = place_of.get(incident.location) if incident else None
+        for unit_id in resolution["freed"]:
+            messages.setdefault(unit_id, []).append({
+                "at": resolution["at"].isoformat(), "plan_id": None, "from": f"Dispatch ({resolution['by']})",
+                "text": f"Stand down: {where or resolution['incident_id']} is resolved. Back in service."})
+    for unit_messages in messages.values():
+        unit_messages.sort(key=lambda m: m["at"])
     units = []
     for s in world.services:
         incident = incidents.get(s.assigned_incident_id) if s.assigned_incident_id else None

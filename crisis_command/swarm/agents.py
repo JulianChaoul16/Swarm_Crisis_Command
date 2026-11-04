@@ -1,4 +1,4 @@
-"""The incident swarm: Triage, Vision and Logistics agents voting on one shared board.
+"""The incident swarm: Intake and Vision agents and the Access check, voting on one shared board.
 
 `spawn_incident_swarm(incident_id)` runs the three agents in parallel for one incident. Each
 reads a frozen world snapshot and writes its vote to the board. Agents also react to each

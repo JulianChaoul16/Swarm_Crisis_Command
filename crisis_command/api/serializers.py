@@ -294,6 +294,8 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
         "simulation": True,
         "run_id": service.run_id,
         "scenario": service.scenario.name,
+        "place": {"city": service.scenario.city, "city_short": service.scenario.city_short,
+                  "hazard": service.scenario.hazard, "operations_label": service.scenario.operations_label},
         "model": service.client.model_id,
         "city": world.city.name if world.city is not None else None,
         "version": world.version,

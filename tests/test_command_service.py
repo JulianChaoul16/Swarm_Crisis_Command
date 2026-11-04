@@ -285,6 +285,8 @@ class LiveRerouteTests(CommandServiceTestCase):
         self.approve_current()
         second = self.rescue("Manchester", "medium", 1)
         self.approve_current()
+        third = self.rescue("Broad & 3rd", "medium", 1)
+        self.approve_current()
         urgent = self.rescue("East Junction", "critical", 4)
 
         proposal = self.service.current_plan
@@ -292,17 +294,18 @@ class LiveRerouteTests(CommandServiceTestCase):
         moved = [d for d in proposal.plan.assignments if d.incident_id == urgent]
         self.assertEqual(len(moved), 1)
         team = next(s for s in self.service.world.services if s.id == moved[0].service_id)
-        self.assertIn(team.assigned_incident_id, (first, second))
-        # Only two swift teams: one of the medium calls has to wait.
+        self.assertIn(team.assigned_incident_id, (first, second, third))
+        # Only three swift teams: one of the medium calls has to wait.
         (dropped,) = proposal.plan.unassigned_incident_ids
-        self.assertIn(dropped, (first, second))
+        self.assertIn(dropped, (first, second, third))
 
         self.approve_current()
 
         statuses = {i.id: i.status for i in self.service.world.incidents}
         self.assertEqual(statuses[urgent], IncidentStatus.ASSIGNED)
         self.assertEqual(statuses[dropped], IncidentStatus.OPEN)
-        self.assertEqual(statuses[({first, second} - {dropped}).pop()], IncidentStatus.ASSIGNED)
+        for kept in {first, second, third} - {dropped}:
+            self.assertEqual(statuses[kept], IncidentStatus.ASSIGNED)
         self.assertEqual(team.assigned_incident_id, urgent)
         self.assertIn("service_rerouted", [e.kind for e in self.service.world.event_log])
 
@@ -317,8 +320,43 @@ class LiveRerouteTests(CommandServiceTestCase):
         self.approve_current()
         self.rescue("Manchester", "critical", 4)
         self.approve_current()
+        self.rescue("Broad & 3rd", "critical", 4)
+        self.approve_current()
         low = self.rescue("East Junction", "low", 1)
 
         plan = self.service.current_plan.plan
         self.assertEqual(plan.assignments, ())
         self.assertIn(low, plan.unassigned_incident_ids)
+
+class ResolvedTests(CommandServiceTestCase):
+    """Resolved: the incident leaves the queue, agents drop it, freed crews stand down."""
+
+    def test_resolving_tells_the_agents_and_the_crews(self) -> None:
+        service = CommandService(scenario=LIVE_RICHMOND_SCENARIO, client=OFFLINE, agent_timeout=2)
+        fields = {"report_type": "incident", "kind": "people trapped by water", "severity": "critical",
+                  "location": "Shockoe Bottom", "required_services": ["rescue"], "people": 2}
+        report = service.submit_report("People trapped", "test", fields=fields)
+        incident = service.confirm_report(report.id).linked_incident_id
+        plan = service.current_plan
+        service.approve(plan.id, plan.world_version)
+        self.assertIn(incident, service.board.votes)
+
+        freed = service.resolve_incident(incident, "operator", "marked resolved from the dashboard")
+
+        self.assertTrue(freed)
+        self.assertNotIn(incident, service.board.votes)
+        dropped = {a.agent for a in service.board.activity if a.incident_id == incident and "no longer scoring" in a.text}
+        self.assertEqual(dropped, {"Intake Agent", "Vision Agent", "Access check"})
+        self.assertEqual(service.resolutions[-1]["freed"], freed)
+        with self.assertRaises(ConflictError):
+            service.resolve_incident(incident, "operator", "again")
+
+    def test_an_open_incident_can_be_resolved_without_a_dispatch(self) -> None:
+        service = CommandService(scenario=LIVE_RICHMOND_SCENARIO, client=OFFLINE, agent_timeout=2)
+        fields = {"report_type": "incident", "kind": "false alarm check", "severity": "low",
+                  "location": "Manchester", "required_services": ["police"], "people": 0}
+        report = service.submit_report("Check on a car", "test", fields=fields)
+        incident = service.confirm_report(report.id).linked_incident_id
+
+        self.assertEqual(service.resolve_incident(incident, "operator", "false alarm"), ())
+        self.assertNotIn(incident, {d.incident_id for d in service.current_plan.plan.assignments})

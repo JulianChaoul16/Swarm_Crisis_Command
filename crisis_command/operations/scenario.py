@@ -38,6 +38,13 @@ class Scenario:
     road_names: dict[str, str] = field(default_factory=dict)
     # Let approvals move committed units to more urgent incidents (see Planner.reroute).
     reroute: bool = False
+    # Where the operation is and what hazard it faces. Prompts, alerts and screen labels use
+    # these, so a new city or hazard is a new Scenario, not a code change. The bundled
+    # scenarios are all set in Richmond, VA.
+    city: str = "Richmond, VA"
+    city_short: str = "Richmond"
+    hazard: str = "flood"
+    operations_label: str = "City of Richmond Operations"
 
 
 def build_demo_world() -> World:
@@ -257,7 +264,7 @@ FLOOD_SCENARIO = Scenario(
 )
 
 
-# ----- Richmond flood demo (the START DEMO SCENARIO run) -------------------------------
+# ----- Richmond flood demo (the stepped demo run) -------------------------------------
 
 # A higher route between 14th St & Main and Rocketts over Church Hill: with Dock St under
 # water, it keeps Shockoe Bottom reachable from the 14th St (Mayo) Bridge.
@@ -323,18 +330,23 @@ def build_richmond_demo_world() -> World:
         EmergencyService("swift-2", "Swift Water Team 2", places["South Station"], frozenset({"rescue"}), speed=1.5, capacity=6),
         EmergencyService("police-1", "Police Unit 1", places["Hospital"], frozenset({"police"}), speed=3.0),
         EmergencyService("utility-1", "Utility Crew 1", places["East Junction"], frozenset({"utility"}), speed=2.0),
+        EmergencyService("fire-3", "Fire Engine 3", places["Fire Station North"], frozenset({"fire"}), speed=2.0),
+        EmergencyService("medic-3", "Ambulance 3", places["Fire Station North"], frozenset({"medical"}), speed=2.5, capacity=2),
+        EmergencyService("swift-3", "Swift Water Team 3", places["Upriver North"], frozenset({"rescue"}), speed=1.5, capacity=6),
+        EmergencyService("police-2", "Police Unit 2", places["Manchester"], frozenset({"police"}), speed=3.0),
     ]
     return World(incidents=incidents, services=services, city=city)
 
 
 DEMO_FLOOD_SCENARIO = Scenario(
     name="richmond-flood-demo",
-    description="Seeded Richmond flash flood run by START DEMO SCENARIO (simulation).",
+    description="Seeded Richmond flash flood for the stepped demo (simulation).",
     build_world=build_richmond_demo_world,
     places=FLOOD_PLACES,
     flood_sample={key: value for key, value in FLOOD_SCENARIO.flood_sample.items() if key != "Shockoe Bottom"},
     place_notes=DEMO_PLACE_NOTES,
     road_names=DEMO_ROAD_NAMES,
+    reroute=True,
 )
 
 

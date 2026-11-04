@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field
 from ..operations import CommandError, StaleApprovalError
 from .serializers import serialize_event, serialize_state
 from ..meta_api import ROOT, hub_from_env, setting
+from . import citizens
 from .gis import gis_frame, roster
 from .session import DEMO_ENABLED, connectors, demo, gis_history, service
 
@@ -131,8 +132,10 @@ def intake_external(payload: ExternalReport, request: Request) -> dict[str, Any]
 
 @app.post("/api/intake/text")
 def intake_text(payload: PublicReport) -> dict[str, Any]:
-    """The report page: a typed incident report through normal intake."""
-    return {"report": _report_summary(service.intake_message(payload.text.strip(), payload.source.strip() or "public report page"))}
+    """The report page: a typed incident report through normal intake. The receipt lets the
+    sender follow it on the hub."""
+    report = service.intake_message(payload.text.strip(), payload.source.strip() or "public report page")
+    return {"report": _report_summary(report), "receipt": citizens.issue(service, report.id)}
 
 
 @app.post("/api/intake/audio")
@@ -143,7 +146,20 @@ async def intake_audio(request: Request, source: str = "public report page (voic
         raise HTTPException(422, "Recording must be between 0.5 s and 2 minutes.")
     from starlette.concurrency import run_in_threadpool
     text, report = await run_in_threadpool(service.intake_audio, pcm, source)
-    return {"transcript": text, "report": _report_summary(report)}
+    return {"transcript": text, "report": _report_summary(report),
+            "receipt": citizens.issue(service, report.id) if report is not None else None}
+
+
+@app.get("/api/public/reports")
+def public_reports(receipts: str = "") -> dict[str, Any]:
+    """The citizen hub: live status of the reports this phone sent (by private receipt)."""
+    return {"reports": citizens.reports(service, [r for r in receipts.split(",") if r])}
+
+
+@app.get("/api/public/feed")
+def public_feed() -> dict[str, Any]:
+    """The citizen hub: approved public alerts, closed roads and the river gauge."""
+    return citizens.feed(service)
 
 
 @app.get("/api/connect")

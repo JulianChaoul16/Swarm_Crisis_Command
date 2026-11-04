@@ -1,4 +1,4 @@
-"""START DEMO SCENARIO end to end, offline, from the committed recordings."""
+"""The stepped demo end to end, offline, from the committed recordings."""
 
 from pathlib import Path
 import tempfile
@@ -77,11 +77,17 @@ class DemoTests(unittest.TestCase):
 
         plan = service.current_plan
         service.approve(plan.id, plan.world_version)
-        while demo.step(wait=True):
-            pass
+        self.assertTrue(demo.step(wait=True))  # the Hull St call
+        status = demo.status()
+        self.assertFalse(status["can_step"])  # its reroute must be approved first, as recorded
+        self.assertIn("Approve", status["blocked"])
+        self.assertTrue(status["guide"]["your_turn"])
+        plan = service.current_plan
+        service.approve(plan.id, plan.world_version)
+        self.assertTrue(demo.step(wait=True))  # Riverside safe: units freed
         status = demo.status()
         self.assertTrue(all(e["done"] for e in status["events"]))
-        self.assertTrue(status["guide"]["your_turn"])  # a freed team can take the new call
+        self.assertTrue(status["guide"]["your_turn"])
         plan = service.current_plan
         service.approve(plan.id, plan.world_version)
         status = demo.status()
@@ -89,16 +95,20 @@ class DemoTests(unittest.TestCase):
         self.assertIn("full loop", status["guide"]["now"])
         demo.stop()
 
-    def test_full_loop_replays_offline_and_the_freed_team_takes_the_new_call(self) -> None:
+    def test_full_loop_replays_offline_with_a_reroute_and_freed_units(self) -> None:
         service = CommandService(scenario=DEMO_FLOOD_SCENARIO, client=OFFLINE)
         demo = DemoRunner(service)
         service.hub.mode = "demo"
         demo.prepare()
         demo.play_all_now(approve=True)
         approved = [p for p in service._plans.values() if p.status.value == "approved"]
-        self.assertEqual(len(approved), 2)
+        self.assertEqual(len(approved), 3)
+        # The critical Hull St call pulls Swift Water Team 2 off the bus; Team 3 takes the bus.
+        hull = {(d.service_id, d.incident_id) for d in approved[1].plan.assignments}
+        self.assertLessEqual({("swift-2", "incident-15"), ("swift-3", "incident-14")}, hull)
+        self.assertIn("service_rerouted", [e.kind for e in service.world.event_log])
         last = {(d.service_id, d.incident_id) for d in approved[-1].plan.assignments}
-        self.assertIn(("swift-1", "incident-15"), last)
+        self.assertIn(("medic-1", "incident-11"), last)  # the dialysis patient is covered again
         self.assertEqual(next(i for i in service.world.incidents if i.id == "incident-9").status.value, "resolved")
         self.assertEqual([a.text for a in service.board.activity if a.source == "fallback"], [])
 

@@ -66,7 +66,14 @@ GROUNDING_RULE = (
     "a place, a time or a number. Use only the facts given and cite them; if something is not in the "
     "facts, say it is unknown."
 )
-NOT_IN_PLAN = "Not in Richmond plan - requires human verification"
+# Where the operation is, and what hazard. Set per scenario (CommandService does it), so
+# prompts and fallback text name the right city; the defaults are the bundled demo's.
+DEFAULT_CITY, DEFAULT_CITY_SHORT, DEFAULT_HAZARD = "Richmond, VA", "Richmond", "flood"
+NOT_IN_PLAN = f"Not in {DEFAULT_CITY_SHORT} plan - requires human verification"
+
+
+def not_in_plan(city_short: str) -> str:
+    return f"Not in {city_short} plan - requires human verification"
 
 
 def unsupported_numbers(value: Any, facts: Any) -> list[str]:
@@ -204,6 +211,9 @@ class MetaHub:
     # Live answers are recorded only where nothing is recorded yet, unless re-recording, so
     # ordinary live use never changes what the demo replays.
     overwrite: bool = False
+    city: str = DEFAULT_CITY
+    city_short: str = DEFAULT_CITY_SHORT
+    hazard: str = DEFAULT_HAZARD
 
     @property
     def spark_live(self) -> bool:
@@ -323,8 +333,12 @@ class MetaHub:
 
     # ----- 3. Muse Spark: triage --------------------------------------------
 
-    TRIAGE_SYSTEM = (
-        "You are the triage agent in a SIMULATED Richmond, VA flood exercise. Score how urgent "
+    @property
+    def TRIAGE_SYSTEM(self) -> str:
+        return self._TRIAGE_SYSTEM.format(city=self.city, hazard=self.hazard)
+
+    _TRIAGE_SYSTEM = (
+        "You are the triage agent in a SIMULATED {city} {hazard} exercise. Score how urgent "
         "this incident is from 0 to 100 (100 = lives at immediate risk). Use only the facts given. "
         "vulnerable is true only if the facts mention a child, elderly, disabled or injured person "
         "or a medical need. reasons: at most 2 short reasons. Return JSON only." + GROUNDING_RULE
@@ -473,12 +487,16 @@ class MetaHub:
         # A passage must share at least two words with the query; otherwise the plan has no answer.
         passages = [item for overlap, item in sorted(scored, key=lambda pair: -pair[0])[:limit] if overlap >= 2]
         return ModelResult(passages, PLAN_SEARCH, "local",
-                           "keyword search over the sample knowledge base" if passages else NOT_IN_PLAN)
+                           "keyword search over the sample knowledge base" if passages else not_in_plan(self.city_short))
 
     # ----- 7. Muse Spark: recommendation and public alert -------------------
 
-    RECOMMEND_SYSTEM = (
-        "You are the command agent in a SIMULATED Richmond flood exercise. The dispatch decision "
+    @property
+    def RECOMMEND_SYSTEM(self) -> str:
+        return self._RECOMMEND_SYSTEM.format(city=self.city_short, hazard=self.hazard)
+
+    _RECOMMEND_SYSTEM = (
+        "You are the command agent in a SIMULATED {city} {hazard} exercise. The dispatch decision "
         "was made by an exact solver and is given; do not change it. Write why: 2-3 short bullets "
         "explaining it, each ending with its source in brackets (an agent name or a citation from "
         "the facts). Write tradeoff: one sentence on what this delays or costs, from the facts. "
@@ -494,8 +512,12 @@ class MetaHub:
     def recommend(self, facts: dict[str, Any], fallback: Callable[[], dict[str, Any]]) -> ModelResult:
         return self._spark("recommend", self.RECOMMEND_SYSTEM, facts, self.RECOMMEND_SCHEMA, fallback)
 
-    ALERT_SYSTEM = (
-        "Write a public flood alert for residents of Richmond, VA in a SIMULATED exercise, from the "
+    @property
+    def ALERT_SYSTEM(self) -> str:
+        return self._ALERT_SYSTEM.format(city=self.city, hazard=self.hazard)
+
+    _ALERT_SYSTEM = (
+        "Write a public {hazard} alert for residents of {city} in a SIMULATED exercise, from the "
         "approved actions given. Two versions: English and Spanish, each at most 3 short sentences "
         "at a 6th-grade reading level: what is happening, where to avoid, what to do. Do not invent "
         "places, numbers or shelters beyond the facts. This text is for the public: no citations, "

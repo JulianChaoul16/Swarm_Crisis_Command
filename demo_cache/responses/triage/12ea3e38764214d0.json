@@ -1,0 +1,27 @@
+{
+ "function": "triage",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T20:23:06.860489+00:00",
+ "input": {
+  "incident": "incident-15",
+  "type": "man trapped in car by floodwater",
+  "location": "South Junction",
+  "people_at_risk": 1,
+  "needs": [
+   "medical",
+   "rescue"
+  ],
+  "reported_severity": "critical",
+  "text": "911, what is your emergency? My dad is stuck in his car in the Hull Street underpass, right by the Mayo Bridge. The water is up to the windows and he can't open the door. How old is he? And is he hurt? He's 78. He has a heart condition. he's on the phone with me and he's panicking please send someone now"
+ },
+ "output": {
+  "reasons": [
+   "water up to windows and can't open door",
+   "78 with heart condition, panicking"
+  ],
+  "severity_score": 98,
+  "summary": "78-year-old with heart condition trapped in car at Hull Street underpass by Mayo Bridge with water to windows.",
+  "vulnerable": true
+ }
+}

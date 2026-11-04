@@ -110,6 +110,17 @@ class SwarmServiceTests(unittest.TestCase):
                   if line.startswith("Incident ") and "prioritized" in line]
         self.assertEqual(ranked[0], low)
 
+    def test_a_re_vote_re_plans_by_itself(self) -> None:
+        board = self.service.board
+        before = self.service.current_plan_id
+        low = min(board.finals, key=board.finals.get)
+        for agent in (TRIAGE, VISION, LOGISTICS):
+            board.cast(low, agent, 100, ("operator test",), "test")
+        self.assertNotEqual(self.service.current_plan_id, before)
+        ranked = [line.split()[1] for line in self.service.current_plan.plan.rationale
+                  if line.startswith("Incident ") and "prioritized" in line]
+        self.assertEqual(ranked[0], low)
+
     def test_reset_starts_a_fresh_board(self) -> None:
         old = self.service.board
         self.service.reset()

@@ -4,7 +4,7 @@ incoming-report connectors.
 DEMO_ENABLED (in .env, default false) chooses the mode:
 - false: live intake. Richmond roads and units with no incidents; reports arrive from the
   /report page, POST /api/intake and any configured database connector.
-- true: the seeded Richmond flood and START DEMO SCENARIO.
+- true: the seeded Richmond flood demo, stepped by the presenter.
 
 Model-written text (recommendation explanations, public alerts) attaches in the background
 so plans never wait for it.

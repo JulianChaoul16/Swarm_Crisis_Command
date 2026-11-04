@@ -395,3 +395,56 @@ button.start.pause { background: var(--warn); border-color: var(--warn); color: 
 @media (max-width: 900px) { .org { display: none; } .nav .tab { padding: 8px 10px; } }
 .gauge-chip { left: auto; right: 52px; transform: none; }
 .demo-note { max-width: min(400px, 64%); font-size: 12px; }
+
+/* A new plan flashes once so a change is visible. */
+@keyframes rec-flash { from { box-shadow: 0 0 0 3px #3987e5; } to { box-shadow: 0 0 0 0 transparent; } }
+.rec-flash { animation: rec-flash 1.6s ease-out; border-radius: 10px; }
+.rec-changes li { font-weight: 600; }
+
+/* ----- Citizen hub (/report) ----- */
+.hub h1 { margin: 8px 0 2px; }
+.hub h2 { font-size: 15px; margin: 18px 0 8px; }
+.hub-head .small { margin: 0; }
+.hub-strip { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; padding: 10px 12px; font-size: 13px;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+.hub-banner { all: unset; box-sizing: border-box; display: block; width: 100%; margin-top: 10px; padding: 10px 12px; cursor: pointer;
+  font-size: 13.5px; line-height: 1.4; border-radius: 10px; background: rgba(251, 191, 36, 0.1); border: 1px solid var(--warn); }
+.hub-more { color: var(--solver); text-decoration: underline; margin-left: 4px; }
+.hub-tabs { display: flex; gap: 4px; margin: 14px 0 6px; border-bottom: 1px solid var(--border); }
+.hub-tabs button { flex: 1; background: transparent; border: 0; border-bottom: 3px solid transparent; border-radius: 0;
+  padding: 10px 4px; font-weight: 700; color: var(--muted); }
+.hub-tabs button.on { color: var(--text); border-bottom-color: var(--solver); }
+.hub-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.hub-lang { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.hub-lang button { border: 0; border-radius: 0; padding: 5px 10px; font-size: 12.5px; background: transparent; color: var(--muted); }
+.hub-lang button.on { background: var(--solver-bg); color: var(--text); }
+.hub-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.hub-card { padding: 12px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--border); }
+.hub-card p { margin: 4px 0 0; line-height: 1.45; }
+.hub-latest { border-color: var(--warn); }
+.hub-road { display: flex; flex-direction: column; gap: 2px; }
+.hub-meta { font-size: 12px; color: var(--muted); }
+.hub-quote { font-style: italic; }
+.hub-status { font-weight: 600; }
+.hub-mine.st-dispatched { border-left: 4px solid var(--solver); }
+.hub-mine.st-resolved { border-left: 4px solid var(--approve); }
+.hub-mine.st-needs_detail, .hub-mine.st-received { border-left: 4px solid var(--warn); }
+.hub-steps { list-style: none; display: flex; gap: 4px; margin: 10px 0 4px; padding: 0; }
+.hub-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px;
+  text-align: center; color: var(--muted); }
+.hub-dot { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800;
+  border: 2px solid var(--border); }
+.hub-step.done .hub-dot { background: var(--approve); border-color: var(--approve); color: #04261a; }
+.hub-step.now { color: var(--text); }
+.hub-step.now .hub-dot { border-color: var(--solver); color: var(--solver); }
+.hub-step.stuck .hub-dot { border-color: var(--warn); color: var(--warn); }
+.hub-empty { text-align: center; padding: 24px 0; }
+.hub-follow { all: unset; cursor: pointer; color: var(--solver); text-decoration: underline; display: inline-block; margin-top: 6px; }
+/* Always-visible flood trend projection under the map. */
+.projection { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-top: 8px; padding: 8px 10px;
+  font-size: 12.5px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; }
+.projection-hours { display: flex; flex-wrap: wrap; gap: 4px; }
+.projection-hours button { padding: 4px 8px; font-size: 12px; background: transparent; border: 1px solid var(--border); color: var(--muted); }
+.projection-hours button.on { border-color: var(--solver); color: var(--text); background: var(--solver-bg); }
+.projection-hours button.over b { color: var(--warn); }
+.swatch-projection { background: rgba(59, 130, 246, 0.2); border: 2px dashed #e0f2fe; }

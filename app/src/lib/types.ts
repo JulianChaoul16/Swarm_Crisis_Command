@@ -175,7 +175,7 @@ export type Roster = {
     location: string | null;
     position: LngLat;
     position_source: string;
-    messages: { at: string; plan_id: string; from: string; text: string }[];
+    messages: { at: string; plan_id: string | null; from: string; text: string }[];
   }[];
   broadcasts: { plan_id: string; english: string; spanish: string; source: string }[];
   note: string;
@@ -199,6 +199,7 @@ export type WorldState = {
   simulation: true;
   run_id: string;
   scenario: string;
+  place: { city: string; city_short: string; hazard: string; operations_label: string };
   model: string;
   city: string | null;
   version: number;

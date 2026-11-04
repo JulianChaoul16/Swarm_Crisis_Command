@@ -27,6 +27,7 @@ ROAD_CHANGED = "road.changed"
 FLOOD_CHANGED = "flood.changed"
 GAUGE_CHANGED = "gauge.changed"
 UNITS_CHANGED = "units.changed"
+INCIDENT_RESOLVED = "incident.resolved"
 
 
 def _now() -> datetime:
@@ -140,6 +141,15 @@ class IncidentBoard:
         if before != reading.get("value"):
             self.log("River gauge", source, f"James River at Westham {reading['value']} ft, {reading.get('trend', '')}")
             self.bus.publish(GAUGE_CHANGED, {"gauge": reading})
+
+    def retire(self, incident_id: str, by: str) -> None:
+        """An incident is resolved: every voter drops it, so the swarm's attention goes elsewhere."""
+        with self._lock:
+            self.votes.pop(incident_id, None)
+            self.finals.pop(incident_id, None)
+        for agent in VOTERS:
+            self.log(agent, "board", f"{incident_id} resolved by {by}; no longer scoring it", incident_id)
+        self.bus.publish(INCIDENT_RESOLVED, {"incident_id": incident_id, "by": by})
 
     def final(self, incident_id: str) -> int | None:
         with self._lock:

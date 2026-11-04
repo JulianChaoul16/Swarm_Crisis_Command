@@ -1,4 +1,4 @@
-"""START DEMO SCENARIO: plays the seeded Richmond timeline through the normal pipeline.
+"""The stepped demo: plays the seeded Richmond timeline through the normal pipeline.
 
 The timeline (`demo_cache/richmond_flood_scenario.json`) says only what arrives and when: a
 gauge reading, an audio report, a citizen photo. Each event goes through the same intake,
@@ -78,7 +78,8 @@ class DemoRunner:
             return None, "Still playing the last step."
         if not pending:
             return None, "All steps played."
-        if events[pending[0]].get("stage", 1) == 2 and not self.approvals:
+        # Stage 2 waits for each recommendation to be approved, as in the recorded run.
+        if events[pending[0]].get("stage", 1) == 2 and (not self.approvals or self._awaiting_approval()):
             return None, "Approve the recommended dispatch first."
         return pending[0], None
 
@@ -112,10 +113,6 @@ class DemoRunner:
         with self._lock:
             if self.started:
                 self.approvals += 1
-                # The scripted story is recorded without rerouting; once it is over, later
-                # reports (e.g. from a phone) may move committed units. A restart resets this.
-                if len(self.done) == len(self.timeline["events"]) and self.approvals >= 2:
-                    self.service.planner.reroute = True
 
     def _awaiting_approval(self) -> bool:
         plan = self.service.current_plan
@@ -137,9 +134,9 @@ class DemoRunner:
         if not pending:
             return {"now": self.timeline["outro_2"], "your_turn": self._awaiting_approval(), "next": None}
         current = self.timeline["intro"] if not self.done else events[self.done[-1]]["explain"]
-        if self.approvals and self.done and self.done[-1] in stage1:
+        if self.approvals and self.done and not self._awaiting_approval():
             current = self.timeline["approved"]
-        return {"now": current, "your_turn": False, "next": upcoming}
+        return {"now": current, "your_turn": bool(self.approvals and self._awaiting_approval()), "next": upcoming}
 
     def status(self) -> dict[str, Any]:
         with self._lock:
