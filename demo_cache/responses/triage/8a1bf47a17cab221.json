@@ -2,7 +2,7 @@
  "function": "triage",
  "model": "Muse Spark",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T03:32:37.698416+00:00",
+ "recorded_at": "2026-11-04T16:21:51.127620+00:00",
  "input": {
   "incident": "incident-14",
   "type": "bus passengers trapped by rising water",
@@ -17,11 +17,11 @@
  },
  "output": {
   "reasons": [
-   "Water entering bus, occupants unable to exit",
-   "Wheelchair passenger needs rescue and medical help"
+   "Water up past steps inside bus at East 18th and Main",
+   "5 trapped including wheelchair user, cannot get out"
   ],
-  "severity_score": 95,
-  "summary": "Bus trapped by rising water in Shockoe Bottom with 5 unable to exit",
+  "severity_score": 98,
+  "summary": "Bus with 5 trapped by rising water entering in Shockoe Bottom, critical rescue need.",
   "vulnerable": true
  }
 }

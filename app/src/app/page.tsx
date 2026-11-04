@@ -99,6 +99,28 @@ function AgentPanel({ agent, onClose }: { agent: Agent; onClose: () => void }) {
   );
 }
 
+/** Where a fact came from, and when. */
+function Source({ evidence }: { evidence?: { report_id: string | null; source: string; at: string | null }[] | null }) {
+  if (!evidence?.length) return null;
+  return (
+    <div className="source">
+      Source:{" "}
+      {evidence.map((e, i) => (
+        <span key={i}>{e.report_id ? `${e.report_id} · ` : ""}{e.source}{e.at ? ` · ${time(e.at)}` : ""}{i < evidence.length - 1 ? "; " : ""}</span>
+      ))}
+    </div>
+  );
+}
+
+function Unverified({ numbers, what }: { numbers?: string[]; what: string }) {
+  if (!numbers?.length) return null;
+  return (
+    <p className="unverified" title="These numbers appear in the model's text but not in the facts it was given.">
+      ⚠ Unverified in {what}: {numbers.join(", ")}. Not in the facts given to the model; check before using.
+    </p>
+  );
+}
+
 function Votes({ entry }: { entry: Swarm["incidents"][string] | undefined }) {
   if (!entry) return <div className="votes muted">Swarm voting…</div>;
   return (
@@ -112,7 +134,7 @@ function Votes({ entry }: { entry: Swarm["incidents"][string] | undefined }) {
           </span>
         );
       })}
-      <span className="final">= Final: <b>{entry.final ?? "…"}</b></span>
+      <span className="final" title="Consensus of three estimates (two AI, one computed); not a measured value.">= Final: <b>{entry.final ?? "…"}</b> <span className="muted">est.</span></span>
     </div>
   );
 }
@@ -138,6 +160,7 @@ function IncidentQueue({ incidents, focus, swarm }: { incidents: Incident[]; foc
             <b>{incident.people}</b> people at risk · needs {incident.required_services.join(", ") || "none"}
           </div>
           <Votes entry={swarm.incidents[incident.id]} />
+          <Source evidence={incident.evidence} />
         </li>
       ))}
     </ol>
@@ -196,7 +219,12 @@ function Recommendation({
                 </li>
               ))}
               {world.roads.some((r) => r.is_closed) && (
-                <li className="muted">Avoiding closed: {world.roads.filter((r) => r.is_closed).map((r) => r.name ?? r.id).join(", ")}</li>
+                <li className="muted">
+                  Avoiding closed:{" "}
+                  {world.roads.filter((r) => r.is_closed).map((r) =>
+                    `${r.name ?? r.id} [${r.evidence ? `${r.evidence.report_id ? `${r.evidence.report_id}, ` : ""}${r.evidence.source}${r.evidence.at ? `, ${time(r.evidence.at)}` : ""}` : "source unknown"}]`,
+                  ).join("; ")}
+                </li>
               )}
             </ul>
           )}
@@ -221,6 +249,7 @@ function Recommendation({
             }).filter(Boolean)).map((line) => <li key={line}>{line}</li>)}
             {reasons.map((reason) => <li key={reason}>{reason} [Exact solver]</li>)}
           </ul>
+          <Unverified numbers={world.explanation?.unverified} what="the explanation" />
           <div className="rec-label">Confidence</div>
           <div className="rec-conf" title="How closely the three agents' votes agree (100 = identical). Not a calibrated probability.">
             {world.swarm.incidents[lead.id]?.agreement ?? "?"}% <span className="muted">vote agreement</span>
@@ -325,8 +354,8 @@ function VisionBadge({ swarm }: { swarm: Swarm }) {
     <div className="vision-badge" title={image.note}>
       <Pill label={image.boxes_source} /> {counts}
       <span className="sep">|</span>
-      <Pill label={image.estimate_source} /> Est. {image.estimate.depth_in_low}–{image.estimate.depth_in_high} in,{" "}
-      <b>{image.estimate.passable_for_cars ? "passable" : "impassable"}</b> ({Math.round(image.estimate.confidence * 100)}% model confidence)
+      <Pill label={image.estimate_source} /> <b>ESTIMATE:</b> {image.estimate.depth_in_low}–{image.estimate.depth_in_high} in,{" "}
+      <b>{image.estimate.passable_for_cars ? "passable" : "impassable"}</b> ({Math.round(image.estimate.confidence * 100)}% model-stated confidence, not calibrated)
     </div>
   );
 }
@@ -365,7 +394,8 @@ function PhotoCard({ swarm }: { swarm: Swarm }) {
           <span key={prompt}><i style={{ borderColor: BOX_COLORS[index % BOX_COLORS.length] }} /> {image.objects[prompt].length} × {prompt}</span>
         ))}
       </div>
-      <p className="photo-reason">“{image.estimate.reason}”</p>
+      <p className="photo-reason"><b>Wonder ESTIMATE:</b> {image.estimate.depth_in_low}–{image.estimate.depth_in_high} in,{" "}
+        {image.estimate.passable_for_cars ? "passable" : "impassable"} ({Math.round(image.estimate.confidence * 100)}%, model-stated). “{image.estimate.reason}”</p>
       <p className="muted photo-note">AI-generated test image (Muse Image), not a real photo. Map position is an assumed footprint.</p>
     </div>
   );
@@ -385,6 +415,7 @@ function Alert({ alert }: { alert: WorldState["alerts"][string] | undefined }) {
         <>
           <p><b>EN</b> {alert.text.value.english}</p>
           <p><b>ES</b> {alert.text.value.spanish}</p>
+          <Unverified numbers={alert.unverified} what="the alert" />
         </>
       ) : (
         <p className="muted">Writing…</p>

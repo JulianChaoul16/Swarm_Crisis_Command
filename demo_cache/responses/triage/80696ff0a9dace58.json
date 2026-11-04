@@ -2,7 +2,7 @@
  "function": "triage",
  "model": "Muse Spark",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T15:51:40.514619+00:00",
+ "recorded_at": "2026-11-04T16:24:03.823230+00:00",
  "input": {
   "incident": "incident-13",
   "type": "vehicle fire at flooded intersection",
@@ -16,11 +16,11 @@
  },
  "output": {
   "reasons": [
-   "No people at risk reported",
-   "Reported severity low"
+   "reported_severity is low",
+   "people_at_risk is 0"
   ],
-  "severity_score": 20,
-  "summary": "Vehicle fire at flooded intersection at Broad & 3rd with no people at risk.",
+  "severity_score": 15,
+  "summary": "Vehicle fire at Broad & 3rd with 0 people at risk, reported severity low.",
   "vulnerable": false
  }
 }

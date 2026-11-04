@@ -266,3 +266,8 @@ button.start.pause { background: var(--warn); border-color: var(--warn); color: 
 .photo-legend i { display: inline-block; width: 12px; height: 9px; border: 2px solid; margin-right: 4px; }
 .photo-reason { margin: 6px 0 2px; font-style: italic; font-size: 12.5px; }
 .photo-note { margin: 0; font-size: 11px; }
+
+/* ---------- Provenance and verification ---------- */
+
+.source { margin-top: 4px; font-size: 11px; color: var(--muted); }
+.unverified { margin: 6px 0 0; padding: 5px 8px; border-radius: 6px; font-size: 12.5px; color: #fde68a; background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.45); }

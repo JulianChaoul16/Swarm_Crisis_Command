@@ -160,6 +160,8 @@ class Swarm:
             if guide.value:
                 passage = guide.value[0]
                 reasons = reasons + (f"Per {passage['citation']}: {passage['text']}",)
+            else:
+                reasons = reasons + (f"Guidance: {guide.note}",)
             self.board.cast(incident_id, LOGISTICS, score, reasons,
                             source=f"rules + {guide.label}" if guide.value else RULES)
 

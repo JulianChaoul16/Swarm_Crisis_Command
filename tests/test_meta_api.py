@@ -99,6 +99,17 @@ class HubTests(unittest.TestCase):
             rows = {row["model"]: row["status"] for row in self.hub(FakeClient(answer)).status()}
         self.assertEqual(rows[SAM], "live")
 
+    def test_numbers_not_in_the_facts_are_flagged(self) -> None:
+        from crisis_command.meta_api import unsupported_numbers
+        facts = {"people_at_risk": 5, "units": ["Swift Water Team 2 (ETA 7.0 min)"]}
+        text = {"why": ["5 people, Swift Water Team 2 arrives in 7.0 min"], "tradeoff": "Shelter has 142 beds"}
+        self.assertEqual(unsupported_numbers(text, facts), ["142"])
+
+    def test_plan_search_says_when_the_plan_has_no_answer(self) -> None:
+        from crisis_command.meta_api import NOT_IN_PLAN
+        result = self.hub(UnavailableModelClient("offline")).guidance("helicopter landing zone capacity")
+        self.assertEqual((result.value, result.note), ([], NOT_IN_PLAN))
+
     def test_sam_output_is_parsed_into_boxes(self) -> None:
         from crisis_command.meta_api import _sam_boxes
         text = "<0f>0<|box;x1=0;y1=10;x2=20;y2=30;w=100;h=50|><|mask;x=0;y=0;data=21,21,~!|>,1<|box;x1=5;y1=6;x2=7;y2=8;w=100;h=50|>"

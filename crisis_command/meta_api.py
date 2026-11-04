@@ -60,6 +60,42 @@ NOT_CONNECTED = {
 }
 
 
+# Appended to every Muse Spark prompt.
+GROUNDING_RULE = (
+    " GROUNDING RULE: Never invent a shelter, a capacity, a road status, an evacuation zone, a unit, "
+    "a place, a time or a number. Use only the facts given and cite them; if something is not in the "
+    "facts, say it is unknown."
+)
+NOT_IN_PLAN = "Not in Richmond plan - requires human verification"
+
+
+def unsupported_numbers(value: Any, facts: Any) -> list[str]:
+    """Numbers in a model's text that appear nowhere in the facts it was given.
+
+    A cheap hallucination check: each flagged number is shown to the operator as
+    unverified. (Numbers written as words are not checked.)"""
+    texts = []
+
+    def collect(item: Any) -> None:
+        if isinstance(item, str):
+            texts.append(item)
+        elif isinstance(item, dict):
+            for v in item.values():
+                collect(v)
+        elif isinstance(item, (list, tuple)):
+            for v in item:
+                collect(v)
+
+    collect(value)
+    known = set(re.findall(r"\d+(?:\.\d+)?", json.dumps(facts, default=str)))
+    flagged = []
+    for text in texts:
+        for number in re.findall(r"\d+(?:\.\d+)?", text):
+            if number not in known and number not in flagged:
+                flagged.append(number)
+    return flagged
+
+
 # .env settings naming each model's ID (and endpoint, if not META_BASE_URL).
 MODEL_SETTINGS = {
     MUSE_VOICE: "META_VOICE",
@@ -220,7 +256,7 @@ class MetaHub:
         "You are the triage agent in a SIMULATED Richmond, VA flood exercise. Score how urgent "
         "this incident is from 0 to 100 (100 = lives at immediate risk). Use only the facts given. "
         "vulnerable is true only if the facts mention a child, elderly, disabled or injured person "
-        "or a medical need. reasons: at most 2 short reasons. Return JSON only."
+        "or a medical need. reasons: at most 2 short reasons. Return JSON only." + GROUNDING_RULE
     )
     TRIAGE_SCHEMA = {
         "type": "object",
@@ -314,7 +350,8 @@ class MetaHub:
         "You are the vision agent in a flood-response exercise. This is an overhead image of a city street "
         "area. Report what you can see on the roads: whether there is floodwater on them, the water depth on "
         "the road in inches (0 if dry), whether an ordinary passenger car could safely drive through, and "
-        "whether there is a fire. Give your confidence from 0 to 1 and one short reason based on visible cues."
+        "whether there is a fire. Give your confidence from 0 to 1 and one short reason based on visible cues. "
+        "Describe only what is visible; if something cannot be seen, say so."
     )
     WATER_SCHEMA = {
         "type": "object",
@@ -362,8 +399,10 @@ class MetaHub:
                     overlap = len(words & set(re.findall(r"[a-z]+", line.lower())))
                     if overlap:
                         scored.append((overlap, {"text": line.strip(), "citation": f"{title}, {section}"}))
-        passages = [item for _, item in sorted(scored, key=lambda pair: -pair[0])[:limit]]
-        return ModelResult(passages, PLAN_SEARCH, "local", "keyword search over the sample knowledge base")
+        # A passage must share at least two words with the query; otherwise the plan has no answer.
+        passages = [item for overlap, item in sorted(scored, key=lambda pair: -pair[0])[:limit] if overlap >= 2]
+        return ModelResult(passages, PLAN_SEARCH, "local",
+                           "keyword search over the sample knowledge base" if passages else NOT_IN_PLAN)
 
     # ----- 7. Muse Spark: recommendation and public alert -------------------
 
@@ -372,7 +411,7 @@ class MetaHub:
         "was made by an exact solver and is given; do not change it. Write why: 2-3 short bullets "
         "explaining it, each ending with its source in brackets (an agent name or a citation from "
         "the facts). Write tradeoff: one sentence on what this delays or costs, from the facts. "
-        "Use only the facts given. Return JSON only."
+        "Use only the facts given. Return JSON only." + GROUNDING_RULE
     )
     RECOMMEND_SCHEMA = {
         "type": "object",
@@ -388,7 +427,9 @@ class MetaHub:
         "Write a public flood alert for residents of Richmond, VA in a SIMULATED exercise, from the "
         "approved actions given. Two versions: English and Spanish, each at most 3 short sentences "
         "at a 6th-grade reading level: what is happening, where to avoid, what to do. Do not invent "
-        "places, numbers or shelters beyond the facts. Return JSON only."
+        "places, numbers or shelters beyond the facts. This text is for the public: no citations, "
+        "brackets or field names. Never invent a shelter, capacity, road status, evacuation zone or number; "
+        "leave out anything not in the facts. Return JSON only."
     )
     ALERT_SCHEMA = {
         "type": "object",

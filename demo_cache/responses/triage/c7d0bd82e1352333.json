@@ -2,7 +2,7 @@
  "function": "triage",
  "model": "Muse Spark",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T15:52:10.555598+00:00",
+ "recorded_at": "2026-11-04T16:24:28.997609+00:00",
  "input": {
   "incident": "incident-14",
   "type": "bus passengers trapped by floodwater",
@@ -17,11 +17,11 @@
  },
  "output": {
   "reasons": [
-   "Water past steps trapping 5 with no exit",
-   "Wheelchair passenger needs medical and rescue"
+   "Water up past bus steps with 5 trapped and can't get out",
+   "One passenger in wheelchair with medical and rescue needs, reported critical"
   ],
   "severity_score": 95,
-  "summary": "City bus trapped by floodwater in Shockoe Bottom with 5 people unable to evacuate.",
+  "summary": "Bus trapped by floodwater at East 18th and Main with 5 at risk, water entering.",
   "vulnerable": true
  }
 }

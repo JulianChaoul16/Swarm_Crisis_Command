@@ -2,8 +2,11 @@
 
 export type LngLat = [number, number];
 
+export type Evidence = { report_id: string | null; source: string; at: string | null };
+
 export type Incident = {
   id: string;
+  evidence?: Evidence[];
   place: string | null;
   kind: string;
   severity: "low" | "medium" | "high" | "critical";
@@ -34,6 +37,7 @@ export type Service = {
 export type Road = {
   id: string;
   name?: string;
+  evidence?: Evidence | null;
   is_closed: boolean;
   length: number;
   path: LngLat[];
@@ -128,8 +132,12 @@ export type WorldState = {
     guide: { now: string; your_turn: boolean; next?: string | null; next_in_s?: number | null } | null;
     errors: string[];
   };
-  explanation: ModelResult<{ why: string[]; tradeoff: string }> | null;
-  alerts: Record<string, { text: ModelResult<{ english: string; spanish: string }> | null; graphic: ModelResult<unknown> | null }>;
+  explanation: (ModelResult<{ why: string[]; tradeoff: string }> & { unverified: string[] }) | null;
+  alerts: Record<string, {
+    text: ModelResult<{ english: string; spanish: string }> | null;
+    graphic: ModelResult<unknown> | null;
+    unverified: string[];
+  }>;
 };
 
 export type Agent = {

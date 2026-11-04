@@ -17,7 +17,7 @@ from typing import Any, Iterator
 from uuid import uuid4
 
 from ..agents.model_client import ModelClient, ModelUnavailableError, model_client_from_env
-from ..meta_api import MetaHub, hub_from_env
+from ..meta_api import MetaHub, hub_from_env, unsupported_numbers
 from ..model import Incident, IncidentStatus, Severity
 from ..swarm.agents import SEVERITY_BASE, Swarm
 from ..swarm.board import ROAD_CHANGED, UNITS_CHANGED, IncidentBoard
@@ -94,7 +94,8 @@ may be informal, misspelled, in any language, or contain irrelevant numbers.
 - certainty: "confirmed" if the source states it as fact, "possible" if hedged ("I think",
   "maybe", a question).
 
-Use null for anything the report does not state. Do not guess.
+Use null for anything the report does not state. Do not guess. Never invent a location, a head
+count, a capability, a road status or a confirmation that the report does not give.
 """
 
 
@@ -159,6 +160,8 @@ class CommandService:
                                self.scenario.flood_sample, self.hub, self._report_text)
             # Plan id -> model-written explanation, and approved plan id -> public alert.
             self.explanations: dict[str, Any] = {}
+            # Plan id -> numbers in the model's explanation that are not in its facts.
+            self.unverified: dict[str, list[str]] = {}
             self.alerts: dict[str, Any] = {}
             self.planner = Planner(priority_key=self._swarm_priority, priority_rule=SWARM_PRIORITY_RULE)
             self.simulation = Simulation(self.world, self.planner)
@@ -653,6 +656,7 @@ class CommandService:
             with self._lock:
                 if run_id == self.run_id:
                     self.explanations[proposal.id] = result
+                    self.unverified[proposal.id] = unsupported_numbers(result.value, facts)
                     self.board.log("Command Agent", result.label, f"Recommendation for {proposal.id} written")
 
         self._in_background(work)
@@ -684,7 +688,8 @@ class CommandService:
             graphic = self.hub.alert_graphic(facts)
             with self._lock:
                 if run_id == self.run_id:
-                    self.alerts[proposal.id] = {"text": text, "graphic": graphic}
+                    self.alerts[proposal.id] = {"text": text, "graphic": graphic,
+                                                "unverified": unsupported_numbers(text.value, facts)}
                     self.board.log("Command Agent", text.label, f"Public alert for {proposal.id} written (EN/ES)")
 
         self._in_background(work)

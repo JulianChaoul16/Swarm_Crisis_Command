@@ -112,6 +112,21 @@ is recorded, the report is shown as unread rather than invented.
 and gauge triggers written for this exercise. They are marked as exercise documents, not
 City of Richmond material; citations say "Sample Richmond Flood Response Plan".
 
+## Trust: no invented facts
+
+- **Grounding rule** in every Muse Spark prompt: never invent a shelter, capacity, road status,
+  evacuation zone, unit, place, time or number; cite the given facts or say unknown.
+- **Unsupported-number check:** any number in the model's explanation or alert that is not in
+  the facts it was given is shown to the operator as "Unverified".
+- **Plan search answers only from the documents:** with no matching passage it says "Not in
+  Richmond plan - requires human verification".
+- **Source and time on facts:** each incident shows the report it came from (or "scenario
+  seed"), and each closed road shows what closed it and when.
+- **Estimates are labelled as estimates:** Wonder's depth is an ESTIMATE with model-stated (not
+  calibrated) confidence; severity is a consensus of estimates; confidence is vote agreement.
+- **No shelter capacities are shown,** because there is no source for them. The sample
+  knowledge base says capacity is not modelled.
+
 ## Evaluation
 
 **Intake Agent triage on 20 sample incidents** (`python -m evaluation.triage_eval`; recordings in

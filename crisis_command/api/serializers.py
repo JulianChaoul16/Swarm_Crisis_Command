@@ -135,6 +135,22 @@ def serialize_proposal(proposal: PlanProposal, city: City | None = None,
     }
 
 
+def _road_evidence(service: CommandService, road: Road) -> dict[str, Any] | None:
+    """Where a road's current status came from: the report that set it, or the seed."""
+    report = next((r for r in service.reports if r.id == service.road_evidence.get(road.id)), None)
+    if report is not None:
+        return {"report_id": report.id, "source": report.source, "at": report.received_at.isoformat()}
+    return {"report_id": None, "source": "scenario seed (T+0)", "at": None} if road.is_closed else None
+
+
+def _incident_evidence(service: CommandService, incident_id: str) -> list[dict[str, Any]]:
+    """Reports behind an incident; seeded incidents say so."""
+    reports = [r for r in service.reports if r.linked_incident_id == incident_id]
+    if not reports:
+        return [{"report_id": None, "source": "scenario seed (T+0)", "at": None}]
+    return [{"report_id": r.id, "source": r.source, "at": r.received_at.isoformat()} for r in reports]
+
+
 def _result(result: Any) -> dict[str, Any] | None:
     if result is None:
         return None
@@ -287,15 +303,17 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
             incident.status == IncidentStatus.RESOLVED for incident in incidents
         ),
         "incidents": [
-            serialize_incident(incident, services, reported_ticks.get(incident.id, 0),
-                               place_names.get(incident.location))
+            {**serialize_incident(incident, services, reported_ticks.get(incident.id, 0),
+                                  place_names.get(incident.location)),
+             "evidence": _incident_evidence(service, incident.id)}
             for incident in incidents
         ],
         "services": [
             serialize_service(service_, incidents_by_id, world.city, place_names.get(service_.location))
             for service_ in services
         ],
-        "roads": [{**serialize_road(road), "name": service.scenario.road_names.get(road.id, road.id)}
+        "roads": [{**serialize_road(road), "name": service.scenario.road_names.get(road.id, road.id),
+                   "evidence": _road_evidence(service, road)}
                   for road in world.city.roads] if world.city else [],
         "places": sorted(service.scenario.places),
         "priority_rule": service.planner.priority_rule,
@@ -319,8 +337,11 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
         "swarm": serialize_swarm(service.board),
         "models": service.hub.status(),
         "agents": serialize_agents(service),
-        "explanation": _result(service.explanations.get(current.id)) if current is not None else None,
-        "alerts": {plan_id: {"text": _result(alert["text"]), "graphic": _result(alert["graphic"])}
+        "explanation": ({**_result(service.explanations[current.id]),
+                         "unverified": service.unverified.get(current.id, [])}
+                        if current is not None and current.id in service.explanations else None),
+        "alerts": {plan_id: {"text": _result(alert["text"]), "graphic": _result(alert["graphic"]),
+                             "unverified": alert.get("unverified", [])}
                    for plan_id, alert in service.alerts.items()},
         "reports": [serialize_report(report) for report in reversed(service.reports)],
     }
