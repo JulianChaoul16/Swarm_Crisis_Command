@@ -1,4 +1,4 @@
-import type { ReportFields, WorldEvent, WorldState } from "./types";
+import type { GisFrame, ReportFields, WorldEvent, WorldState } from "./types";
 
 export class ApiError extends Error {
   constructor(
@@ -29,6 +29,7 @@ const post = <T>(path: string, body?: unknown) =>
 
 export const api = {
   state: () => request<WorldState>("/state"),
+  gisHistory: () => request<{ frames: GisFrame[] }>("/gis/history"),
   events: (limit = 200) => request<WorldEvent[]>(`/events?limit=${limit}`),
   reset: () => post<WorldState>("/reset"),
   startDemo: () => post<WorldState>("/demo/start"),

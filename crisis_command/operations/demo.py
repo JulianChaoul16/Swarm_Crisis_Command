@@ -279,6 +279,7 @@ class DemoRunner:
 
     def _gauge(self, event: dict[str, Any]) -> None:
         self.service.board.set_gauge({"value": event["value"], "trend": event["trend"],
+                                      "scenario_hour": event.get("scenario_hour"),
                                       "site": self.timeline["gauge"]["site"],
                                       "label": self.timeline["gauge_label"]}, "scenario value")
         self.service.propose()

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { GeoJSONSource, Map as MapLibreMap, Marker, StyleSpecification } from "maplibre-gl";
-import type { Incident, LngLat, Road, Service } from "@/lib/types";
+import type { GisFrame, Incident, LngLat, Road, Service, Zone } from "@/lib/types";
 
 // Without network access the road graph renders on a plain background. With it, the
 // basemap is Esri World Imagery satellite tiles of Richmond, dimmed so overlays read.
@@ -46,6 +46,11 @@ const KIND_COLOR = ["match", ["get", "kind"], ...Object.entries(UNIT_COLORS).fla
 // Dispatched units drive their route on the map. The pace is time-compressed for display;
 // arrival times in the plan come from the planner, not from this animation.
 const DISPLAY_METRES_PER_SECOND = 140;
+const ZONE_COLOR = [
+  "match", ["get", "type"],
+  "fire", ["match", ["get", "level"], "critical", "#dc2626", "high", "#ea580c", "#f59e0b"],
+  ["match", ["get", "level"], "severe", "#1d4ed8", "moderate", "#3b82f6", "#93c5fd"],
+] as unknown as string;
 
 export type MapData = {
   incidents: Pick<Incident, "id" | "kind" | "severity" | "severity_level" | "status" | "position">[];
@@ -55,6 +60,10 @@ export type MapData = {
   annotations?: { label: string; path: LngLat[] }[];
   // Flood-water masks (GeoJSON features) drawn as a blue overlay.
   floodMasks?: GeoJSON.Feature[];
+  // Affected-area zones (flood by percent, fire by severity); projected ones are dashed.
+  zones?: Zone[];
+  outages?: GisFrame["outages"];
+  facilities?: GisFrame["facilities"];
 };
 
 type Props = {
@@ -109,6 +118,13 @@ function staticGeoJson(data: MapData): Record<string, Collection> {
   return {
     [`${OWN}annotations`]: collection((data.annotations ?? []).map((item) => line(item.path, { label: item.label }))),
     [`${OWN}masks`]: collection(data.floodMasks ?? []),
+    [`${OWN}zones`]: collection((data.zones ?? []).map((zone) => ({
+      type: "Feature" as const,
+      geometry: { type: "Polygon" as const, coordinates: [zone.polygon] },
+      properties: { id: zone.id, type: zone.type, level: zone.level, projected: zone.projected },
+    }))),
+    [`${OWN}outages`]: collection((data.outages ?? []).map((o) => point(o.position, { id: o.incident_id }))),
+    [`${OWN}facilities`]: collection((data.facilities ?? []).map((f) => point(f.position, { name: f.name, type: f.type }))),
     [`${OWN}roads`]: collection(data.roads.map((road) => line(road.path, { id: road.id, closed: road.is_closed }))),
     [`${OWN}proposed`]: collection(
       (data.proposedRoutes ?? [])
@@ -124,10 +140,34 @@ function staticGeoJson(data: MapData): Record<string, Collection> {
 }
 
 function addOwnLayers(map: MapLibreMap) {
-  for (const name of ["masks", "annotations", "roads", "routes", "proposed", "incidents", "services"]) {
+  for (const name of ["zones", "masks", "annotations", "roads", "routes", "proposed", "incidents", "outages", "facilities", "services"]) {
     if (!map.getSource(`${OWN}${name}`)) map.addSource(`${OWN}${name}`, { type: "geojson", data: collection([]) });
   }
   const layers: Parameters<MapLibreMap["addLayer"]>[0][] = [
+    // Affected areas: flood zones (blue by depth of cover) and fire zones (orange/red).
+    {
+      id: `${OWN}zones`,
+      type: "fill",
+      source: `${OWN}zones`,
+      paint: {
+        "fill-color": ZONE_COLOR,
+        "fill-opacity": ["case", ["get", "projected"], 0.2, 0.36],
+      },
+    },
+    {
+      id: `${OWN}zones-edge`,
+      type: "line",
+      source: `${OWN}zones`,
+      filter: ["==", ["get", "projected"], false],
+      paint: { "line-color": ZONE_COLOR, "line-width": 1.5, "line-opacity": 0.9 },
+    },
+    {
+      id: `${OWN}zones-projected-edge`,
+      type: "line",
+      source: `${OWN}zones`,
+      filter: ["==", ["get", "projected"], true],
+      paint: { "line-color": "#e0f2fe", "line-width": 2, "line-dasharray": [2, 2] },
+    },
     {
       id: `${OWN}masks`,
       type: "fill",
@@ -220,6 +260,24 @@ function addOwnLayers(map: MapLibreMap) {
         "circle-color": ["match", ["get", "status"], "open", "#ef4444", "assigned", "#f59e0b", "#94a3b8"],
         "circle-opacity": 0.25,
         "circle-stroke-color": ["match", ["get", "status"], "open", "#ef4444", "assigned", "#f59e0b", "#94a3b8"],
+        "circle-stroke-width": 3,
+      },
+    },
+    // Reported power outages and facilities (hospitals, shelters).
+    {
+      id: `${OWN}outages`,
+      type: "circle",
+      source: `${OWN}outages`,
+      paint: { "circle-radius": 8, "circle-color": "#facc15", "circle-stroke-color": "#111827", "circle-stroke-width": 2.5 },
+    },
+    {
+      id: `${OWN}facilities`,
+      type: "circle",
+      source: `${OWN}facilities`,
+      paint: {
+        "circle-radius": 9,
+        "circle-color": ["match", ["get", "type"], "hospital", "#f8fafc", "#a7f3d0"],
+        "circle-stroke-color": ["match", ["get", "type"], "hospital", "#dc2626", "#047857"],
         "circle-stroke-width": 3,
       },
     },
@@ -411,6 +469,19 @@ export default function CrisisMap({ data, basemap, onBasemapError, selectedRoadI
     for (const [key, names] of unitsAt) {
       wanted.add(`s:${key}`);
       label(`s:${key}`, key.split(",").map(Number) as LngLat, names.join(" · "), "unit");
+    }
+    for (const facility of data.facilities ?? []) {
+      const key = `f:${facility.name}`;
+      wanted.add(key);
+      const detail = facility.type === "hospital"
+        ? `beds: ${facility.beds_available ?? facility.beds_source ?? "unknown"}`
+        : `capacity: ${facility.capacity ?? facility.capacity_source ?? "unknown"}`;
+      label(key, facility.position, `${facility.type === "hospital" ? "✚" : "⌂"} ${facility.name} · ${detail}`, "facility");
+    }
+    for (const outage of data.outages ?? []) {
+      const key = `o:${outage.incident_id}`;
+      wanted.add(key);
+      label(key, outage.position, "⚡ outage reported", "outage", `${outage.kind} (${outage.source})`);
     }
     for (const annotation of data.annotations ?? []) {
       const middle = annotation.path[Math.floor(annotation.path.length / 2)] ?? annotation.path[0];

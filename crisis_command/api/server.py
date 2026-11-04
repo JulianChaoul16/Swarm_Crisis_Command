@@ -14,7 +14,8 @@ from pydantic import BaseModel, Field
 from ..operations import CommandError, StaleApprovalError
 from .serializers import serialize_event, serialize_state
 from ..meta_api import ROOT, hub_from_env, setting
-from .session import DEMO_ENABLED, connectors, demo, service
+from .gis import gis_frame, roster
+from .session import DEMO_ENABLED, connectors, demo, gis_history, service
 
 app = FastAPI(title="Crisis Command API")
 
@@ -56,7 +57,10 @@ def value_error(_: Request, error: ValueError) -> JSONResponse:
 
 def _state() -> dict[str, Any]:
     with service._lock:
+        frame = gis_frame(service)
         return {**serialize_state(service), "demo": demo.status() if demo else None,
+                "gis": {**frame, "projection": gis_history.projection(frame)},
+                "roster": roster(service),
                 "mode": {"demo_enabled": DEMO_ENABLED,
                          "connectors": [{"name": name, **status} for name, status in connectors.status.items()]
                                        or [{"name": c.name, "received": 0, "error": None} for c in connectors.connectors]}}
@@ -69,8 +73,15 @@ def _require_demo():
 
 
 @app.on_event("startup")
-def _start_connectors() -> None:
+def _start_background() -> None:
     connectors.start()
+    gis_history.start()
+
+
+@app.get("/api/gis/history")
+def gis_history_frames() -> dict[str, Any]:
+    """Recorded map frames for the timeline scrubber (oldest first, last 2 hours)."""
+    return {"frames": gis_history.history()}
 
 
 @app.get("/api/state")

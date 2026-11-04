@@ -102,6 +102,85 @@ export type Report = {
   decision_reason: string | null;
 };
 
+export type Zone = {
+  id: string;
+  type: "flood" | "fire";
+  place: string | null;
+  percent?: number;
+  level: string;
+  source: string;
+  projected: boolean;
+  polygon: LngLat[];
+  incident_id?: string;
+};
+
+export type GisFrame = {
+  at: string;
+  run_id: string;
+  zones: Zone[];
+  outages: { incident_id: string; kind: string; place: string | null; position: LngLat; source: string }[];
+  facilities: {
+    name: string;
+    type: "hospital" | "shelter";
+    position: LngLat;
+    beds_available?: number | null;
+    beds_source?: string;
+    capacity?: number | null;
+    capacity_source?: string;
+  }[];
+  incidents: {
+    id: string;
+    kind: string;
+    place: string | null;
+    position: LngLat;
+    status: string;
+    severity: string;
+    severity_level: number;
+    people: number | null;
+  }[];
+  units: {
+    id: string;
+    name: string;
+    kind: string;
+    position: LngLat;
+    available: boolean;
+    assigned_incident_id: string | null;
+    position_source: string;
+  }[];
+  closed_roads: { id: string; name: string; path: LngLat[] }[];
+  gauge: { value?: number; trend?: string; label?: string; scenario_hour?: number } | null;
+  affected: { people_reported: number; incidents: number; incidents_without_count: number };
+  layer_sources: Record<string, string>;
+};
+
+export type Projection = {
+  available: boolean;
+  reason?: string;
+  note: string;
+  rate_ft_per_h?: number;
+  basis?: string;
+  trigger_ft?: number;
+  frames: { hours: number; gauge_ft: number; above_trigger: boolean; zones: Zone[] }[];
+};
+
+export type Roster = {
+  units: {
+    id: string;
+    name: string;
+    kind: string;
+    capabilities: string[];
+    capacity: number | null;
+    status: string;
+    assignment: { incident_id: string; kind: string; place: string | null } | null;
+    location: string | null;
+    position: LngLat;
+    position_source: string;
+    messages: { at: string; plan_id: string; from: string; text: string }[];
+  }[];
+  broadcasts: { plan_id: string; english: string; spanish: string; source: string }[];
+  note: string;
+};
+
 export type DemoStatus = {
   running: boolean;
   paused: boolean;
@@ -134,6 +213,8 @@ export type WorldState = {
   models: { model: string; status: string; detail: string }[];
   agents: Agent[];
   demo: DemoStatus | null;
+  gis: GisFrame & { projection: Projection };
+  roster: Roster;
   mode: { demo_enabled: boolean; connectors: { name: string; received: number; error: string | null }[] };
   explanation: (ModelResult<{ why: string[]; tradeoff: string }> & { unverified: string[] }) | null;
   alerts: Record<string, {

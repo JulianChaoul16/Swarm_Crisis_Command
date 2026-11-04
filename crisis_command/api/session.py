@@ -11,6 +11,7 @@ so plans never wait for it.
 """
 
 from ..connectors import ConnectorRunner, connectors_from_env
+from .gis import GisHistory
 from ..meta_api import setting
 from ..operations import DEMO_FLOOD_SCENARIO, LIVE_RICHMOND_SCENARIO, CommandService
 from ..operations.demo import DemoRunner
@@ -29,6 +30,9 @@ def _deliver(report) -> None:
 def _connector_error(name: str, error: str) -> None:
     service.board.log("Intake Agent", "connector", f"{name}: {error}")
 
+
+# Map history for the timeline scrubber (last 2 hours, a frame whenever the map changes).
+gis_history = GisHistory(service)
 
 connectors = ConnectorRunner(
     connectors_from_env(setting), _deliver,

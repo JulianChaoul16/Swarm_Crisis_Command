@@ -2,10 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CrisisMap, { type MapData } from "@/components/CrisisMap";
+import { ALL_LAYERS, AffectedCard, LayerControl, ScrubBanner, Scrubber, type Layers, type Scrub } from "@/components/Gis";
 import { ApiError, api } from "@/lib/api";
-import type { Agent, Incident, Proposal, Swarm, WorldState, DemoStatus } from "@/lib/types";
+import type { Agent, GisFrame, Incident, Proposal, Swarm, WorldState, DemoStatus } from "@/lib/types";
 
-// One screen, three panels: incident queue | map | recommendation + activity.
+// Three tabs. Operations map: incident queue | multi-layer map with a time scrubber |
+// recommendation + activity. Personnel: the roster and the orders sent to each unit.
+// Agents: each agent's decisions and the swarm's discussion per incident.
 // Workflow: Detect -> Prioritize -> Decide -> Dispatch -> Communicate.
 
 // Ranked by the swarm's consensus severity (the same order the solver plans in).
@@ -52,12 +55,12 @@ function AgentStrip({ agents, open, onOpen }: { agents: Agent[]; open: string | 
   );
 }
 
-function AgentPanel({ agent, onClose }: { agent: Agent; onClose: () => void }) {
+function AgentPanel({ agent, onClose }: { agent: Agent; onClose?: () => void }) {
   return (
-    <div className="agent-panel" role="dialog" aria-label={agent.name}>
+    <div className={onClose ? "agent-panel" : "agent-panel inline"} role={onClose ? "dialog" : undefined} aria-label={agent.name}>
       <div className="agent-head">
         <h3>{agent.name}</h3>
-        <button className="ghost" onClick={onClose}>Close</button>
+        {onClose && <button className="ghost" onClick={onClose}>Close</button>}
       </div>
       <p>{agent.role}</p>
       <div className="rec-label">Models</div>
@@ -478,11 +481,110 @@ function ConnectCorner() {
   );
 }
 
+/** Personnel: every unit, its status, and the orders dispatch has sent it. */
+function PersonnelTab({ world }: { world: WorldState }) {
+  const { units, broadcasts, note } = world.roster;
+  return (
+    <main className="tab-page">
+      <p className="muted">{note}</p>
+      <div className="roster">
+        {units.map((unit) => (
+          <article key={unit.id} className={`unit-card status-${unit.status.replace(/\s+/g, "-")}`}>
+            <header>
+              <i className={`dot kind-${unit.kind}`} /> <b>{unit.name}</b>
+              <span className={`unit-status ${unit.status.replace(/\s+/g, "-")}`}>{unit.status}</span>
+            </header>
+            <div className="muted small">
+              {unit.capabilities.join(", ")}{unit.capacity ? ` · carries up to ${unit.capacity}` : ""} · at {unit.location ?? "en route"}
+              <span title={unit.position_source}> (simulated position)</span>
+            </div>
+            {unit.assignment && (
+              <div className="unit-assignment">Assigned: <b>{unit.assignment.place ?? unit.assignment.incident_id}</b> · {unit.assignment.kind}</div>
+            )}
+            <div className="rec-label">Orders received ({unit.messages.length})</div>
+            <ol className="feed">
+              {unit.messages.map((m, i) => (
+                <li key={`${m.plan_id}${i}`}>
+                  <span className="t">[{time(m.at)}]</span> <span className="src">{m.plan_id} · {m.from}</span> {m.text}
+                </li>
+              ))}
+              {!unit.messages.length && <li className="muted">No orders yet. Orders appear when a dispatcher approves a plan.</li>}
+            </ol>
+          </article>
+        ))}
+      </div>
+      <h2>Public broadcasts</h2>
+      {broadcasts.length ? broadcasts.map((b) => (
+        <div key={b.plan_id} className="alert">
+          <div className="rec-label">{b.plan_id} <Pill label={b.source} /></div>
+          <p><b>EN</b> {b.english}</p>
+          <p><b>ES</b> {b.spanish}</p>
+        </div>
+      )) : <p className="muted">No public alerts yet.</p>}
+    </main>
+  );
+}
+
+/** Agents: what each agent decided, and how the swarm argued each incident's severity. */
+function AgentsTab({ world, queue, focus }: { world: WorldState; queue: Incident[]; focus: string | null }) {
+  const agents = focus ? world.agents.filter((a) => a.name === focus) : world.agents;
+  return (
+    <main className="tab-page">
+      <h2>Swarm discussion by incident</h2>
+      <p className="muted">
+        Each agent scores every incident independently (two AI estimates and one computed check); the consensus is the
+        median pulled halfway toward the highest score. A dispatcher approves every plan.
+      </p>
+      <div className="discussion">
+        {queue.map((incident) => {
+          const entry = world.swarm.incidents[incident.id];
+          return (
+            <article key={incident.id} className={`card sev-${incident.severity}`}>
+              <header>
+                <b>{incident.place ?? incident.id}</b> · {incident.kind}
+                <span className="muted"> · {incident.id}</span>
+                {entry?.final != null && <span className="final"> = consensus <b>{entry.final}</b> est.{entry.agreement != null ? ` · ${Math.round(entry.agreement)}% agreement` : ""}</span>}
+              </header>
+              {AGENTS.map(([name, label]) => {
+                const vote = entry?.votes[name];
+                return (
+                  <div key={name} className="argument">
+                    <span className="argument-who">{label}</span>
+                    <b className="argument-score">{vote ? vote.score : "…"}</b>
+                    <span>
+                      {vote ? vote.reasons.join(" · ") : "waiting"}
+                      {vote && <span className="muted small"> ({vote.source})</span>}
+                    </span>
+                  </div>
+                );
+              })}
+            </article>
+          );
+        })}
+        {!queue.length && <p className="muted">No open incidents to discuss.</p>}
+      </div>
+      <h2>{focus ? focus : "All agents"}</h2>
+      <div className="agent-grid">
+        {agents.map((agent) => <AgentPanel key={agent.name} agent={agent} />)}
+      </div>
+      <h2>Swarm activity</h2>
+      <ActivityFeed activity={world.swarm.activity} />
+    </main>
+  );
+}
+
 export default function CommandScreen() {
   const [world, setWorld] = useState<WorldState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [agentOpen, setAgentOpen] = useState<string | null>(null);
+  const [tab, setTab] = useState<"map" | "personnel" | "agents">("map");
+  const [layers, setLayers] = useState<Layers>(ALL_LAYERS);
+  const [scrub, setScrub] = useState<Scrub>({ kind: "live" });
+  const [frames, setFrames] = useState<GisFrame[]>([]);
+  const loadHistory = useCallback(() => {
+    api.gisHistory().then((h) => setFrames(h.frames)).catch(() => null);
+  }, []);
 
   const refresh = useCallback(async () => {
     setWorld(await api.state());
@@ -522,18 +624,53 @@ export default function CommandScreen() {
   }, [demoRunning, liveIntake, refresh]);
 
   const queue = useMemo(() => (world ? rank(world.incidents, world.swarm) : []), [world]);
-  const mapData: MapData | null = useMemo(
-    () =>
-      world && {
-        incidents: queue.map((incident) => ({ ...incident, kind: incident.place ? `${incident.place}: ${incident.kind}` : incident.kind })),
-        services: world.services,
-        roads: world.roads,
-        annotations: world.annotations,
-        proposedRoutes: world.current_plan?.status === "proposed" ? world.current_plan.assignments : [],
-        floodMasks: world.swarm.imagery.flatMap((image) => image.map_features ?? []),
-      },
-    [world, queue],
-  );
+  // What the map shows: live state, a recorded frame (scrubbed back) or a projection hour.
+  const pastFrame = scrub.kind === "past" ? frames[scrub.index] ?? null : null;
+  const futureFrame = scrub.kind === "future" && world ? world.gis.projection.frames.find((f) => f.hours === scrub.hours) ?? null : null;
+  const shownFrame: GisFrame | null = pastFrame ?? world?.gis ?? null;
+  const mapData: MapData | null = useMemo(() => {
+    if (!world) return null;
+    const zones = (futureFrame?.zones ?? shownFrame?.zones ?? []).filter((z) => (z.type === "flood" ? layers.flood : layers.fire));
+    const closed = new Set((shownFrame?.closed_roads ?? []).map((r) => r.id));
+    const base: MapData = pastFrame
+      ? {
+          incidents: pastFrame.incidents.map((i) => ({
+            id: i.id, kind: i.place ? `${i.place}: ${i.kind}` : i.kind, severity: i.severity as Incident["severity"],
+            severity_level: i.severity_level, status: i.status as Incident["status"], position: i.position,
+          })),
+          services: pastFrame.units.map((u) => ({
+            id: u.id, name: u.name, capabilities: [u.kind], available: u.available, position: u.position, route: null,
+          })),
+          roads: world.roads.map((r) => ({ ...r, is_closed: closed.has(r.id) })),
+          annotations: world.annotations,
+          proposedRoutes: [],
+        }
+      : {
+          incidents: queue.map((incident) => ({ ...incident, kind: incident.place ? `${incident.place}: ${incident.kind}` : incident.kind })),
+          services: world.services,
+          roads: world.roads,
+          annotations: world.annotations,
+          proposedRoutes: !futureFrame && world.current_plan?.status === "proposed" ? world.current_plan.assignments : [],
+          floodMasks: layers.flood && !futureFrame ? world.swarm.imagery.flatMap((image) => image.map_features ?? []) : [],
+        };
+    return {
+      ...base,
+      services: layers.units ? base.services : [],
+      proposedRoutes: layers.units ? base.proposedRoutes : [],
+      roads: layers.roads ? base.roads : base.roads.map((r) => ({ ...r, is_closed: false })),
+      zones,
+      outages: layers.power ? shownFrame?.outages ?? [] : [],
+      facilities: layers.hospitals ? shownFrame?.facilities ?? [] : [],
+    };
+  }, [world, queue, layers, pastFrame, futureFrame, shownFrame]);
+
+  // Keep the scrubber's history fresh while the map tab is open.
+  useEffect(() => {
+    if (tab !== "map") return;
+    loadHistory();
+    const timer = setInterval(loadHistory, 5000);
+    return () => clearInterval(timer);
+  }, [tab, loadHistory]);
 
   return (
     <div className="screen">
@@ -562,29 +699,48 @@ export default function CommandScreen() {
           one is read by the Intake Agent, scored by the swarm and planned; a dispatcher approves every plan.
         </div>
       )}
-      {world && <AgentStrip agents={world.agents} open={agentOpen} onOpen={setAgentOpen} />}
-      {world && agentOpen && world.agents.find((a) => a.name === agentOpen) && (
-        <AgentPanel agent={world.agents.find((a) => a.name === agentOpen)!} onClose={() => setAgentOpen(null)} />
+      {world && (
+        <nav className="tabs" role="tablist">
+          {([["map", "Operations map"], ["personnel", `Personnel (${world.roster.units.length})`], ["agents", "Agents & decisions"]] as const).map(([key, label]) => (
+            <button key={key} role="tab" aria-selected={tab === key} className={tab === key ? "tab on" : "tab"} onClick={() => setTab(key)}>
+              {label}
+            </button>
+          ))}
+          {tab === "agents" && <AgentStrip agents={world.agents} open={agentOpen} onOpen={setAgentOpen} />}
+        </nav>
       )}
       {error && <div className="banner">{error}</div>}
 
-      {world && (
+      {world && tab === "personnel" && <PersonnelTab world={world} />}
+      {world && tab === "agents" && <AgentsTab world={world} queue={queue} focus={agentOpen} />}
+
+      {world && tab === "map" && (
         <main className="panels">
           <section className="panel left">
             <h2>Swarm Incident Queue</h2>
+            {shownFrame && <AffectedCard frame={shownFrame} label={pastFrame ? "recorded" : "now"} />}
             <Transcripts swarm={world.swarm} />
             <PhotoCard swarm={world.swarm} />
             <IncidentQueue incidents={queue} focus={queue[0]?.id ?? null} swarm={world.swarm} />
           </section>
 
           <section className="panel center">
-            <CrisisMap data={mapData} basemap />
+            <div className="map-wrap">
+              <CrisisMap data={mapData} basemap />
+              <LayerControl layers={layers} onChange={setLayers} sources={world.gis.layer_sources} />
+              <ScrubBanner scrub={scrub} frames={frames} projection={world.gis.projection} />
+            </div>
+            <Scrubber frames={frames} projection={world.gis.projection} scrub={scrub} onScrub={setScrub} onOpen={loadHistory} />
             <VisionBadge swarm={world.swarm} />
             <div className="legend">
               <span><i className="ring open" /> Needs units</span>
               <span><i className="ring assigned" /> Dispatched</span>
               <span><i className="line proposed" /> Recommended route</span>
               <span><i className="line closed" /> Road closed</span>
+              <span><i className="swatch swatch-flood" /> Flood (darker = more cover)</span>
+              <span><i className="swatch swatch-fire" /> Fire area</span>
+              <span><i className="dot outage" /> Outage reported</span>
+              <span><i className="dot hospital" /> Hospital (beds: no feed)</span>
             </div>
           </section>
 

@@ -1,0 +1,52 @@
+{
+ "function": "recommend",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T17:07:22.395454+00:00",
+ "input": {
+  "recommended": {
+   "incident": "incident-9",
+   "type": "residents trapped by rising water",
+   "location": "Riverside Apartments",
+   "people_at_risk": 5,
+   "units": [
+    "Swift Water Team 1 (ETA 0.0 min)",
+    "Ambulance 2 (ETA 0.9 min)"
+   ]
+  },
+  "swarm_votes": {
+   "Vision Agent": {
+    "score": 86,
+    "reasons": [
+     "80% of the area around it is flooded"
+    ]
+   },
+   "Access check": {
+    "score": 89,
+    "reasons": [
+     "nearest medical unit 0.9 min away",
+     "nearest rescue unit 0.0 min away",
+     "water still rising around access routes",
+     "Per Sample Richmond Flood Response Plan (exercise document, not an official City of Richmond plan), 3.1 Life safety first: Rescue of people in moving water, trapped on roofs or in vehicles takes priority over property and infrastructure incidents."
+    ]
+   },
+   "Intake Agent": {
+    "score": 95,
+    "reasons": [
+     "trapped by rising water, reported critical",
+     "5 people at Riverside Apartments need rescue and medical"
+    ]
+   }
+  },
+  "consensus": 92,
+  "unmet": []
+ },
+ "output": {
+  "tradeoff": "Commits Swift Water Team 1 (ETA 0.0 min) and Ambulance 2 (ETA 0.9 min) to this rescue, with any other delay unknown from the facts.",
+  "why": [
+   "5 people trapped by rising water at Riverside Apartments, reported critical [Intake Agent]",
+   "80% of the area around it is flooded [Vision Agent]",
+   "Nearest rescue unit 0.0 min away and medical unit 0.9 min away with life safety first priority for rescue [Access check]"
+  ]
+ }
+}

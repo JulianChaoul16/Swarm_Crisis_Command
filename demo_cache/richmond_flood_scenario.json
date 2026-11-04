@@ -5,7 +5,8 @@
  "gauge": {
   "site": "James River at Westham (USGS 02037500)",
   "value": 11.2,
-  "trend": "rising"
+  "trend": "rising",
+  "scenario_hour": 0
  },
  "initial_incidents": "5, seeded in crisis_command/operations/scenario.py (build_richmond_demo_world)",
  "events": [
@@ -45,7 +46,8 @@
    "label": "River gauge update",
    "value": 11.8,
    "trend": "rising",
-   "explain": "The river gauge rises to 11.8 ft, near the 12 ft sample trigger. Logistics re-votes the low-lying incidents and the plan is recomputed."
+   "explain": "The river gauge rises to 11.8 ft, near the 12 ft sample trigger. Logistics re-votes the low-lying incidents and the plan is recomputed.",
+   "scenario_hour": 1
   },
   {
    "at": 10,
@@ -72,5 +74,6 @@
  "outro": "Your turn. Read the recommendation on the right (what, why, confidence, tradeoff) and press Approve & Dispatch. The English and Spanish public alert appears below it. The demo then keeps going: new reports keep arriving.",
  "approved": "Approved: units are dispatched (they move on the map) and the alert is out. Operations continue: more reports are on the way.",
  "outro_2": "Your turn again. A freed team can now reach the waiting call. Review the new recommendation and press Approve & Dispatch.",
- "final": "That is the full loop: detect, prioritize, decide, dispatch, communicate, and again when new information arrives. Press RESTART DEMO to run it again."
+ "final": "That is the full loop: detect, prioritize, decide, dispatch, communicate, and again when new information arrives. Press RESTART DEMO to run it again.",
+ "gauge_time_note": "Each gauge reading carries the scenario hour it represents; the 50-second demo compresses about an hour of river rise."
 }
