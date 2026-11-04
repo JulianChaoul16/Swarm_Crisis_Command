@@ -1,0 +1,18 @@
+{
+ "function": "triage",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T00:06:59.947114+00:00",
+ "input": {
+  "text": "PD unit 12: River Rd closed at the old mill, water over road. Mill Rd still open."
+ },
+ "output": {
+  "reasons": [
+   "Road closure with water over road",
+   "No persons at risk reported"
+  ],
+  "severity_score": 20,
+  "summary": "River Rd closed at old mill due to water over road",
+  "vulnerable": false
+ }
+}

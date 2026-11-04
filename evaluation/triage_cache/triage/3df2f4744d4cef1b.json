@@ -1,0 +1,18 @@
+{
+ "function": "triage",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T00:07:04.051171+00:00",
+ "input": {
+  "text": "EOC update 13:40: Main St bridge reopened to emergency vehicles only. Upriver bridge remains closed."
+ },
+ "output": {
+  "reasons": [
+   "No immediate risk to life reported",
+   "Infrastructure status update only"
+  ],
+  "severity_score": 10,
+  "summary": "Main St bridge partially reopened, upriver bridge closed",
+  "vulnerable": false
+ }
+}

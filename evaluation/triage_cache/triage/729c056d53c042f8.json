@@ -1,0 +1,18 @@
+{
+ "function": "triage",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T00:07:01.766372+00:00",
+ "input": {
+  "text": "Two guys in a canoe flipped near Pine market, holding onto a tree, current is strong"
+ },
+ "output": {
+  "reasons": [
+   "Holding onto tree in water",
+   "Strong current"
+  ],
+  "severity_score": 90,
+  "summary": "Two people in water after canoe flip near Pine market",
+  "vulnerable": false
+ }
+}

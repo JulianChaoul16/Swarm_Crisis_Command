@@ -1,141 +1,195 @@
-# Crisis Command
+# Crisis Command Swarm
 
-Adaptive AI coordination for a changing world. A swarm of specialist agents helps emergency
-operations managers see how a disruption breaks a response plan, then proposes a feasible
-alternative for human approval. Submission for the Meta AI Developer Hackathon.
+**A human-led agent swarm for Richmond flood operations. The swarm triages, humans decide.**
 
-> **Simulation only.** Crisis Command is an exercise and decision-support prototype. All
-> incidents, resources, roads, and outcomes are synthetic. The map is an illustrative graph on
-> a Richmond-inspired grid, not a validated representation of Richmond roads or emergency
-> services. It performs no real dispatch and is not a certified emergency system.
+> **Simulation only.** All incidents, units, gauge readings, imagery and outcomes are
+> synthetic. Street geometry is real (OpenStreetMap), but the response network, fleet and
+> scenario are invented for this exercise. Nothing is dispatched. This is not a certified
+> emergency system.
 
-## The problem
+## Who it is for
 
-Municipal emergency planners, campus emergency-management teams, and exercise organizers
-juggle several missions at once. When a bridge closes, they need to know which missions it
-breaks, what the feasible alternatives are, and which needs can no longer be met, before
-they commit anyone.
+An Emergency Operations Manager in Richmond, VA during a James River / Shockoe Bottom flash
+flood. Reports arrive as messy 911 calls, photos and radio traffic; several incidents compete
+for a few boat teams; roads close while units are moving. The manager has to make the first
+critical decision fast, and be able to defend it.
 
-## What it does
+**One workflow:** Detect → Prioritize → Decide → Dispatch → Communicate.
 
-- **Report intake with provenance.** Each report keeps its source, receipt time, extracted
-  fields, and explicit unknowns. Incomplete or invalid reports are held for clarification,
-  and nothing changes the world until an operator confirms a complete report. A report that a
-  bridge *might* be closed cannot close it silently.
-- **Three specialists, one authority.** Situation, Resources, and Routing specialists run
-  concurrently over an immutable world snapshot with a shared timeout. Their graph and
-  inventory tools are deterministic. Agents return findings; only the command service writes
-  state.
-- **Deterministic planning and feasibility.** Routes are graph shortest paths over open
-  roads. Assignments respect capability, capacity, availability, and one active mission per
-  resource, served in a stated, configurable priority order. Every proposal records
-  per-rule constraint checks, and every unmet need explains its tradeoff.
-- **Closure-driven replanning.** A confirmed closure releases committed missions that lost
-  their route and recomputes the whole plan. The diff explains each change and cites the
-  report behind it.
-- **Human approval bound to a version.** Approval must name the current plan and the world
-  version it was computed against. A stale plan is refused and recomputed. Each commit writes
-  events, plan and approval records, and a world snapshot to SQLite in one transaction.
-- **Seeded reset and recorded replay.** Reset restores the exact seed under a new run
-  identity and discards in-flight results. Replay reads a past run back from the SQLite log
-  under a RECORDED REPLAY banner.
+## Impact
 
-The AI interprets and explains. Deterministic software computes routes, assignments, and
-feasibility, and commits state. Humans approve dispatch-like transitions. See
-[docs/architecture.md](docs/architecture.md).
+- **Goal:** the first critical decision in about 90 seconds. Our brief compares this with
+  47 minutes today; we have no source or measurement for that 47-minute baseline, so we do
+  not claim it.
+- **Measured (live, Muse Spark 1.3, 3 trials):** a raw 911 transcript became the top-ranked,
+  explained recommendation, ready for the operator's Approve click, in **18–22 seconds**
+  (7.6–10.8 s to read the report, about 11 s for the swarm vote, exact plan and
+  explanation).
+- **Measured (demo replay):** the whole seeded timeline, from five open incidents to a
+  re-ranked plan after a new rescue and a road closure, runs in about 50 seconds with no
+  typing and no network.
 
-## Model status
+The operator still decides: nothing is dispatched without **Approve & Dispatch**.
 
-The app calls Meta's **Muse Spark 1.3** through the Responses API
-(`crisis_command/agents/model_client.py`). Every call uses a strict JSON schema and
-`store: false`.
+## What you see
 
-- **Report intake**: the model turns free-text reports, in any language, into structured
-  fields. Its schema only allows places, roads and capabilities that exist in the scenario.
-  Software validation and operator confirmation still gate every world change.
-- **Specialists** (Situation, Resources, Routing): each runs deterministic tools first. The
-  model then interprets those results and flags missing information. The agents never write
-  world state.
-- **Planning** stays deterministic. Assignment is solved exactly; the model never chooses
-  units.
+One screen, three panels:
 
-The evidence for this split is the measured comparison of a person, algorithms and the model
-on the `findings` branch (`findings/README.md`).
+| Left: Swarm Incident Queue | Center: Live map of Richmond | Right: Recommendation + Activity |
+|---|---|---|
+| Ranked by swarm consensus; each card shows `Triage 95 · Vision 90 · Logistics 100 = Final 98` with each vote's source | Satellite basemap, incident rings, unit dots, recommended routes, closed roads in black, blue flood-water mask | RECOMMEND / WHY / CONFIDENCE (vote agreement) / TRADEOFF, Approve & Dispatch, then the English and Spanish public alert; below, a live log of every agent action |
 
-To configure, copy [`.env.example`](.env.example) to `.env` and set `META_API_KEY`,
-`META_MODEL` and `META_BASE_URL`. Without them, model steps report `unavailable`, and no
-canned or simulated AI output is shown. Tests and `evaluation/run_eval.py` never call the
-model.
+Every AI output carries a model pill showing where it really came from: `live`, `cache`
+(a recorded real response), `local` (runs on this machine) or `sample` (hand-made data for a
+model this account cannot reach).
 
-## Quickstart
+## How it works: a swarm on a shared board
 
-Requirements: Python 3.10+ and Node.js 20+. From the repository root:
+```mermaid
+flowchart LR
+  subgraph Inputs
+    A[911 audio] --> L[Listener<br/>Muse Voice Transcribe]
+    P[Citizen photo] --> V1[Vision<br/>SAM 3.1 + Muse Wonder]
+    G[River gauge]
+  end
+  L --> R[Local PII redaction<br/>Muse Spark Open role] --> X[Report reader<br/>Muse Spark]
+  X -->|confirmed incident| S[spawn_incident_swarm]
+  subgraph Board[IncidentBoard + EventBus]
+    T[Triage Agent<br/>Muse Spark]
+    VA[Vision Agent]
+    LA[Logistics Agent<br/>rules + Muse Glimmer retrieval]
+    C((Consensus vote))
+    T --> C
+    VA --> C
+    LA --> C
+  end
+  S --> T & VA & LA
+  V1 -->|flood cover, road impassable| Board
+  G -->|gauge.changed| LA
+  C -->|priority| O[Exact solver<br/>routing + assignment]
+  O --> K[Command Agent<br/>Muse Spark: why + tradeoff]
+  K --> H{Operator<br/>Approve}
+  H --> M[Comms Agent<br/>Muse Spark: EN + ES alert]
+```
+
+- **IncidentBoard** (`crisis_command/swarm/board.py`) is one shared store; agents write votes
+  and observations to it, and the **EventBus** tells the others. There is no fixed pipeline:
+  a flood-cover change makes Vision and Logistics re-vote, a road closure or gauge change
+  makes Logistics re-vote, and any consensus change re-plans.
+- **`spawn_incident_swarm(incident_id)`** runs Triage, Vision and Logistics in parallel for
+  one incident.
+- **Consensus, not one model:** final severity is the median vote pulled halfway toward the
+  highest (82, 96, 91 → 94), so one alarmed agent raises priority but cannot set it alone.
+  CONFIDENCE is how closely the three votes agree, labelled as agreement, not a probability.
+- **Deterministic where it matters:** routes, unit assignment (an exact integer program),
+  capacity, availability and feasibility checks are code, not model output. The AI reads,
+  scores and explains; the solver decides who goes where; the human approves.
+- **Agents never write world state.** Only the command service commits changes, and approval
+  is bound to the exact plan and world version.
+
+## Models
+
+All model calls live in one file, [`crisis_command/meta_api.py`](crisis_command/meta_api.py),
+with a cached fallback for each.
+
+| Agent | Model (brief) | What runs today | Status |
+|---|---|---|---|
+| Listener | Muse Voice Transcribe | Sample transcript for the demo call | **sample**: no transcription endpoint configured |
+| Triage | Muse Spark (API) | Severity score, vulnerability, reasons from the report | **live** (recorded for demo replay) |
+| Triage (privacy) | Muse Spark Open (local) | Rule-based redaction of names, phones, emails on this machine before any cloud call | **local stand-in**: open weights not installed |
+| Report reader | Muse Spark | Messy text → strict JSON (type, location, people, needs) against the scenario's places and roads | **live** (recorded) |
+| Vision | SAM 3.1 + Muse Wonder | Flood mask and depth/passability for the demo photo | **sample**: hand-made mask (Dock St geometry, buffered) and estimate, each labelled "not model output" |
+| Logistics | Muse Glimmer (local RAG) | Rule-based access scoring plus passages retrieved locally from a sample knowledge base, cited | **local stand-in** for retrieval; generation not installed |
+| Command | Muse Spark | WHY and TRADEOFF for the solver's recommendation, from the agents' evidence | **live** (recorded) |
+| Comms | Muse Spark + Muse Image | English and Spanish alert after approval | Spark **live** (recorded); Muse Image **not connected**: no graphic is generated, and the UI says so |
+
+**Record and replay.** In live mode every Muse Spark response is saved under
+`demo_cache/responses/`. START DEMO SCENARIO replays only those recordings, so the demo is
+reliable offline and every answer in it is a real model answer. If a live call fails, the
+hub uses the recording, then rules, and logs the fallback to the activity feed. If nothing
+is recorded, the report is shown as unread rather than invented.
+
+**Sample knowledge base.** `demo_cache/knowledge/` holds a flood response plan, shelter list
+and gauge triggers written for this exercise. They are marked as exercise documents, not
+City of Richmond material; citations say "Sample Richmond Flood Response Plan".
+
+## Evaluation
+
+**Triage Agent on 20 sample incidents** (`python -m evaluation.triage_eval`; recordings in
+`evaluation/triage_cache/`, results in `evaluation/triage_results.json`). Raw report text
+only; the 0–100 score is mapped to the rubric class with bands fixed before running
+(critical ≥ 80, high 60–79, medium 40–59, low < 40).
+
+| Metric | Muse Spark 1.3 |
+|---|---|
+| Exact severity class | **15 / 20** (75%) |
+| Within one class | **20 / 20** |
+| Critical reports scored critical | **6 / 6** |
+| Misses | 5, all one class too high: 3 high → critical, 1 low → medium, 1 medium → high |
+
+The Triage score errs toward over-triage on this set. A separate test with the same 20
+reports (`findings/`), where Muse Spark filled in the rubric's fields directly, matched the
+answer key on 20/20 severities in 3 of 3 runs. Caveats: the reports and keys were written by
+the project author, and 20 is a small set; a held-out set written by someone else is still
+needed.
+
+**Other checks**
+
+| Check | Result |
+|---|---|
+| Exact solver vs brute force (60 random instances) | Optimal on all 60 (`tests/test_planner_optimal.py`) |
+| Demo replay, offline | Same queue, routes and recommendation as the live recording; 0 fallbacks (`tests/test_demo.py`) |
+| Planner scenario variants (`python -m evaluation.run_eval`) | Expected outcome in every variant, 3 runs each |
+| Automated tests (`python -m unittest discover -s tests`) | 86 passing |
+
+## Pilot story: City of Richmond (proposal)
+
+This is a proposal; we have not contacted or worked with the City.
+
+1. **Tabletop first.** Run the demo scenario and two historical James River flood timelines
+   with Richmond emergency management staff in a training room, with no live data.
+2. **Measure what matters.** Time to first critical decision with and without the swarm,
+   how often operators override the recommendation and why, and triage accuracy on
+   reports written by Richmond dispatchers rather than by us.
+3. **Swap samples for real feeds.** The USGS Westham gauge (02037500) has a public feed; the
+   City's actual flood plan and shelter list would replace the sample knowledge base, and
+   connecting SAM 3.1 and Muse Voice Transcribe would replace the sample imagery and
+   transcripts.
+4. **Keep the human in charge.** The swarm only ranks, explains and drafts; dispatch stays
+   with the operator.
+
+## Meta tooling, used honestly
+
+- **Muse Spark** does the reading, triage scoring, explanation and bilingual alerts, with
+  strict JSON schemas and `store: false`.
+- **Record/replay hub:** one file owns every model call; live answers become the offline
+  demo, so judges see real model output without needing network access.
+- **Offline roles:** redaction and retrieval run locally, the roles the brief gives to
+  Muse Spark Open and Muse Glimmer, so the parts that should work without internet do.
+- **Clear labels:** models this account cannot reach are shown as such instead of being
+  simulated as if they ran.
+
+## Run it
 
 ```powershell
-python -m pip install -r requirements.txt
+pip install -r requirements.txt
+cd app; npm install; cd ..
+
+# API (put META_API_KEY / META_MODEL / META_BASE_URL in crisis_command/agents/.env; see .env.example)
 python -m uvicorn crisis_command.api.server:app --port 8000
+
+# Dashboard
+cd app; npm run dev        # http://localhost:3000, press START DEMO SCENARIO
 ```
 
-In a second terminal:
+- `POST /api/demo/start` replays the recorded run; `POST /api/demo/start?record=true` calls
+  the live model and re-records.
+- Without a key, the app still runs: votes fall back to rules and say so.
+- Tests: `python -m unittest discover -s tests`.
 
-```powershell
-cd app
-npm install
-npm run dev
-```
+## Limits
 
-Open http://localhost:3000. The dashboard proxies `/api/*` to `http://127.0.0.1:8000`; set
-`CRISIS_API_ORIGIN` to point it elsewhere. Restart the API after Python changes, because
-`--reload` can hang on Windows with this app. The npm scripts use webpack because Windows
-Application Control can block Next.js's native Turbopack bindings. Runtime data is written
-to `crisis_command/data/crisis_command.db` (ignored by git).
-
-## Demo
-
-The canonical scenario is a synthetic flood with 6 incidents, 8 resources, and one open river
-crossing. Press **Confirm main street bridge closure**, review the revised plan, and approve
-it. The full script, expected results, and reset/replay steps are in
-[docs/demo.md](docs/demo.md).
-
-## Tests and evaluation
-
-```powershell
-python -B -m unittest discover -s tests
-python -m evaluation.run_eval
-```
-
-The evaluation runs 12 authored variants, 3 times each, through the real pipeline. Results
-and their limits are in [docs/evaluation.md](docs/evaluation.md). The AI comparison
-configurations are blocked until a model client exists.
-
-## Repository layout
-
-- `crisis_command/model.py`: incidents, resources (capability, speed, capacity), roads, and
-  `City`, a NetworkX multigraph that routes around closed roads.
-- `crisis_command/planner.py`: deterministic priority-order assignment with rationale and
-  explicit unmet-need reasons. The `AuthoritativeStateAgent`
-  (`crisis_command/agents/authoritative_state_agent.py`) arbitrates conflicting road claims by
-  verification, authority, reliability, confidence, and recency.
-- `crisis_command/simulation.py`: the versioned world with an ordered event log, snapshots,
-  checkpoint/rollback, dispatch, clock advance, and mission invalidation.
-- `crisis_command/operations/`: the command service (intake, proposals, approval, reset),
-  feasibility checks, plan diffs, scenarios, and SQLite persistence.
-- `crisis_command/agents/`: the model client interface and the three specialists.
-- `crisis_command/database/`: SQLite schema and connection (with migrations for earlier
-  schemas).
-- `crisis_command/api/`: FastAPI routes and serializers.
-- `app/`: the Next.js + MapLibre dashboard with Map, Intake, Review, Incidents, Resources, and
-  Timeline surfaces, grid or table layout, and replay mode.
-- `evaluation/`: the evaluation harness. `docs/`: architecture, demo, evaluation, submission
-  draft, and the progress checklist.
-- `crisis_command/main.py`: the original command-line demo (`python -m crisis_command.main`).
-
-## Known limitations
-
-- Assignment is solved exactly for the served set and its units, but committed missions are
-  not preempted for later, higher-priority needs.
-- One active mission per resource; transport to shelters and destination capacity are not
-  modeled.
-- One scenario; evaluation variants were authored by the developer.
-- No authentication; intended for local use. Any public deployment needs a separate access
-  and security review.
+- One scenario type (Richmond flood) and one simulated fleet; no real dispatch.
+- Unit movement on the map is animated in the browser, not simulated in the backend.
+- Shelter capacity, crew fatigue and multi-trip rescues are not modelled.
+- Vision, transcription and alert graphics use sample data until those models are connected.

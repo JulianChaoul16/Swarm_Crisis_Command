@@ -1,0 +1,18 @@
+{
+ "function": "triage",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T00:07:01.564365+00:00",
+ "input": {
+  "text": "the low water crossing by the school is under like 2 ft of water, someone drove into it, car stalled, driver on the roof"
+ },
+ "output": {
+  "reasons": [
+   "Driver stranded on roof of stalled car",
+   "Crossing under 2 ft of water"
+  ],
+  "severity_score": 92,
+  "summary": "Driver stranded on roof in flooded crossing by school",
+  "vulnerable": false
+ }
+}

@@ -1,0 +1,18 @@
+{
+ "function": "triage",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T00:06:52.872784+00:00",
+ "input": {
+  "text": "my basement at 42 pine st is flooded, everyone is fine, just reporting"
+ },
+ "output": {
+  "reasons": [
+   "Everyone reported fine",
+   "Flooding limited to basement"
+  ],
+  "severity_score": 10,
+  "summary": "Basement flooded at 42 Pine St, occupants safe.",
+  "vulnerable": false
+ }
+}

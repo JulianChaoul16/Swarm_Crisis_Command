@@ -1,0 +1,18 @@
+{
+ "function": "triage",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T00:06:50.249451+00:00",
+ "input": {
+  "text": "smoke pouring out of the old mill roof, no idea if anyones inside"
+ },
+ "output": {
+  "reasons": [
+   "Heavy smoke indicates active structure fire",
+   "Occupancy unknown so possible entrapment"
+  ],
+  "severity_score": 85,
+  "summary": "Possible structure fire at old mill with unknown occupancy",
+  "vulnerable": false
+ }
+}

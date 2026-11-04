@@ -1,0 +1,18 @@
+{
+ "function": "triage",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T00:06:49.668071+00:00",
+ "input": {
+  "text": "elm st & 5th, old man fell on his porch steps maybe broke his hip. hes 80. water not too bad here yet"
+ },
+ "output": {
+  "reasons": [
+   "80-year-old with possible hip fracture",
+   "water not too bad at location yet"
+  ],
+  "severity_score": 70,
+  "summary": "80-year-old fell on porch steps with possible hip fracture at Elm St & 5th",
+  "vulnerable": true
+ }
+}
