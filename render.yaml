@@ -1,0 +1,27 @@
+# Render blueprint for the Python API. The Next.js dashboard (app/) deploys on Vercel
+# and reaches this service through CRISIS_API_ORIGIN.
+services:
+  - type: web
+    name: crisis-command-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m uvicorn crisis_command.api.server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/state
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: META_API_KEY
+        sync: false
+      - key: META_MODEL
+        value: muse-spark-1.3
+      - key: META_VOICE_MODEL
+        value: muse-voice-transcribe-1.0
+      - key: META_WONDER_MODEL
+        value: muse-wonder-1.0
+      - key: META_SAM_MODEL
+        sync: false
+      - key: DEMO_ENABLED
+        value: "true"
+      - key: INTAKE_TOKEN
+        sync: false
