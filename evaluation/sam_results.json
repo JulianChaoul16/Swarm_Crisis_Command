@@ -1,0 +1,49 @@
+{
+ "model": "sam-3.1",
+ "endpoint": "/v1/responses (input_image + input_text prompt)",
+ "output_format": {
+  "objects": "Repeated '<index><|box;x1;y1;x2;y2;w;h|><|mask;x;y;data=H,W,<encoded>|>' after a '<0f>' prefix; empty output when nothing matches.",
+  "box": "Pixel coordinates on the w x h image (1600 x 1600 here).",
+  "mask": "H x W grid covering the box; data is printable ASCII ('!'..'~'). Encoding not yet decoded: not base94 chunks of zlib/deflate/lzma/bz2, not variable-length run lengths. Needs the format documentation."
+ },
+ "results": [
+  {
+   "image": "03_flood_knee.webp",
+   "prompt": "flood water",
+   "objects": 2,
+   "note": "Both boxes on the river along the left edge, not the flooded street."
+  },
+  {
+   "image": "03_flood_knee.webp",
+   "prompt": "flooded street",
+   "objects": 3,
+   "note": "Third box (0,437)-(1595,1226), ~49% of image, covers the flooded street; first two are the river."
+  },
+  {
+   "image": "03_flood_knee.webp",
+   "prompt": "brown water covering the road",
+   "objects": 3,
+   "note": "Same three regions."
+  },
+  {
+   "image": "03_flood_knee.webp",
+   "prompt": "car",
+   "objects": 28,
+   "note": "Matches the ~28 parked cars visible."
+  },
+  {
+   "image": "01_dry_street.webp",
+   "prompt": "flood water",
+   "objects": 0,
+   "note": "Correct negative on the dry street."
+  },
+  {
+   "image": "06_building_fire.webp",
+   "prompt": "smoke",
+   "objects": 1,
+   "note": "Box (402,584)-(687,937) is where the smoke plume is."
+  }
+ ],
+ "latency_s": "about 1-2 per call",
+ "note": "Images are AI-generated (Muse Image). Box checks were made by comparing coordinates with the images by eye."
+}
