@@ -1,0 +1,162 @@
+{
+ "model": "muse-wonder-1.0",
+ "reasoning_effort": "low",
+ "summary": {
+  "water_correct": "6/6",
+  "depth_overlaps_intended": "4/6",
+  "passable_correct": "5/6",
+  "fire_correct": "6/6"
+ },
+ "note": "Images are AI-generated (Muse Image); 'intended' values are what each prompt asked for.",
+ "rows": [
+  {
+   "file": "01_dry_street.webp",
+   "intended_depth_in": [
+    0,
+    0
+   ],
+   "intended_passable": true,
+   "intended_fire": false,
+   "seconds": 6.3,
+   "error": null,
+   "answer": {
+    "confidence": 0.99,
+    "depth_in_high": 0,
+    "depth_in_low": 0,
+    "fire_visible": false,
+    "passable_for_cars": true,
+    "reason": "Dry pavement, lane markings and sharp shadows unobstructed; parked cars stationary on clean street",
+    "water_on_road": false
+   },
+   "depth_overlaps_intended": true,
+   "passable_correct": true,
+   "fire_correct": true,
+   "water_correct": true
+  },
+  {
+   "file": "02_flood_shallow.webp",
+   "intended_depth_in": [
+    2,
+    6
+   ],
+   "intended_passable": true,
+   "intended_fire": false,
+   "seconds": 7.9,
+   "error": null,
+   "answer": {
+    "confidence": 0.7,
+    "depth_in_high": 8,
+    "depth_in_low": 6,
+    "fire_visible": false,
+    "passable_for_cars": false,
+    "reason": "Cars are still moving and not submerged, but the large bow wakes around them show water is several inches deep.",
+    "water_on_road": true
+   },
+   "depth_overlaps_intended": true,
+   "passable_correct": false,
+   "fire_correct": true,
+   "water_correct": true
+  },
+  {
+   "file": "03_flood_knee.webp",
+   "intended_depth_in": [
+    18,
+    24
+   ],
+   "intended_passable": false,
+   "intended_fire": false,
+   "seconds": 8.7,
+   "error": null,
+   "answer": {
+    "confidence": 0.85,
+    "depth_in_high": 18,
+    "depth_in_low": 12,
+    "fire_visible": false,
+    "passable_for_cars": false,
+    "reason": "Brown river water fully covers the main street and reaches the lower bodywork of neatly parked cars, with floating debris showing strong current, so a typical passenger car could not safely cross despite rooves remaining dry. No smoke or flames are visible.",
+    "water_on_road": true
+   },
+   "depth_overlaps_intended": true,
+   "passable_correct": true,
+   "fire_correct": true,
+   "water_correct": true
+  },
+  {
+   "file": "04_flood_deep.webp",
+   "intended_depth_in": [
+    42,
+    54
+   ],
+   "intended_passable": false,
+   "intended_fire": false,
+   "seconds": 6.2,
+   "error": null,
+   "answer": {
+    "confidence": 0.88,
+    "depth_in_high": 30,
+    "depth_in_low": 12,
+    "fire_visible": false,
+    "passable_for_cars": false,
+    "reason": "Streets are completely covered by brown floodwater which surrounds/partially submerges many vehicles and carries debris, so an ordinary passenger car could not safely drive through.",
+    "water_on_road": true
+   },
+   "depth_overlaps_intended": false,
+   "passable_correct": true,
+   "fire_correct": true,
+   "water_correct": true
+  },
+  {
+   "file": "05_flood_severe.webp",
+   "intended_depth_in": [
+    96,
+    144
+   ],
+   "intended_passable": false,
+   "intended_fire": false,
+   "seconds": 7.4,
+   "error": null,
+   "answer": {
+    "confidence": 0.85,
+    "depth_in_high": 24,
+    "depth_in_low": 12,
+    "fire_visible": false,
+    "passable_for_cars": false,
+    "reason": "Water is nearly up to the roofs of the cars parked along the side of roads, and fire is not visible.",
+    "water_on_road": true
+   },
+   "depth_overlaps_intended": false,
+   "passable_correct": true,
+   "fire_correct": true,
+   "water_correct": true
+  },
+  {
+   "file": "06_building_fire.webp",
+   "intended_depth_in": [
+    0,
+    0
+   ],
+   "intended_passable": true,
+   "intended_fire": true,
+   "seconds": 7.4,
+   "error": null,
+   "answer": {
+    "confidence": 0.97,
+    "depth_in_high": 0,
+    "depth_in_low": 0,
+    "fire_visible": true,
+    "passable_for_cars": true,
+    "reason": "No water observed on streets; parked cars were vertically displaced but taxis were visible, indicating thin sheet of water or no flooding.",
+    "water_on_road": false
+   },
+   "depth_overlaps_intended": true,
+   "passable_correct": true,
+   "fire_correct": true,
+   "water_correct": true
+  }
+ ],
+ "label_audit": {
+  "05_flood_severe.webp": "Image does not match its prompt: cars are fully visible with water around them (roughly 1-2 ft), not 'only roofs above water'. Wonder's 12-24 in is consistent with the image; the intended 96-144 in label is wrong.",
+  "04_flood_deep.webp": "Ambiguous from overhead: vehicles and a bus stand in water but depth cannot be judged reliably from directly above. Neither the intended 42-54 in nor Wonder's 12-30 in can be confirmed.",
+  "conclusion": "Water, fire and passability calls are reliable on this set; exact depth from overhead imagery is not well constrained, and the two deep-flood labels need a human-checked ground truth before depth accuracy can be claimed."
+ }
+}
