@@ -103,11 +103,14 @@ class DemoTests(unittest.TestCase):
         self.assertEqual(next(i for i in service.world.incidents if i.id == "incident-9").status.value, "resolved")
         self.assertEqual([a.text for a in service.board.activity if a.source == "fallback"], [])
 
-    def test_sample_imagery_and_transcript_are_labelled_as_samples(self) -> None:
+    def test_photo_is_read_by_recorded_sam_and_wonder_and_labelled_honestly(self) -> None:
         state = serialize_state(self.run_demo())
         image = state["swarm"]["imagery"][0]
-        self.assertEqual((image["mask_source"], image["estimate_source"]), ("SAM 3.1 · sample", "Muse Wonder · sample"))
-        self.assertIn("Not SAM 3.1 output", image["mask"]["properties"]["note"])
+        self.assertEqual((image["boxes_source"], image["estimate_source"]), ("SAM 3.1 · cache", "Muse Wonder · cache"))
+        self.assertTrue(image["objects"]["flooded street"] and image["map_features"])
+        self.assertFalse(image["estimate"]["passable_for_cars"])
+        self.assertIn("AI-generated test image", image["note"])
+        self.assertIn("assumed footprint", image["note"])
         self.assertEqual(state["swarm"]["transcripts"][0]["source"], "Muse Voice Transcribe · sample")
 
     def test_without_recordings_the_call_is_not_invented(self) -> None:

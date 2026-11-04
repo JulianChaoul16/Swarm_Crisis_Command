@@ -18,14 +18,23 @@ unless a model produced it. Configuration: META_API_KEY / META_MODEL / META_BASE
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+import base64
 import hashlib
 import json
 import os
+import urllib.error
+import urllib.request
 from pathlib import Path
 import re
 from typing import Any, Callable
 
-from .agents.model_client import ModelClient, UnavailableModelClient, _env_file_values, model_client_from_env
+from .agents.model_client import (
+    ModelClient,
+    UnavailableModelClient,
+    _env_file_values,
+    model_client_from_env,
+    parse_json_object,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "demo_cache" / "responses"
@@ -58,6 +67,27 @@ MODEL_SETTINGS = {
     MUSE_WONDER: "META_WONDER",
     MUSE_IMAGE: "META_IMAGE",
 }
+
+
+# Image models with a live call implemented here.
+WIRED = {SAM, MUSE_WONDER}
+
+
+def _mime(path: Path) -> str:
+    return {".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}.get(
+        path.suffix.lower(), "application/octet-stream")
+
+
+def _sam_boxes(text: str) -> dict[str, Any] | None:
+    """Parse SAM 3.1 output: '<|box;x1=..;y1=..;x2=..;y2=..;w=..;h=..|>' per object; empty = none found."""
+    boxes, size = [], None
+    for match in re.finditer(r"<\|box;x1=(\d+);y1=(\d+);x2=(\d+);y2=(\d+);w=(\d+);h=(\d+)\|>", text):
+        x1, y1, x2, y2, w, h = (int(v) for v in match.groups())
+        boxes.append([x1, y1, x2, y2])
+        size = [w, h]
+    if not boxes and text.strip() not in ("", "<0f>"):
+        return None if "<|" in text else {"boxes": [], "size": [0, 0]}
+    return {"boxes": boxes, "size": size or [0, 0]}
 
 
 def setting(name: str) -> str:
@@ -95,12 +125,20 @@ class MetaHub:
     def spark_live(self) -> bool:
         return self.mode == "live" and not isinstance(self.client, UnavailableModelClient)
 
+    def wired(self, model: str) -> bool:
+        """An image model is called live when its ID is configured (SAM 3.1, Muse Wonder)."""
+        return model in WIRED and bool(setting(f"{MODEL_SETTINGS[model]}_MODEL"))
+
     def status(self) -> list[dict[str, str]]:
         spark = ("live" if self.spark_live else "cache (demo mode)" if self.mode == "demo"
                  else "not connected")
         rows = [{"model": MUSE_SPARK, "status": spark,
                  "detail": f"{self.client.model_id} via Meta Responses API" if self.spark_live else ""}]
         for model, detail in NOT_CONNECTED.items():
+            if self.wired(model):
+                rows.append({"model": model, "status": "live" if self.mode == "live" else "cache (demo mode)",
+                             "detail": setting(f"{MODEL_SETTINGS[model]}_MODEL")})
+                continue
             model_id = setting(f"{MODEL_SETTINGS[model]}_MODEL")
             # Filling in an ID records it; the call itself still has to be written for that
             # model's input type (audio, image), so it is not reported as connected.
@@ -207,20 +245,101 @@ class MetaHub:
 
     # ----- 4. SAM 3.1 and 5. Muse Wonder ------------------------------------
 
-    def segment(self, image_id: str) -> ModelResult:
-        """Flood-water mask for a photo, as GeoJSON. Not connected: the sample mask."""
-        path = SAMPLE_DIR / "masks" / f"{image_id}.geojson"
-        if path.exists():
-            return ModelResult(json.loads(path.read_text(encoding="utf-8")), SAM, "sample", NOT_CONNECTED[SAM])
-        return ModelResult(None, SAM, "sample", f"no sample mask for {image_id}")
+    def _image_call(self, function: str, model: str, image: Path, key_extra: dict[str, Any],
+                    content_text: str, extra_body: dict[str, Any], parse) -> ModelResult:
+        """An image + text request to /v1/responses, with the same record/replay as Spark."""
+        digest = hashlib.sha256(image.read_bytes()).hexdigest()[:16]
+        payload = {"image_sha256": digest, **key_extra}
+        failure = None
+        if self.mode == "live" and self.wired(model):
+            prefix = MODEL_SETTINGS[model]
+            body = {
+                "model": setting(f"{prefix}_MODEL"),
+                "store": False,
+                "input": [{"role": "user", "content": [
+                    {"type": "input_image", "image_url": f"data:{_mime(image)};base64,"
+                                                         f"{base64.b64encode(image.read_bytes()).decode()}"},
+                    {"type": "input_text", "text": content_text},
+                ]}],
+                **extra_body,
+            }
+            started = datetime.now(timezone.utc)
+            try:
+                request = urllib.request.Request(
+                    setting(f"{prefix}_URL") or setting("META_BASE_URL"), data=json.dumps(body).encode(),
+                    method="POST", headers={"Authorization": f"Bearer {setting('META_API_KEY')}",
+                                            "Content-Type": "application/json"})
+                with urllib.request.urlopen(request, timeout=max(self.timeout, 60)) as response:
+                    data = json.loads(response.read())
+                text = "".join(part.get("text", "") for item in data.get("output", []) if item.get("type") == "message"
+                               for part in item.get("content") or [] if part.get("type") == "output_text")
+                value = parse(text)
+                if value is None:
+                    raise ValueError("unreadable model output")
+                self._record(function, payload, model, value)
+                ms = round((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+                self.calls.append({"function": function, "source": "live", "ms": ms})
+                return ModelResult(value, model, "live", latency_ms=ms)
+            except Exception as error:  # noqa: BLE001 - reported, then the recording
+                failure = f"{function} live call failed ({type(error).__name__}: {str(error)[:120]})"
+        cached = self._cached(function, payload)
+        if cached is not None:
+            if failure and self.on_fallback:
+                self.on_fallback(model, f"{failure}; used recorded response")
+            return ModelResult(cached["output"], model, "cache", f"recorded {cached['recorded_at'][:16]}")
+        if self.on_fallback:
+            self.on_fallback(model, failure or f"{function}: no live model and no recorded response")
+        return ModelResult(None, model, "fallback", failure or "no live model and no recorded response")
 
-    def assess_water(self, image_id: str) -> ModelResult:
-        """Depth and passability estimate for a photo. Not connected: the sample estimate."""
-        path = SAMPLE_DIR / "estimates" / f"{image_id}.json"
-        if path.exists():
-            return ModelResult(json.loads(path.read_text(encoding="utf-8")), MUSE_WONDER, "sample",
-                               NOT_CONNECTED[MUSE_WONDER])
-        return ModelResult(None, MUSE_WONDER, "sample", f"no sample estimate for {image_id}")
+    def segment(self, image: Path, prompts: list[str]) -> ModelResult:
+        """SAM 3.1 boxes for each text prompt: {"size": [w, h], "objects": {prompt: [[x1, y1, x2, y2], ...]}}.
+
+        SAM also returns a pixel mask per object; its encoding is not decoded yet, so only
+        boxes are used (approximate regions).
+        """
+        results: dict[str, list[list[int]]] = {}
+        size, sources = None, set()
+        for prompt in prompts:
+            result = self._image_call("segment", SAM, image, {"prompt": prompt}, prompt, {}, _sam_boxes)
+            if result.value is None:
+                return result
+            results[prompt] = result.value["boxes"]
+            size = size or result.value["size"]
+            sources.add(result.source)
+        source = "live" if sources == {"live"} else "cache" if "live" not in sources else "live"
+        return ModelResult({"size": size or [0, 0], "objects": results}, SAM, source,
+                           "boxes only; mask encoding not decoded")
+
+    WATER_QUESTION = (
+        "You are the vision agent in a flood-response exercise. This is an overhead image of a city street "
+        "area. Report what you can see on the roads: whether there is floodwater on them, the water depth on "
+        "the road in inches (0 if dry), whether an ordinary passenger car could safely drive through, and "
+        "whether there is a fire. Give your confidence from 0 to 1 and one short reason based on visible cues."
+    )
+    WATER_SCHEMA = {
+        "type": "object",
+        "properties": {
+            "water_on_road": {"type": "boolean"},
+            "depth_in_low": {"type": "integer"},
+            "depth_in_high": {"type": "integer"},
+            "passable_for_cars": {"type": "boolean"},
+            "fire_visible": {"type": "boolean"},
+            "confidence": {"type": "number"},
+            "reason": {"type": "string"},
+        },
+        "required": ["water_on_road", "depth_in_low", "depth_in_high", "passable_for_cars", "fire_visible",
+                     "confidence", "reason"],
+        "additionalProperties": False,
+    }
+
+    def assess_water(self, image: Path) -> ModelResult:
+        """Muse Wonder: water on the road, depth range, passability, fire, confidence, reason."""
+        return self._image_call(
+            "assess_water", MUSE_WONDER, image, {"question": self.WATER_QUESTION}, self.WATER_QUESTION,
+            {"reasoning": {"effort": "low"},
+             "text": {"format": {"type": "json_schema", "name": "vision", "schema": self.WATER_SCHEMA, "strict": True}}},
+            parse_json_object,
+        )
 
     # ----- 6. Plan search (local retrieval, code) ---------------------------
 

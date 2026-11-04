@@ -2,7 +2,7 @@
  "function": "triage",
  "model": "Muse Spark",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T03:32:02.941715+00:00",
+ "recorded_at": "2026-11-04T15:51:40.084764+00:00",
  "input": {
   "incident": "incident-11",
   "type": "dialysis patient cut off from clinic",
@@ -16,11 +16,11 @@
  },
  "output": {
   "reasons": [
-   "Dialysis care is time-critical medical need",
-   "Patient cut off from clinic in Manchester"
+   "Dialysis patient cut off from clinic",
+   "Medical need for 1 person at risk"
   ],
-  "severity_score": 80,
-  "summary": "Dialysis patient in Manchester cut off from clinic needs medical help.",
+  "severity_score": 75,
+  "summary": "Dialysis patient in Manchester cut off from clinic needs urgent medical access",
   "vulnerable": true
  }
 }

@@ -1,0 +1,21 @@
+{
+ "function": "public_alert",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T15:51:05.318204+00:00",
+ "input": {
+  "responding_to": [
+   {
+    "type": "elderly man trapped in car by floodwater",
+    "location": "South Junction"
+   }
+  ],
+  "closed_roads": [
+   "Lee Bridge"
+  ]
+ },
+ "output": {
+  "english": "This is a SIMULATED flood exercise for Richmond, VA. Floodwater has trapped a car near South Junction. Avoid Lee Bridge and do not drive through floodwater.",
+  "spanish": "Este es un ejercicio SIMULADO de inundación para Richmond, VA. El agua ha atrapado un carro cerca de South Junction. Evite Lee Bridge y no maneje por el agua."
+ }
+}

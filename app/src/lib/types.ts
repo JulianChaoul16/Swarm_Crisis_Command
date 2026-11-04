@@ -154,9 +154,20 @@ export type Swarm = {
     image_id: string;
     place: string;
     road_id: string;
-    mask: GeoJSON.Feature;
-    mask_source: string;
-    estimate: { depth_in: string; passable: boolean; confidence: number; note: string };
+    image_url: string;
+    size: [number, number];
+    objects: Record<string, [number, number, number, number][]>;
+    boxes_source: string;
+    map_features: GeoJSON.Feature[];
+    estimate: {
+      water_on_road: boolean;
+      depth_in_low: number;
+      depth_in_high: number;
+      passable_for_cars: boolean;
+      fire_visible: boolean;
+      confidence: number;
+      reason: string;
+    };
     estimate_source: string;
     note: string;
   }[];

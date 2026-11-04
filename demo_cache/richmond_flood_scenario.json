@@ -24,7 +24,19 @@
    "image_id": "dock_st_photo",
    "place": "Shockoe Bottom",
    "road_id": "dock-street",
-   "explain": "A citizen photo of Dock St. The blue overlay on the map is the flood-water mask; the Vision badge reads it as impassable, so Dock St closes (black). The agents re-vote and the route changes to cross the 14th St (Mayo) Bridge instead."
+   "explain": "A citizen photo of Dock St. SAM 3.1 outlines the flooded street and counts the vehicles in the water (boxes on the photo, blue area on the map); Muse Wonder judges the depth and that cars cannot get through, so Dock St closes (black). The swarm re-votes and the route changes to cross the 14th St (Mayo) Bridge instead.",
+   "image_file": "test_media/images/03_flood_knee.webp",
+   "prompts": {
+    "water": "flooded street",
+    "vehicles": "car"
+   },
+   "footprint": [
+    -77.434376,
+    37.530613,
+    -77.427332,
+    37.534988
+   ],
+   "footprint_note": "Assumed area the photo covers (around Dock St); the test image is not georeferenced."
   },
   {
    "at": 45,

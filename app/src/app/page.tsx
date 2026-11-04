@@ -317,12 +317,52 @@ function Transcripts({ swarm }: { swarm: Swarm }) {
 function VisionBadge({ swarm }: { swarm: Swarm }) {
   if (!swarm.imagery.length) return null;
   const image = swarm.imagery[swarm.imagery.length - 1];
+  const counts = Object.entries(image.objects).map(([prompt, boxes]) => `${boxes.length} × ${prompt}`).join(", ");
   return (
     <div className="vision-badge" title={image.note}>
-      <Pill label={image.mask_source} /> Water detected at {image.place}
+      <Pill label={image.boxes_source} /> {counts}
       <span className="sep">|</span>
-      <Pill label={image.estimate_source} /> Est. {image.estimate.depth_in} in,{" "}
-      <b>{image.estimate.passable ? "passable" : "impassable"}</b> ({Math.round(image.estimate.confidence * 100)}% sample confidence)
+      <Pill label={image.estimate_source} /> Est. {image.estimate.depth_in_low}–{image.estimate.depth_in_high} in,{" "}
+      <b>{image.estimate.passable_for_cars ? "passable" : "impassable"}</b> ({Math.round(image.estimate.confidence * 100)}% model confidence)
+    </div>
+  );
+}
+
+const BOX_COLORS = ["#3b82f6", "#facc15", "#f97316", "#22c55e"];
+
+/** The citizen photo with SAM 3.1's boxes drawn on it. */
+function PhotoCard({ swarm }: { swarm: Swarm }) {
+  const [open, setOpen] = useState(false);
+  if (!swarm.imagery.length) return null;
+  const image = swarm.imagery[swarm.imagery.length - 1];
+  const [width, height] = image.size;
+  const prompts = Object.keys(image.objects);
+  return (
+    <div className={`photo ${open ? "photo-open" : ""}`}>
+      <div className="rec-label">
+        Vision Agent · citizen photo <Pill label={image.boxes_source} title={image.note} />{" "}
+        <Pill label={image.estimate_source} />
+      </div>
+      <button className="photo-frame" onClick={() => setOpen(!open)} title={open ? "Click to shrink" : "Click to enlarge"}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={image.image_url} alt={`Photo of ${image.place}`} />
+        <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+          {prompts.map((prompt, index) =>
+            image.objects[prompt].map(([x1, y1, x2, y2], i) => (
+              <rect key={`${prompt}${i}`} x={x1} y={y1} width={x2 - x1} height={y2 - y1}
+                fill={index === 0 ? "rgba(59,130,246,0.18)" : "none"} stroke={BOX_COLORS[index % BOX_COLORS.length]}
+                strokeWidth={index === 0 ? 10 : 6} />
+            )),
+          )}
+        </svg>
+      </button>
+      <div className="photo-legend">
+        {prompts.map((prompt, index) => (
+          <span key={prompt}><i style={{ borderColor: BOX_COLORS[index % BOX_COLORS.length] }} /> {image.objects[prompt].length} × {prompt}</span>
+        ))}
+      </div>
+      <p className="photo-reason">“{image.estimate.reason}”</p>
+      <p className="muted photo-note">AI-generated test image (Muse Image), not a real photo. Map position is an assumed footprint.</p>
     </div>
   );
 }
@@ -415,7 +455,7 @@ export default function CommandScreen() {
         roads: world.roads,
         annotations: world.annotations,
         proposedRoutes: world.current_plan?.status === "proposed" ? world.current_plan.assignments : [],
-        floodMasks: world.swarm.imagery.map((image) => image.mask),
+        floodMasks: world.swarm.imagery.flatMap((image) => image.map_features),
       },
     [world, queue],
   );
@@ -446,6 +486,7 @@ export default function CommandScreen() {
           <section className="panel left">
             <h2>Swarm Incident Queue</h2>
             <Transcripts swarm={world.swarm} />
+            <PhotoCard swarm={world.swarm} />
             <IncidentQueue incidents={queue} focus={queue[0]?.id ?? null} swarm={world.swarm} />
           </section>
 

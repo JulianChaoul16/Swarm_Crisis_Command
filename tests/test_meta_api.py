@@ -91,10 +91,19 @@ class HubTests(unittest.TestCase):
         self.assertEqual((result.model, result.source), (PLAN_SEARCH, "local"))
         self.assertTrue(result.value and "Sample" in result.value[0]["citation"])
 
-    def test_status_reports_only_spark_as_connected(self) -> None:
-        rows = {row["model"]: row["status"] for row in self.hub(FakeClient(answer)).status()}
-        self.assertEqual(rows[MUSE_SPARK], "live")
-        self.assertEqual(rows[SAM], "not connected")
+    def test_status_reports_image_models_live_only_when_configured(self) -> None:
+        with patch("crisis_command.meta_api.setting", lambda name: ""):
+            rows = {row["model"]: row["status"] for row in self.hub(FakeClient(answer)).status()}
+        self.assertEqual((rows[MUSE_SPARK], rows[SAM]), ("live", "not connected"))
+        with patch("crisis_command.meta_api.setting", lambda name: "sam-3.1" if name == "META_SAM_MODEL" else ""):
+            rows = {row["model"]: row["status"] for row in self.hub(FakeClient(answer)).status()}
+        self.assertEqual(rows[SAM], "live")
+
+    def test_sam_output_is_parsed_into_boxes(self) -> None:
+        from crisis_command.meta_api import _sam_boxes
+        text = "<0f>0<|box;x1=0;y1=10;x2=20;y2=30;w=100;h=50|><|mask;x=0;y=0;data=21,21,~!|>,1<|box;x1=5;y1=6;x2=7;y2=8;w=100;h=50|>"
+        self.assertEqual(_sam_boxes(text), {"boxes": [[0, 10, 20, 30], [5, 6, 7, 8]], "size": [100, 50]})
+        self.assertEqual(_sam_boxes(""), {"boxes": [], "size": [0, 0]})
 
 
 class ServiceModelTests(unittest.TestCase):

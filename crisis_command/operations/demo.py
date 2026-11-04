@@ -13,7 +13,7 @@ from threading import Event, Lock, Thread
 from time import monotonic
 from typing import Any
 
-from ..meta_api import ROOT, SAM, MUSE_WONDER
+from ..meta_api import ROOT
 from ..swarm.board import VISION
 from .reports import ReportStatus
 
@@ -212,31 +212,59 @@ class DemoRunner:
         self._auto_confirm(report.id, "auto-apply (complete report)")
 
     def _photo_report(self, event: dict[str, Any]) -> None:
-        """A citizen photo: Vision segments water, estimates depth; the coordinator applies
-        an impassable estimate as a road closure, and the swarm re-votes."""
+        """A citizen photo: SAM 3.1 finds the flooded street and vehicles, Muse Wonder judges
+        depth and passability; the coordinator applies an impassable reading as a road
+        closure, and the swarm re-votes."""
         board, hub = self.service.board, self.service.hub
-        mask, estimate = hub.segment(event["image_id"]), hub.assess_water(event["image_id"])
-        if mask.value is None or estimate.value is None:
-            board.log(VISION, mask.label, f"No imagery result for {event['image_id']}")
+        image = ROOT / event["image_file"]
+        prompts = event["prompts"]
+        boxes, estimate = hub.segment(image, list(prompts.values())), hub.assess_water(image)
+        if boxes.value is None or estimate.value is None:
+            board.log(VISION, boxes.label if boxes.value is None else estimate.label,
+                      f"No imagery result for {event['image_id']}: {boxes.note if boxes.value is None else estimate.note}")
             return
-        board.imagery.append({"image_id": event["image_id"], "place": event["place"], "road_id": event["road_id"],
-                              "mask": mask.value, "mask_source": mask.label, "estimate": estimate.value,
-                              "estimate_source": estimate.label, "note": f"{mask.note}; {estimate.note}"})
-        board.log(VISION, mask.label, f"Water detected in photo {event['image_id']} at {event['place']}")
-        board.log(VISION, estimate.label, f"Est. {estimate.value['depth_in']} in, "
-                  f"{'impassable' if not estimate.value['passable'] else 'passable'} "
-                  f"({round(estimate.value['confidence'] * 100)}% sample confidence)")
-        board.set_flood_cover(event["place"], {"percent": mask.value["properties"]["flooded_percent"],
-                                               "place": event["place"], "source": f"{SAM} · {mask.source}"},
-                              VISION, mask.label)
-        if not estimate.value["passable"]:
+        width, height = boxes.value["size"]
+        water = boxes.value["objects"].get(prompts["water"], [])
+        vehicles = boxes.value["objects"].get(prompts.get("vehicles", ""), [])
+        percent = _covered_percent(water, width, height)
+        west, south, east, north = event["footprint"]
+
+        def to_map(box: list[int]) -> dict[str, Any]:
+            x1, y1, x2, y2 = box
+            lng = lambda x: round(west + (east - west) * x / width, 6)  # noqa: E731
+            lat = lambda y: round(north - (north - south) * y / height, 6)  # noqa: E731
+            ring = [[lng(x1), lat(y1)], [lng(x2), lat(y1)], [lng(x2), lat(y2)], [lng(x1), lat(y2)], [lng(x1), lat(y1)]]
+            return {"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [ring]},
+                    "properties": {"label": prompts["water"]}}
+
+        value = estimate.value
+        board.imagery.append({
+            "image_id": event["image_id"], "place": event["place"], "road_id": event["road_id"],
+            "image_url": f"/api/media/{image.parent.name}/{image.name}", "size": [width, height],
+            "objects": boxes.value["objects"], "boxes_source": boxes.label,
+            "map_features": [to_map(box) for box in water],
+            "estimate": value, "estimate_source": estimate.label,
+            "note": (f"{boxes.note}. The photo is an AI-generated test image; its position on the map is an "
+                     f"assumed footprint around {event['place']}, not georeferenced."),
+        })
+        board.log(VISION, boxes.label, f"'{prompts['water']}': {len(water)} regions, about {percent}% of the photo; "
+                  f"{len(vehicles)} vehicles found")
+        board.log(VISION, estimate.label, f"Est. {value['depth_in_low']}-{value['depth_in_high']} in, "
+                  f"{'passable' if value['passable_for_cars'] else 'impassable'} for cars "
+                  f"({round(value['confidence'] * 100)}% model confidence): {value['reason']}")
+        board.set_flood_cover(event["place"], {"percent": percent, "place": event["place"],
+                                               "source": boxes.label}, VISION, boxes.label)
+        if not value["passable_for_cars"] and not value["water_on_road"]:
+            board.log(VISION, estimate.label, "Model fields disagree (no water on road, yet impassable); "
+                      "treated as impassable, the safer reading")
+        if not value["passable_for_cars"]:
             report = self.service.submit_report(
                 f"Vision Agent: {event['road_id']} impassable in citizen photo {event['image_id']} "
-                f"(est. {estimate.value['depth_in']} in of water).",
-                f"Vision Agent ({SAM} + {MUSE_WONDER}, sample imagery)",
+                f"(est. {value['depth_in_low']}-{value['depth_in_high']} in of water; {value['reason']}).",
+                f"Vision Agent ({boxes.label}, {estimate.label})",
                 fields={"report_type": "road_status", "road_id": event["road_id"], "road_closed": True,
                         "certainty": "confirmed"},
-                entered_by=f"Vision Agent ({mask.label}, {estimate.label})",
+                entered_by=f"Vision Agent ({boxes.label}, {estimate.label})",
             )
             self.service.confirm_report(report.id, actor="coordinator (imagery evidence)")
         else:
@@ -252,3 +280,16 @@ class DemoRunner:
                                       "site": self.timeline["gauge"]["site"],
                                       "label": self.timeline["gauge_label"]}, "scenario value")
         self.service.propose()
+
+
+def _covered_percent(boxes: list[list[int]], width: int, height: int, cells: int = 80) -> int:
+    """Share of the photo inside the union of the boxes, on an 80 x 80 grid (approximate)."""
+    if not boxes or not width or not height:
+        return 0
+    covered = 0
+    for row in range(cells):
+        y = (row + 0.5) * height / cells
+        for col in range(cells):
+            x = (col + 0.5) * width / cells
+            covered += any(x1 <= x <= x2 and y1 <= y <= y2 for x1, y1, x2, y2 in boxes)
+    return round(100 * covered / cells / cells)

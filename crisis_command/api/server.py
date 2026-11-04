@@ -8,12 +8,12 @@ from datetime import datetime
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 
 from ..operations import CommandError, StaleApprovalError
 from .serializers import serialize_event, serialize_state
-from ..meta_api import hub_from_env
+from ..meta_api import ROOT, hub_from_env
 from .session import demo, service
 
 app = FastAPI(title="Crisis Command API")
@@ -68,6 +68,18 @@ def get_state() -> dict[str, Any]:
 def get_events(limit: int = 200) -> list[dict[str, Any]]:
     events = service.world.event_log[-limit:] if limit > 0 else ()
     return [serialize_event(event) for event in reversed(events)]
+
+
+MEDIA_DIRS = {"images", "audio"}
+
+
+@app.get("/api/media/{folder}/{name}")
+def media(folder: str, name: str) -> FileResponse:
+    """Test media (AI-generated images, synthesized audio) for the dashboard."""
+    path = (ROOT / "test_media" / folder / name).resolve()
+    if folder not in MEDIA_DIRS or path.parent != (ROOT / "test_media" / folder).resolve() or not path.is_file():
+        raise HTTPException(404, "Not found.")
+    return FileResponse(path)
 
 
 @app.post("/api/demo/start")

@@ -1,0 +1,36 @@
+{
+ "function": "segment",
+ "model": "SAM 3.1",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T15:52:19.186153+00:00",
+ "input": {
+  "image_sha256": "78ca1231d6845b58",
+  "prompt": "flooded street"
+ },
+ "output": {
+  "boxes": [
+   [
+    0,
+    1027,
+    223,
+    1599
+   ],
+   [
+    0,
+    0,
+    149,
+    665
+   ],
+   [
+    0,
+    437,
+    1595,
+    1226
+   ]
+  ],
+  "size": [
+   1600,
+   1600
+  ]
+ }
+}
