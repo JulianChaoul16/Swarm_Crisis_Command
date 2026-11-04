@@ -114,7 +114,7 @@ City of Richmond material; citations say "Sample Richmond Flood Response Plan".
 
 ## Evaluation
 
-**Triage Agent on 20 sample incidents** (`python -m evaluation.triage_eval`; recordings in
+**Intake Agent triage on 20 sample incidents** (`python -m evaluation.triage_eval`; recordings in
 `evaluation/triage_cache/`, results in `evaluation/triage_results.json`). Raw report text
 only; the 0–100 score is mapped to the rubric class with bands fixed before running
 (critical ≥ 80, high 60–79, medium 40–59, low < 40).
