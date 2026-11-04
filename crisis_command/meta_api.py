@@ -75,6 +75,9 @@ class MetaHub:
     # Called with (model, message) when a call falls back; the swarm logs it to the feed.
     on_fallback: Callable[[str, str], None] | None = None
     calls: list[dict[str, Any]] = field(default_factory=list)
+    # Live answers are recorded only where nothing is recorded yet, unless re-recording, so
+    # ordinary live use never changes what the demo replays.
+    overwrite: bool = False
 
     @property
     def spark_live(self) -> bool:
@@ -103,6 +106,8 @@ class MetaHub:
 
     def _record(self, function: str, payload: Any, model: str, output: Any) -> None:
         path = self._key(function, payload)
+        if path.exists() and not self.overwrite:
+            return
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps({
             "function": function, "model": model, "model_id": self.client.model_id,

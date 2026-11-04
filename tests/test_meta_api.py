@@ -55,6 +55,18 @@ class HubTests(unittest.TestCase):
         replay = self.hub(UnavailableModelClient("offline"), mode="demo").triage(facts, lambda: {})
         self.assertEqual((replay.source, replay.value), ("cache", live.value))
 
+    def test_live_use_never_overwrites_a_recording_unless_re_recording(self) -> None:
+        facts = {"type": "stranded bus"}
+        self.hub(FakeClient(answer)).triage(facts, lambda: {})
+        changed = lambda schema: {**answer(schema), "severity_score": 10}
+        self.hub(FakeClient(changed)).triage(facts, lambda: {})
+        replay = self.hub(UnavailableModelClient("x"), mode="demo").triage(facts, lambda: {})
+        self.assertEqual(replay.value["severity_score"], 97)
+        hub = self.hub(FakeClient(changed))
+        hub.overwrite = True
+        hub.triage(facts, lambda: {})
+        self.assertEqual(self.hub(UnavailableModelClient("x"), mode="demo").triage(facts, lambda: {}).value["severity_score"], 10)
+
     def test_failure_uses_the_cache_and_logs_it(self) -> None:
         facts = {"type": "stranded bus"}
         self.hub(FakeClient(answer)).triage(facts, lambda: {})

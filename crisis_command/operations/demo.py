@@ -47,6 +47,7 @@ class DemoRunner:
         Replays recorded model responses (demo mode) so the run is reliable offline;
         `record=True` calls the live model instead and records fresh responses."""
         self.service.hub.mode = "live" if record else "demo"
+        self.service.hub.overwrite = record
         with self._lock:
             self._generation += 1
             generation = self._generation
