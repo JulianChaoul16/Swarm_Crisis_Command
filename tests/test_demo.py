@@ -29,7 +29,9 @@ class DemoTests(unittest.TestCase):
         demo = DemoRunner(service)
         service.hub.mode = "demo"
         demo.prepare()
-        demo.play_all_now()
+        for event in demo.timeline["events"]:
+            if event.get("stage", 1) == 1:
+                getattr(demo, f"_{event['type']}")(event)
         return service
 
     def test_offline_replay_produces_the_seeded_story_with_no_fallbacks(self) -> None:
@@ -56,7 +58,7 @@ class DemoTests(unittest.TestCase):
         self.assertEqual(alert.source, "cache")
         self.assertTrue(alert.value["english"] and alert.value["spanish"])
 
-    def test_pause_stops_the_clock_and_resume_continues(self) -> None:
+    def test_pause_stops_the_clock_and_the_demo_continues_after_each_approval(self) -> None:
         import time
         service = CommandService(scenario=DEMO_FLOOD_SCENARIO, client=OFFLINE)
         demo = DemoRunner(service, speed=20)  # T+15s arrives after 0.75 s
@@ -70,9 +72,36 @@ class DemoTests(unittest.TestCase):
         demo.resume()
         time.sleep(3)
         status = demo.status()
+        stage1 = [e["done"] for e in status["events"] if e["stage"] == 1]
+        stage2 = [e["done"] for e in status["events"] if e["stage"] == 2]
+        self.assertTrue(all(stage1) and not any(stage2))  # stage 2 waits for the operator
+        self.assertTrue(status["guide"]["your_turn"] and not status["finished"])
+
+        plan = service.current_plan
+        service.approve(plan.id, plan.world_version)
+        time.sleep(2.5)
+        status = demo.status()
         self.assertTrue(all(e["done"] for e in status["events"]))
-        self.assertTrue(status["finished"] and status["guide"]["your_turn"])
+        self.assertTrue(status["guide"]["your_turn"])  # a freed team can take the new call
+        plan = service.current_plan
+        service.approve(plan.id, plan.world_version)
+        status = demo.status()
+        self.assertTrue(status["finished"])
+        self.assertIn("full loop", status["guide"]["now"])
         demo.stop()
+
+    def test_full_loop_replays_offline_and_the_freed_team_takes_the_new_call(self) -> None:
+        service = CommandService(scenario=DEMO_FLOOD_SCENARIO, client=OFFLINE)
+        demo = DemoRunner(service)
+        service.hub.mode = "demo"
+        demo.prepare()
+        demo.play_all_now(approve=True)
+        approved = [p for p in service._plans.values() if p.status.value == "approved"]
+        self.assertEqual(len(approved), 2)
+        last = {(d.service_id, d.incident_id) for d in approved[-1].plan.assignments}
+        self.assertIn(("swift-1", "incident-15"), last)
+        self.assertEqual(next(i for i in service.world.incidents if i.id == "incident-9").status.value, "resolved")
+        self.assertEqual([a.text for a in service.board.activity if a.source == "fallback"], [])
 
     def test_sample_imagery_and_transcript_are_labelled_as_samples(self) -> None:
         state = serialize_state(self.run_demo())

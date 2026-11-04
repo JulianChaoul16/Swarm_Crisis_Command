@@ -25,6 +25,7 @@ CONSENSUS_CHANGED = "consensus.changed"
 ROAD_CHANGED = "road.changed"
 FLOOD_CHANGED = "flood.changed"
 GAUGE_CHANGED = "gauge.changed"
+UNITS_CHANGED = "units.changed"
 
 
 def _now() -> datetime:

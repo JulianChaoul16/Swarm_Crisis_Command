@@ -142,6 +142,64 @@ def _result(result: Any) -> dict[str, Any] | None:
             "note": result.note, "label": result.label}
 
 
+# The named agents shown in the UI: role, the models behind each, and which activity-log
+# names belong to it.
+AGENT_ROSTER = (
+    ("Listener Agent", "Turns 911 and radio audio into text.", ("Muse Voice Transcribe",), ("Listener Agent",)),
+    ("Triage Agent", "Reads each report and votes how urgent it is (0-100). Personal details are redacted locally first.",
+     ("Muse Spark", "Muse Spark Open"), ("Triage Agent",)),
+    ("Vision Agent", "Reads citizen photos: where the water is and whether a road is passable. Votes on flood exposure.",
+     ("SAM 3.1", "Muse Wonder"), ("Vision Agent",)),
+    ("Logistics Agent", "Checks which units can reach each incident and how fast, votes on access, and cites the flood plan.",
+     ("Muse Glimmer",), ("Logistics Agent",)),
+    ("Command Agent", "Explains the solver's recommendation: why, and what it delays.", ("Muse Spark",), ("Command Agent",)),
+    ("Comms Agent", "Writes the public alert in English and Spanish after approval.", ("Muse Spark", "Muse Image"),
+     ("Comms Agent",)),
+    ("Coordinator", "Spawns the swarm, runs the exact solver, applies only confirmed changes, and never dispatches without approval.",
+     (), ("Coordinator", "Swarm consensus", "River gauge")),
+)
+VOTERS = {"Triage Agent", "Vision Agent", "Logistics Agent"}
+MODEL_STATUS_LABEL = {"live": "live", "cache (demo mode)": "recorded answers (demo)", "not connected": "not connected"}
+STAND_IN = {
+    "Muse Spark Open": "local stand-in: redaction rules on this machine",
+    "Muse Glimmer": "local stand-in: retrieval over the sample plan, plus access rules",
+    "SAM 3.1": "sample data",
+    "Muse Wonder": "sample data",
+    "Muse Voice Transcribe": "sample data",
+    "Muse Image": "not connected: no graphic is generated",
+}
+
+
+def serialize_agents(service: CommandService) -> list[dict[str, Any]]:
+    status = {row["model"]: row["status"] for row in service.hub.status()}
+    data = service.board.snapshot()
+    incidents = {i.id: i for i in service.world.incidents if i.status != IncidentStatus.RESOLVED}
+    agents = []
+    for name, role, models, log_names in AGENT_ROSTER:
+        activity = [a for a in data["activity"] if a.agent in log_names]
+        votes = []
+        if name in VOTERS:
+            for incident_id, by_agent in data["votes"].items():
+                vote = by_agent.get(name)
+                if vote is not None and incident_id in incidents:
+                    votes.append({"incident_id": incident_id, "kind": incidents[incident_id].kind,
+                                  "score": vote.score, "reasons": list(vote.reasons), "source": vote.source})
+            votes.sort(key=lambda v: -v["score"])
+        agents.append({
+            "name": name,
+            "role": role,
+            "models": [{"model": m, "status": MODEL_STATUS_LABEL.get(status.get(m, ""), "") if m == "Muse Spark"
+                        else STAND_IN.get(m, status.get(m, ""))} for m in models]
+                      or [{"model": "Exact solver (code)", "status": "deterministic"}],
+            "actions": len(activity),
+            "last": ({"at": activity[-1].at.isoformat(), "text": activity[-1].text} if activity else None),
+            "activity": [{"at": a.at.isoformat(), "source": a.source, "text": a.text, "incident_id": a.incident_id}
+                         for a in reversed(activity[-40:])],
+            "votes": votes,
+        })
+    return agents
+
+
 def serialize_swarm(board: IncidentBoard) -> dict[str, Any]:
     data = board.snapshot()
     return {
@@ -267,6 +325,7 @@ def serialize_state(service: CommandService) -> dict[str, Any]:
         if current is not None else None,
         "swarm": serialize_swarm(service.board),
         "models": service.hub.status(),
+        "agents": serialize_agents(service),
         "explanation": _result(service.explanations.get(current.id)) if current is not None else None,
         "alerts": {plan_id: {"text": _result(alert["text"]), "graphic": _result(alert["graphic"])}
                    for plan_id, alert in service.alerts.items()},

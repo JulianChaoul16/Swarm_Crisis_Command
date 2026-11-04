@@ -38,6 +38,9 @@ class DemoRunner:
         self._paused_total = 0.0
         self.done: list[int] = []
         self.errors: list[str] = []
+        # Demo clock time of each operator approval; stage 2 events count from the first.
+        self.approvals: list[float] = []
+        service.approval_listeners.append(self._approved)
 
     # ----- control -------------------------------------------------------
 
@@ -53,7 +56,7 @@ class DemoRunner:
             generation = self._generation
             self._stop.set()
             self._stop = Event()
-            self.done, self.errors = [], []
+            self.done, self.errors, self.approvals = [], [], []
         self.prepare()
         with self._lock:
             self.started = monotonic()
@@ -89,28 +92,54 @@ class DemoRunner:
         now = self._paused_at or monotonic()
         return (now - self.started - self._paused_total) * self.speed
 
+    def _approved(self, proposal: Any) -> None:
+        with self._lock:
+            if self.started is not None:
+                self.approvals.append(self._clock())
+
+    def _due(self, event: dict[str, Any]) -> float | None:
+        """Demo time an event is due; stage 2 counts from the first approval. Under the lock."""
+        if event.get("stage", 1) == 1:
+            return event["at"]
+        return self.approvals[0] + event["at"] if self.approvals else None
+
+    def _awaiting_approval(self) -> bool:
+        plan = self.service.current_plan
+        return bool(plan and plan.status.value == "proposed" and plan.plan.assignments)
+
     def _guide(self, finished: bool) -> dict[str, Any]:
         """What the presenter is looking at now, and what comes next."""
         events = self.timeline["events"]
+        stage1 = [i for i, e in enumerate(events) if e.get("stage", 1) == 1]
         if finished:
+            return {"now": self.timeline["final"], "your_turn": False}
+        if all(i in self.done for i in stage1) and not self.approvals:
             return {"now": self.timeline["outro"], "your_turn": True}
+        pending = [i for i in range(len(events)) if i not in self.done]
+        if not pending:
+            return {"now": self.timeline["outro_2"], "your_turn": self._awaiting_approval()}
         current = self.timeline["intro"] if not self.done else events[max(self.done)]["explain"]
-        upcoming = next((e for i, e in enumerate(events) if i not in self.done), None)
-        return {"now": current, "your_turn": False,
-                "next": upcoming["label"] if upcoming else None,
-                "next_in_s": max(0, round(upcoming["at"] - self._clock())) if upcoming else None}
+        if self.approvals and max(self.done, default=-1) in stage1:
+            current = self.timeline["approved"]
+        upcoming = events[pending[0]]
+        due = self._due(upcoming)
+        return {"now": current, "your_turn": False, "next": upcoming["label"],
+                "next_in_s": max(0, round(due - self._clock())) if due is not None else None}
 
     def status(self) -> dict[str, Any]:
         with self._lock:
             started = self.started is not None
-            finished = started and len(self.done) == len(self.timeline["events"])
+            # Finished once every event has played and the last recommendation was approved.
+            finished = (started and len(self.done) == len(self.timeline["events"])
+                        and len(self.approvals) >= 2 and not self._awaiting_approval())
             return {
                 "running": started and not finished,
                 "paused": self._paused_at is not None,
                 "finished": finished,
                 "elapsed_s": round(self._clock(), 1) if started else None,
-                "events": [{"at": e["at"], "label": e["label"], "done": i in self.done}
+                "events": [{"at": e["at"], "stage": e.get("stage", 1), "label": e["label"], "done": i in self.done}
                            for i, e in enumerate(self.timeline["events"])],
+                "approvals": len(self.approvals),
                 "guide": self._guide(finished) if started else None,
                 "errors": list(self.errors),
             }
@@ -121,7 +150,8 @@ class DemoRunner:
                 with self._lock:
                     if generation != self._generation:
                         return
-                    due = self._clock() >= event["at"]
+                    when = self._due(event)
+                    due = when is not None and self._clock() >= when
                 if due:
                     break
                 if stop.wait(0.2):
@@ -138,11 +168,21 @@ class DemoRunner:
                 if generation == self._generation:
                     self.done.append(index)
 
-    def play_all_now(self) -> None:
-        """Run every event immediately (tests and recording)."""
-        for index, event in enumerate(self.timeline["events"]):
+    def play_all_now(self, approve: bool = False) -> None:
+        """Run every event immediately (tests and recording); optionally approve at each
+        point the presenter would."""
+        events = self.timeline["events"]
+        for index, event in enumerate(events):
+            if approve and event.get("stage", 1) == 2 and self._awaiting_approval():
+                self._approve_current()
             getattr(self, f"_{event['type']}")(event)
             self.done.append(index)
+        if approve and self._awaiting_approval():
+            self._approve_current()
+
+    def _approve_current(self) -> None:
+        plan = self.service.current_plan
+        self.service.approve(plan.id, plan.world_version, actor="operator (recording run)")
 
     # ----- events ----------------------------------------------------------
 
@@ -201,6 +241,11 @@ class DemoRunner:
             self.service.confirm_report(report.id, actor="coordinator (imagery evidence)")
         else:
             self.service.propose()
+
+    def _unit_report(self, event: dict[str, Any]) -> None:
+        """A field unit reports its incident resolved (scripted scenario message)."""
+        self.service.resolve_incident(event["incident_id"], f"{event['unit_name']} (field unit, scripted scenario message)",
+                                      event["text"])
 
     def _gauge(self, event: dict[str, Any]) -> None:
         self.service.board.set_gauge({"value": event["value"], "trend": event["trend"],

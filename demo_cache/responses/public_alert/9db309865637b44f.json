@@ -1,0 +1,38 @@
+{
+ "function": "public_alert",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T02:03:05.275968+00:00",
+ "input": {
+  "responding_to": [
+   {
+    "type": "transformer fire",
+    "location": "Downtown Junction"
+   },
+   {
+    "type": "downed power lines across road",
+    "location": "East Junction"
+   },
+   {
+    "type": "vehicle fire at flooded intersection",
+    "location": "Broad & 3rd"
+   },
+   {
+    "type": "bus passengers trapped by rising water",
+    "location": "Shockoe Bottom"
+   },
+   {
+    "type": "residents trapped by rising water",
+    "location": "Riverside Apartments"
+   }
+  ],
+  "closed_roads": [
+   "Dock St",
+   "Lee Bridge"
+  ]
+ },
+ "output": {
+  "english": "This is a practice flood alert for Richmond, VA. There is flooding and danger near Dock St, Lee Bridge, Broad & 3rd, Shockoe Bottom, Riverside Apartments, Downtown Junction and East Junction. Stay away from those areas and do not walk or drive through flood water.",
+  "spanish": "Este es un alerta de inundación de práctica para Richmond, VA. Hay inundación y peligro cerca de Dock St, Lee Bridge, Broad & 3rd, Shockoe Bottom, Riverside Apartments, Downtown Junction y East Junction. Manténgase lejos de esas áreas y no camine ni maneje en el agua."
+ }
+}

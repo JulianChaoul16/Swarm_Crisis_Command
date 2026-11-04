@@ -118,6 +118,7 @@ export type WorldState = {
   reports: Report[];
   swarm: Swarm;
   models: { model: string; status: string; detail: string }[];
+  agents: Agent[];
   demo: {
     running: boolean;
     paused: boolean;
@@ -129,6 +130,16 @@ export type WorldState = {
   };
   explanation: ModelResult<{ why: string[]; tradeoff: string }> | null;
   alerts: Record<string, { text: ModelResult<{ english: string; spanish: string }> | null; graphic: ModelResult<unknown> | null }>;
+};
+
+export type Agent = {
+  name: string;
+  role: string;
+  models: { model: string; status: string }[];
+  actions: number;
+  last: { at: string; text: string } | null;
+  activity: { at: string; source: string; text: string; incident_id: string | null }[];
+  votes: { incident_id: string; kind: string; score: number; reasons: string[]; source: string }[];
 };
 
 export type ModelResult<T> = { value: T; model: string; source: string; note: string; label: string };

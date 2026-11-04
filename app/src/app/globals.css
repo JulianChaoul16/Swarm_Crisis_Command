@@ -225,3 +225,31 @@ button.start.pause { background: var(--warn); border-color: var(--warn); color: 
 .guide { margin: 8px 16px 0; padding: 9px 12px; border-radius: 8px; font-size: 14px; line-height: 1.45; background: rgba(37, 99, 235, 0.14); border: 1px solid rgba(37, 99, 235, 0.5); }
 .guide.paused { background: rgba(251, 191, 36, 0.12); border-color: rgba(251, 191, 36, 0.5); }
 .guide.your-turn { background: rgba(52, 211, 153, 0.14); border-color: var(--approve); font-size: 15px; }
+
+/* ---------- Agent strip and panel ---------- */
+
+.agent-strip { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 16px 0; }
+.agent-chip { font-size: 12.5px; padding: 4px 10px; border-radius: 14px; background: var(--ai-bg); border-color: rgba(167, 139, 250, 0.35); }
+.agent-chip.on { background: rgba(167, 139, 250, 0.3); border-color: var(--ai); }
+.agent-panel {
+  position: fixed;
+  top: 120px;
+  right: 16px;
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  z-index: 20;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--ai);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+.agent-head { display: flex; align-items: center; justify-content: space-between; }
+.agent-head h3 { margin: 0; font-size: 16px; }
+.agent-panel p { margin: 4px 0 8px; }
+.agent-models { margin: 2px 0 8px; padding-left: 18px; }
+.agent-now { font-weight: 600; }
+.agent-votes { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 8px; }
+.agent-votes td { padding: 4px 6px; border-top: 1px solid var(--border); vertical-align: top; }
+.agent-panel .feed { padding: 4px 0; }

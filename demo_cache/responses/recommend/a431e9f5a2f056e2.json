@@ -1,0 +1,55 @@
+{
+ "function": "recommend",
+ "model": "Muse Spark",
+ "model_id": "muse-spark-1.3",
+ "recorded_at": "2026-11-04T01:59:26.848847+00:00",
+ "input": {
+  "recommended": {
+   "incident": "incident-15",
+   "type": "elderly man trapped in car by floodwater",
+   "location": "South Junction",
+   "people_at_risk": 1,
+   "units": [
+    "Ambulance 2 (ETA 0.6 min)",
+    "Swift Water Team 1 (ETA 2.0 min)"
+   ]
+  },
+  "swarm_votes": {
+   "Vision Agent": {
+    "score": 62,
+    "reasons": [
+     "45% of the area around it is flooded"
+    ]
+   },
+   "Logistics Agent": {
+    "score": 100,
+    "reasons": [
+     "no free medical unit can reach it over open roads",
+     "no free rescue unit can reach it over open roads",
+     "only 0 free seats for 1 people",
+     "Per Sample Richmond Flood Response Plan (exercise document, not an official City of Richmond plan), 3.1 Life safety first: Rescue of people in moving water, trapped on roofs or in vehicles takes priority over property and infrastructure incidents."
+    ]
+   },
+   "Triage Agent": {
+    "score": 100,
+    "reasons": [
+     "78-year-old trapped in car, cannot open door",
+     "Water up to windows at Hull Street underpass"
+    ]
+   }
+  },
+  "consensus": 100,
+  "unmet": [
+   "incident-11 left unassigned; medical units that can reach it are committed to higher-priority incident-15.",
+   "incident-12 left unassigned; police units that can reach it are already on incident-14."
+  ]
+ },
+ "output": {
+  "tradeoff": "Leaves incident-11 unassigned because medical units that can reach it are committed to higher-priority incident-15, and leaves incident-12 unassigned because police units that can reach it are already on incident-14.",
+  "why": [
+   "78-year-old trapped in car, cannot open door with water up to windows at Hull Street underpass [Triage Agent]",
+   "Rescue of people trapped in vehicles takes priority over property and infrastructure incidents [Per Sample Richmond Flood Response Plan (exercise document, not an official City of Richmond plan), 3.1 Life safety first: Rescue of people in moving water, trapped on roofs or in vehicles takes priority over property and infrastructure incidents.]",
+   "45% of the area around it is flooded [Vision Agent]"
+  ]
+ }
+}

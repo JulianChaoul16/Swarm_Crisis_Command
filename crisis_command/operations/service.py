@@ -20,7 +20,7 @@ from ..agents.model_client import ModelClient, ModelUnavailableError, model_clie
 from ..meta_api import MetaHub, hub_from_env
 from ..model import Incident, IncidentStatus, Severity
 from ..swarm.agents import SEVERITY_BASE, Swarm
-from ..swarm.board import ROAD_CHANGED, IncidentBoard
+from ..swarm.board import ROAD_CHANGED, UNITS_CHANGED, IncidentBoard
 from ..planner import Planner
 from ..simulation import Simulation, World
 from .feasibility import all_passed, check_plan
@@ -136,6 +136,8 @@ class CommandService:
         # When on, the recommendation text and public alert are written in a background
         # thread and attach when ready; the plan itself never waits for them.
         self.background_models = background_models
+        # Called with the approved proposal (the demo uses it to continue the timeline).
+        self.approval_listeners: list = []
         self.store = store or OperationsStore()
         self.agent_timeout = agent_timeout
         self._lock = RLock()
@@ -575,15 +577,36 @@ class CommandService:
                     },
                 )
 
+        if not stale:
+            self.board.bus.publish(UNITS_CHANGED, {"why": f"units dispatched by {plan_id}"})
         replacement = self.propose()
         if not stale:
             self._announce(proposal)
+            for listener in list(self.approval_listeners):
+                listener(proposal)
         if stale:
             raise StaleApprovalError(
                 f"{plan_id} is stale; a new proposal was computed from the latest snapshot.",
                 replacement.id if replacement else None,
             )
         return proposal
+
+    def resolve_incident(self, incident_id: str, reported_by: str, text: str) -> tuple[str, ...]:
+        """A field unit reports an incident resolved: close it, free its units, re-plan."""
+        with self._atomic():
+            try:
+                freed = self.world.resolve_incident(incident_id, f"{reported_by}: {text}")
+            except ValueError as error:
+                raise ConflictError(str(error)) from error
+            self._mark_stale_locked()
+            self._commit(plans=self._plans.values())
+        names = {s.id: s.name for s in self.world.services}
+        self.board.bus.publish(UNITS_CHANGED, {"why": f"{', '.join(names[f] for f in freed) or 'no units'} freed by {incident_id} resolving"})
+        self.board.log("Coordinator", "field report",
+                       f"{incident_id} resolved ({reported_by}); free again: "
+                       f"{', '.join(names[f] for f in freed) or 'none'}", incident_id)
+        self.propose()
+        return freed
 
     # ----- command & comms (model-written text around the solver's decision) --
 

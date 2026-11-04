@@ -19,7 +19,16 @@ import networkx as nx
 from ..meta_api import SAM, MetaHub
 from ..model import Incident, IncidentStatus, Severity
 from ..simulation import WorldSnapshot
-from .board import FLOOD_CHANGED, GAUGE_CHANGED, LOGISTICS, ROAD_CHANGED, TRIAGE, VISION, IncidentBoard
+from .board import (
+    FLOOD_CHANGED,
+    GAUGE_CHANGED,
+    LOGISTICS,
+    ROAD_CHANGED,
+    TRIAGE,
+    UNITS_CHANGED,
+    VISION,
+    IncidentBoard,
+)
 
 # Sample trigger from the exercise knowledge base: at 12 ft and rising, low-lying areas
 # are expected to flood further. Within half a foot of it, Logistics raises urgency there.
@@ -96,6 +105,7 @@ class Swarm:
         board.bus.subscribe(FLOOD_CHANGED, self._on_flood)
         board.bus.subscribe(ROAD_CHANGED, self._on_road)
         board.bus.subscribe(GAUGE_CHANGED, self._on_gauge)
+        board.bus.subscribe(UNITS_CHANGED, self._on_units)
 
     def _open(self, snapshot: WorldSnapshot) -> list[Incident]:
         return [i for i in snapshot.incidents if i.status != IncidentStatus.RESOLVED]
@@ -179,6 +189,13 @@ class Swarm:
         self.board.log(LOGISTICS, RULES, f"Reacting to river gauge {payload['gauge']['value']} ft")
         for incident in self._open(self.snapshot()):
             if len(self.board.votes.get(incident.id, {})) == 3:
+                self.logistics(incident.id)
+
+    def _on_units(self, payload: dict[str, Any]) -> None:
+        """Units were dispatched or freed: Logistics re-checks access for incidents still waiting."""
+        self.board.log(LOGISTICS, RULES, f"Reacting to {payload['why']}")
+        for incident in self._open(self.snapshot()):
+            if incident.status == IncidentStatus.OPEN and len(self.board.votes.get(incident.id, {})) == 3:
                 self.logistics(incident.id)
 
     def _on_road(self, payload: dict[str, Any]) -> None:

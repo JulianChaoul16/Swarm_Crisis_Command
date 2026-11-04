@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CrisisMap, { type MapData } from "@/components/CrisisMap";
 import { ApiError, api } from "@/lib/api";
-import type { Incident, Proposal, Swarm, WorldState } from "@/lib/types";
+import type { Agent, Incident, Proposal, Swarm, WorldState } from "@/lib/types";
 
 // One screen, three panels: incident queue | map | recommendation + activity.
 // Workflow: Detect -> Prioritize -> Decide -> Dispatch -> Communicate.
@@ -29,14 +29,69 @@ function Pill({ label, title }: { label: string; title?: string }) {
   );
 }
 
-function ModelStrip({ models }: { models: WorldState["models"] }) {
+const ago = (iso: string) => {
+  const seconds = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+  return seconds < 60 ? `${seconds}s ago` : `${Math.round(seconds / 60)}m ago`;
+};
+
+/** The named agents; click one to see what it is working on. */
+function AgentStrip({ agents, open, onOpen }: { agents: Agent[]; open: string | null; onOpen: (name: string | null) => void }) {
   return (
-    <div className="model-strip">
-      {models.map((m) => (
-        <span key={m.model} className={`pill ${m.status === "live" ? "pill-live" : "pill-off"}`} title={m.detail || m.status}>
-          [{m.model}] {m.status === "live" ? "live" : m.status}
-        </span>
+    <div className="agent-strip">
+      {agents.map((agent) => (
+        <button key={agent.name} className={`agent-chip ${open === agent.name ? "on" : ""}`}
+          onClick={() => onOpen(open === agent.name ? null : agent.name)} title={agent.role}>
+          <b>{agent.name}</b>
+          <span className="muted"> {agent.last ? `· ${agent.actions} actions · ${ago(agent.last.at)}` : "· idle"}</span>
+        </button>
       ))}
+    </div>
+  );
+}
+
+function AgentPanel({ agent, onClose }: { agent: Agent; onClose: () => void }) {
+  return (
+    <div className="agent-panel" role="dialog" aria-label={agent.name}>
+      <div className="agent-head">
+        <h3>{agent.name}</h3>
+        <button className="ghost" onClick={onClose}>Close</button>
+      </div>
+      <p>{agent.role}</p>
+      <div className="rec-label">Models</div>
+      <ul className="agent-models">
+        {agent.models.map((m) => <li key={m.model}><b>{m.model}</b> <span className="muted">{m.status}</span></li>)}
+      </ul>
+      {agent.last && (
+        <>
+          <div className="rec-label">Working on</div>
+          <p className="agent-now">{agent.last.text} <span className="muted">({ago(agent.last.at)})</span></p>
+        </>
+      )}
+      {agent.votes.length > 0 && (
+        <>
+          <div className="rec-label">Current votes</div>
+          <table className="agent-votes">
+            <tbody>
+              {agent.votes.map((v) => (
+                <tr key={v.incident_id}>
+                  <td><b>{v.score}</b></td>
+                  <td>{v.incident_id} · {v.kind}<div className="muted">{v.reasons[0]}</div></td>
+                  <td className="muted">{v.source}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+      <div className="rec-label">Activity ({agent.actions})</div>
+      <ol className="feed">
+        {agent.activity.map((item, index) => (
+          <li key={`${item.at}${index}`}>
+            <span className="t">[{time(item.at)}]</span> <span className="src">({item.source})</span> {item.text}
+          </li>
+        ))}
+        {!agent.activity.length && <li className="muted">Nothing yet this run.</li>}
+      </ol>
     </div>
   );
 }
@@ -313,6 +368,7 @@ export default function CommandScreen() {
   const [world, setWorld] = useState<WorldState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [agentOpen, setAgentOpen] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     setWorld(await api.state());
@@ -378,7 +434,10 @@ export default function CommandScreen() {
       </header>
 
       {world && <DemoGuide demo={world.demo} />}
-      {world && <ModelStrip models={world.models} />}
+      {world && <AgentStrip agents={world.agents} open={agentOpen} onOpen={setAgentOpen} />}
+      {world && agentOpen && world.agents.find((a) => a.name === agentOpen) && (
+        <AgentPanel agent={world.agents.find((a) => a.name === agentOpen)!} onClose={() => setAgentOpen(null)} />
+      )}
       {error && <div className="banner">{error}</div>}
 
       {world && (

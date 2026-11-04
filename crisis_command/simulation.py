@@ -281,6 +281,26 @@ class World:
             raise ValueError("Incident addition reason cannot be empty.")
         self.incidents.append_with_reason(incident, reason)
 
+    def resolve_incident(self, incident_id: str, reason: str) -> tuple[str, ...]:
+        """Close an incident on a confirmed resolution report; returns the units freed."""
+        if not reason.strip():
+            raise ValueError("Resolution reason cannot be empty.")
+        with self._lock:
+            incident = next((item for item in self.incidents if item.id == incident_id), None)
+            if incident is None:
+                raise ValueError(f"Unknown incident {incident_id!r}.")
+            if incident.status == IncidentStatus.RESOLVED:
+                return ()
+            freed = tuple(s.id for s in self.services if s.assigned_incident_id == incident_id)
+            for service in self.services:
+                if service.assigned_incident_id == incident_id:
+                    service.assigned_incident_id = None
+            incident.status = IncidentStatus.RESOLVED
+            self.version += 1
+            self._append_event("incident_resolved", (incident_id, *freed), reason,
+                               (("freed_units", ", ".join(freed) or "none"),))
+            return freed
+
     def add_emergency_service(
         self,
         service: EmergencyService,
