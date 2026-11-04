@@ -1,0 +1,62 @@
+{
+ "model": "muse-voice-transcribe-1.0",
+ "pooled_wer": 0.091,
+ "pooled_wer_numbers_normalized": 0.039,
+ "clips": [
+  {
+   "file": "01_bus_shockoe.wav",
+   "audio_s": 36.6,
+   "took_s": 44.6,
+   "wer": 0.087,
+   "wer_numbers_normalized": 0.044,
+   "transcript": "911, what is the address of your emergency? I'm driving a city bus on East 18th Street and Maine, in Chaco Bottom. Water is coming in through the front doors. It's already over the first step. How many people are on the bus with you? Four passengers, plus me. One of them is in a wheelchair and can't and can't get up the steps. The road outside is moving like a river. We can't get out. Stay on the bus and keep everyone as high as you can. Help is being sent.",
+   "reference": "Nine one one, what is the address of your emergency? I'm driving a city bus on East Eighteenth Street and Main, in Shockoe Bottom. Water is coming in through the front doors. It's already over the first step. How many people are on the bus with you? Four passengers, plus me. One of them is in a wheelchair and can't get up the steps. The road outside is moving like a river. We can't get out. Stay on the bus and keep everyone as high as you can. Help is being sent."
+  },
+  {
+   "file": "02_car_underpass.wav",
+   "audio_s": 25.6,
+   "took_s": 33.2,
+   "wer": 0.076,
+   "wer_numbers_normalized": 0.0,
+   "transcript": "911, what is your emergency? My dad is stuck in his car in the Hull Street underpass, right by the Mayo Bridge. The water is up to the windows and he can't open the door. How old is he and is he hurt? He's 78. He has a heart condition. He's on the phone with me and he's panicking. Please send someone now.",
+   "reference": "Nine one one, what is your emergency? My dad is stuck in his car in the Hull Street underpass, right by the Mayo Bridge. The water is up to the windows and he can't open the door. How old is he, and is he hurt? He's seventy eight. He has a heart condition. He's on the phone with me and he's panicking. Please send someone now."
+  },
+  {
+   "file": "03_radio_swift_water.wav",
+   "audio_s": 13.6,
+   "took_s": 20.8,
+   "wer": 0.125,
+   "wer_numbers_normalized": 0.125,
+   "transcript": "Swiftwater Team won to dispatch. We are clear of Riverside Apartments. All five residents are out and safe, no injuries. We are heading back to the staging staging area and are available.",
+   "reference": "Swift Water Team One to dispatch. We are clear of Riverside Apartments. All five residents are out and safe, no injuries. We are heading back to the staging area and are available."
+  },
+  {
+   "file": "04_hedged_bridge.wav",
+   "audio_s": 14.3,
+   "took_s": 21.5,
+   "wer": 0.028,
+   "wer_numbers_normalized": 0.0,
+   "transcript": "Hi. Um, I'm not sure who to call. I think the mayo bridge might be closed. I saw police cars at 14th street with their lights on, but I didn't see any signs. is it closed?",
+   "reference": "Hi, um, I'm not sure who to call. I think the Mayo Bridge might be closed? I saw police cars at Fourteenth Street with their lights on, but I didn't see any signs. Is it closed?"
+  },
+  {
+   "file": "05_road_authority_dock.wav",
+   "audio_s": 13.1,
+   "took_s": 20.2,
+   "wer": 0.2,
+   "wer_numbers_normalized": 0.133,
+   "transcript": "Road Authority to all to all units. Dock Street is closed between 14th and and 18th Street. Water is over the road. About two feet deep. Use broad Street to reach Chaco bottom.",
+   "reference": "Road authority to all units. Dock Street is closed between Fourteenth and Eighteenth Street. Water is over the road, about two feet deep. Use Broad Street to reach Shockoe Bottom."
+  },
+  {
+   "file": "06_rooftop_family.wav",
+   "audio_s": 23.8,
+   "took_s": 31.5,
+   "wer": 0.077,
+   "wer_numbers_normalized": 0.0,
+   "transcript": "911, where are you? We're on the roof of our house, 7th and Bainbridge, in Manchester. The water came up so fast. Please hurry. How many people are with you? It's me, my wife, our two kids, and my mother. My mother can't walk, I had to carry her up.",
+   "reference": "Nine one one, where are you? We're on the roof of our house, Seventh and Bainbridge, in Manchester. The water came up so fast. Please hurry. How many people are with you? It's me, my wife, our two kids, and my mother. My mother can't walk, I had to carry her up."
+  }
+ ],
+ "note": "Synthesized voices (Windows TTS) reading fictional scripts."
+}
