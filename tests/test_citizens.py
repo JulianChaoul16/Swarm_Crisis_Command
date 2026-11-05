@@ -68,5 +68,27 @@ class CitizenHubTests(unittest.TestCase):
         self.assertEqual(feed["units_total"], len(self.service.world.services))
 
 
+
+class FillGapsTests(unittest.TestCase):
+    """Any readable report reaches the swarm; what the reader left blank is a stated assumption."""
+
+    CAPS = frozenset({"fire", "medical", "rescue", "police", "utility"})
+
+    def test_a_bare_report_gets_stated_defaults(self) -> None:
+        from crisis_command.operations.reports import ReportFields, fill_gaps
+        fields, notes = fill_gaps(ReportFields(location="Manchester"), "Water is coming into our house", self.CAPS)
+        self.assertEqual((fields.report_type, fields.severity), ("incident", "medium"))
+        self.assertEqual(fields.required_services, ("rescue",))
+        self.assertEqual(fields.people, 1)
+        self.assertIn("severity assumed medium", notes)
+
+    def test_what_the_reader_gave_is_kept_and_location_is_never_invented(self) -> None:
+        from crisis_command.operations.reports import ReportFields, fill_gaps
+        given = ReportFields(report_type="incident", kind="kitchen fire", severity="high",
+                             required_services=("fire",), people=0)
+        fields, notes = fill_gaps(given, "Kitchen fire", self.CAPS)
+        self.assertEqual((fields, notes), (given, ()))
+        self.assertIsNone(fields.location)
+
 if __name__ == "__main__":
     unittest.main()

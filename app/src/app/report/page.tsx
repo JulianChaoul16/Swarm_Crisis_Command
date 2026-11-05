@@ -202,9 +202,12 @@ export default function HubPage() {
   const capture = useRef<{ stop: () => Promise<ArrayBuffer> } | null>(null);
 
   const source = name.trim() ? `report page (${name.trim()})` : "public report page";
-  const canRecord = typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia;
+  // Checked after mount: the server has no microphone, so checking during render would make the
+  // server and browser HTML differ (a hydration error).
+  const [canRecord, setCanRecord] = useState(false);
 
   useEffect(() => {
+    setCanRecord(!!navigator.mediaDevices?.getUserMedia);
     setReceipts(loadReceipts());
     try {
       setSpanish(window.localStorage.getItem("crisis-command-lang") === "es");
@@ -326,9 +329,8 @@ export default function HubPage() {
   return (
     <main className="report-page hub">
       <header className="hub-head">
-        <span className="sim">SIMULATION</span>
         <h1>{feed ? `${feed.city} ${feed.hazard[0].toUpperCase()}${feed.hazard.slice(1)} Help Hub` : "Help Hub"}</h1>
-        <p className="muted small">Emergency exercise, not a live service. In a real emergency, call 911.</p>
+        <p className="muted small">This page is not monitored by 911. In an emergency, call 911.</p>
       </header>
 
       {feed && (

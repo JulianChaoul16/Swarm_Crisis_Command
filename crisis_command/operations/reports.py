@@ -106,6 +106,48 @@ class Report:
     linked_incident_id: str | None = None
     linked_road_id: str | None = None
     decision_reason: str | None = None
+    # Gaps the intake filled so the report could still go to the swarm, in plain words.
+    assumptions: tuple[str, ...] = ()
+
+
+# Words that point to the capability a report needs, checked in this order; police otherwise.
+SERVICE_HINTS = (
+    ("fire", ("fire", "smoke", "burning", "flames", "explosion")),
+    ("rescue", ("trapped", "stuck", "stranded", "water", "flood", "drown", "swept", "roof")),
+    ("medical", ("hurt", "injur", "bleed", "sick", "medical", "unconscious", "breath", "heart",
+                 "pregnant", "elderly", "wheelchair", "dialysis", "fell")),
+    ("utility", ("power", "outage", "line", "wire", "gas", "transformer", "electric", "sparking")),
+)
+
+
+def fill_gaps(fields: ReportFields, text: str, capabilities: frozenset[str]) -> tuple[ReportFields, tuple[str, ...]]:
+    """Let any readable report reach the swarm: fill what the reader left blank with a stated,
+    conservative assumption. A missing location is not guessed; that report waits for a person."""
+    notes: list[str] = []
+    if fields.report_type is None:
+        fields = replace(fields, report_type="road_status" if fields.road_id else "incident")
+    if fields.report_type == "road_status":
+        if fields.road_id and fields.road_closed is None:
+            fields = replace(fields, road_closed=True)
+            notes.append("road assumed closed")
+        return fields, tuple(notes)
+    if not fields.kind:
+        fields = replace(fields, kind=" ".join(text.split())[:60].lower() or "reported emergency")
+        notes.append("description taken from the report")
+    if fields.severity is None:
+        fields = replace(fields, severity="medium")
+        notes.append("severity assumed medium")
+    if not fields.required_services:
+        words = f"{fields.kind} {text}".lower()
+        needed = [cap for cap, hints in SERVICE_HINTS if cap in capabilities and any(h in words for h in hints)]
+        if not needed and "police" in capabilities:
+            needed = ["police"]
+        fields = replace(fields, required_services=tuple(needed))
+        notes.append(f"needs inferred: {', '.join(needed)}")
+    if "rescue" in (fields.required_services or ()) and fields.people is None:
+        fields = replace(fields, people=1)
+        notes.append("head count not given; planned for at least 1 person")
+    return fields, tuple(notes)
 
 
 def validate_fields(

@@ -49,6 +49,7 @@ class DemoRunner:
         `record=True` calls the live model instead and records fresh responses."""
         self.service.hub.mode = "live" if record else "demo"
         self.service.hub.overwrite = record
+        self.service.hub.record = record
         with self._lock:
             self._generation += 1
             self.done, self.errors, self.approvals, self.busy = [], [], 0, False
@@ -237,7 +238,7 @@ class DemoRunner:
             "objects": boxes.value["objects"], "boxes_source": boxes.label,
             "map_features": [to_map(box) for box in water],
             "estimate": value, "estimate_source": estimate.label,
-            "note": (f"{boxes.note}. The photo is an AI-generated test image; its position on the map is an "
+            "note": (f"{boxes.note}. The satellite image is AI-generated (Muse Image); its position on the map is an "
                      f"assumed footprint around {event['place']}, not georeferenced."),
         })
         board.log(VISION, boxes.label, f"'{prompts['water']}': {len(water)} regions, about {percent}% of the photo; "
@@ -252,7 +253,7 @@ class DemoRunner:
                       "treated as impassable, the safer reading")
         if not value["passable_for_cars"]:
             report = self.service.submit_report(
-                f"Vision Agent: {event['road_id']} impassable in citizen photo {event['image_id']} "
+                f"Vision Agent: {event['road_id']} impassable in satellite image {event['image_id']} "
                 f"(est. {value['depth_in_low']}-{value['depth_in_high']} in of water; {value['reason']}).",
                 f"Vision Agent ({boxes.label}, {estimate.label})",
                 fields={"report_type": "road_status", "road_id": event["road_id"], "road_closed": True,
@@ -264,9 +265,12 @@ class DemoRunner:
             self.service.propose()
 
     def _unit_report(self, event: dict[str, Any]) -> None:
-        """A field unit reports its incident resolved (scripted scenario message)."""
-        self.service.resolve_incident(event["incident_id"], f"{event['unit_name']} (field unit, scripted scenario message)",
-                                      event["text"])
+        """A field unit radios in that its incident is resolved; it shows like an incoming call."""
+        self.service.board.transcripts.append({
+            "audio_id": f"radio-{event['incident_id']}", "kind": "radio", "text": event["radio"],
+            "source": f"{event['unit_name']} · field radio", "note": "Status report from the crew on scene"})
+        self.service.board.log("Field radio", event["unit_name"], f"\"{event['radio']}\"", event["incident_id"])
+        self.service.resolve_incident(event["incident_id"], f"{event['unit_name']} (field radio)", event["text"])
 
     def _gauge(self, event: dict[str, Any]) -> None:
         self.service.board.set_gauge({"value": event["value"], "trend": event["trend"],

@@ -92,7 +92,7 @@ def reports(service: CommandService, tokens: list[str]) -> list[dict[str, Any]]:
         report = by_id.get(report_id) if run_id == service.run_id else None
         if report is None:
             out.append({"receipt": token, "stage": "closed", "step": 0,
-                        "label": "This exercise was reset, so the report is no longer on the board."})
+                        "label": "The command board was reset, so this report is no longer on it."})
             continue
         out.append({"receipt": token, "id": report.id, "text": report.content,
                     "received_at": report.received_at.isoformat(), "place": report.fields.location,

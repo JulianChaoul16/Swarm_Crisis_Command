@@ -55,6 +55,17 @@ class HubTests(unittest.TestCase):
         replay = self.hub(UnavailableModelClient("offline"), mode="demo").triage(facts, lambda: {})
         self.assertEqual((replay.source, replay.value), ("cache", live.value))
 
+    def test_demo_mode_replays_recordings_and_calls_live_only_for_new_input(self) -> None:
+        recorded = {"type": "stranded bus"}
+        self.hub(FakeClient(answer)).triage(recorded, lambda: {})
+        client = FakeClient(answer)
+        demo = self.hub(client, mode="demo")
+        self.assertEqual(demo.triage(recorded, lambda: {}).source, "cache")
+        self.assertEqual(client.calls, [])  # the scripted step never reaches the model
+        fresh = demo.triage({"type": "family on a roof"}, lambda: {})
+        self.assertEqual((fresh.source, len(client.calls)), ("live", 1))  # a resident's new report does
+        self.assertEqual(len(list(self.cache.rglob("*.json"))), 1)  # and is not added to the demo's recordings
+
     def test_live_use_never_overwrites_a_recording_unless_re_recording(self) -> None:
         facts = {"type": "stranded bus"}
         self.hub(FakeClient(answer)).triage(facts, lambda: {})

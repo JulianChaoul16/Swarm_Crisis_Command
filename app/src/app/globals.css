@@ -448,3 +448,30 @@ button.start.pause { background: var(--warn); border-color: var(--warn); color: 
 .projection-hours button.on { border-color: var(--solver); color: var(--text); background: var(--solver-bg); }
 .projection-hours button.over b { color: var(--warn); }
 .swatch-projection { background: rgba(59, 130, 246, 0.2); border: 2px dashed #e0f2fe; }
+/* Reports the swarm could not use yet: shown so a person reads them. */
+.held { margin: 8px 0; padding: 10px; border-radius: 10px; border: 1px solid var(--warn); background: rgba(251, 191, 36, 0.08); }
+.held ul { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.held-text { font-style: italic; margin: 2px 0; }
+.held-why { color: var(--warn); }
+
+/* Small scenario tag in the nav (replaces the old SIMULATION banner). */
+.scenario-tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; color: var(--muted);
+  border: 1px solid var(--border); margin-left: 6px; }
+/* Field radio report: same card as a transcript, marked as radio. */
+.transcript.radio { border-left: 3px solid var(--approve); }
+/* River gauge chart (left panel). */
+.gauge-card { margin: 8px 0; padding: 10px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--border); }
+.gauge-now { font-size: 13px; margin: 2px 0 4px; }
+.gauge-now b { font-size: 18px; }
+.gauge-warn { color: var(--warn); font-weight: 700; }
+.gauge-svg { width: 100%; height: auto; display: block; }
+.gauge-grid { stroke: var(--border); stroke-width: 1; }
+.gauge-axis { fill: var(--muted); font-size: 9px; }
+.gauge-trigger { stroke: var(--warn); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.gauge-trigger-label { fill: var(--warn); font-size: 9px; font-weight: 700; }
+.gauge-observed { fill: none; stroke: #3987e5; stroke-width: 2.5; stroke-linejoin: round; }
+.gauge-projected { fill: none; stroke: #3987e5; stroke-width: 2; stroke-dasharray: 5 4; opacity: 0.8; }
+.gauge-dot { fill: #3987e5; stroke: var(--panel-2); stroke-width: 2; }
+.gauge-value { fill: var(--text); font-size: 10px; font-weight: 700; }
+/* A typed report from the citizen hub, API or a connector. */
+.transcript.report { border-left: 3px solid var(--warn); }

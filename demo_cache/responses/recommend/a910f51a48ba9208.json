@@ -2,7 +2,7 @@
  "function": "recommend",
  "model": "Muse Spark",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T20:23:18.589558+00:00",
+ "recorded_at": "2026-11-04T23:06:31.576963+00:00",
  "input": {
   "recommended": {
    "incident": "incident-14",
@@ -20,6 +20,13 @@
      "54% of the area around it is flooded"
     ]
    },
+   "Intake Agent": {
+    "score": 98,
+    "reasons": [
+     "Water coming in through front doors over first step, road moving like a river, can't get out",
+     "4 passengers plus driver, one in wheelchair can't get up steps, needs medical and rescue"
+    ]
+   },
    "Access check": {
     "score": 100,
     "reasons": [
@@ -27,13 +34,6 @@
      "nearest rescue unit 7.0 min away",
      "river at 11.8 ft and rising, near the 12 ft sample trigger",
      "Per Sample Richmond Flood Response Plan (exercise document, not an official City of Richmond plan), 3.1 Life safety first: Rescue of people in moving water, trapped on roofs or in vehicles takes priority over property and infrastructure incidents."
-    ]
-   },
-   "Intake Agent": {
-    "score": 98,
-    "reasons": [
-     "Water coming in through front doors over first step, road moving like a river, can't get out",
-     "4 passengers plus driver, one in wheelchair can't get up steps, needs medical and rescue"
     ]
    }
   },
@@ -45,9 +45,9 @@
  "output": {
   "tradeoff": "Leaves incident-11 unassigned because medical units that can reach it are committed to higher-priority incident-14, incident-15, incident-9.",
   "why": [
-   "Life safety first: rescue of people trapped in vehicles takes priority over property incidents [Access check]",
-   "Water over first step, road moving like a river, 4 passengers plus driver with wheelchair passenger needing medical and rescue [Intake Agent]",
-   "54% of the area around it is flooded with river at 11.8 ft and rising near 12 ft trigger [Vision Agent]"
+   "Bus trapped by floodwater in Shockoe Bottom with 5 at risk, water over first step and road moving like a river [Intake Agent]",
+   "54% of the area around it is flooded [Vision Agent]",
+   "Assigned Swift Water Team 3 (ETA 7.4 min) as life-safety rescue takes priority with river at 11.8 ft and rising near 12 ft trigger [Access check]"
   ]
  }
 }

@@ -118,7 +118,7 @@ class DemoTests(unittest.TestCase):
         self.assertEqual((image["boxes_source"], image["estimate_source"]), ("SAM 3.1 · cache", "Muse Wonder · cache"))
         self.assertTrue(image["objects"]["flooded street"] and image["map_features"])
         self.assertFalse(image["estimate"]["passable_for_cars"])
-        self.assertIn("AI-generated test image", image["note"])
+        self.assertIn("AI-generated", image["note"])
         self.assertIn("assumed footprint", image["note"])
         self.assertEqual(state["swarm"]["transcripts"][0]["source"], "Muse Voice Transcribe · cache")
         self.assertIn("text-to-speech", state["swarm"]["transcripts"][0]["note"])

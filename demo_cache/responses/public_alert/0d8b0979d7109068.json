@@ -2,7 +2,7 @@
  "function": "public_alert",
  "model": "Muse Spark",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T20:22:16.824996+00:00",
+ "recorded_at": "2026-11-04T23:06:20.108444+00:00",
  "input": {
   "responding_to": [
    {
@@ -36,7 +36,7 @@
   ]
  },
  "output": {
-  "english": "This is a simulated flood alert exercise for Richmond, VA. Floodwater is trapping a bus in Shockoe Bottom and residents at Riverside Apartments, and Dock St and Lee Bridge are closed. Avoid these areas and never drive through floodwater.",
-  "spanish": "Este es un ejercicio simulado de alerta de inundación para Richmond, VA. El agua está atrapando un autobús en Shockoe Bottom y a residentes en Riverside Apartments, y Dock St y Lee Bridge están cerradas. Evite estas áreas y nunca conduzca por calles inundadas."
+  "english": "There is dangerous flooding in Richmond, VA. Avoid Dock St, Lee Bridge, and flooded areas in Shockoe Bottom and Riverside Apartments. Do not drive or walk through floodwater and stay away from downed power lines.",
+  "spanish": "Hay inundaciones peligrosas en Richmond, VA. Evite Dock St, Lee Bridge y las zonas inundadas en Shockoe Bottom y Riverside Apartments. No maneje ni camine por el agua y manténgase lejos de los cables eléctricos caídos."
  }
 }

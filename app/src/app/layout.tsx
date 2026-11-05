@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Crisis Command Swarm",
-  description: "A human-led agent swarm for city emergency operations (simulation)."
+  description: "A human-led agent swarm for city emergency operations."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

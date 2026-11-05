@@ -6,7 +6,7 @@ export const LAYERS = [
   ["flood", "Flood zones"],
   ["projection", "Projected flood (trend)"],
   ["fire", "Fire areas"],
-  ["units", "Units (simulated GPS)"],
+  ["units", "Units"],
   ["roads", "Closed roads"],
   ["power", "Power outages"],
   ["hospitals", "Hospitals & shelters"],
@@ -159,7 +159,7 @@ export function ProjectionCard({ projection, horizon, onHorizon, shown }: {
             key={frame.hours}
             className={`${frame.hours === horizon ? "on" : ""} ${frame.above_trigger ? "over" : ""}`}
             onClick={() => onHorizon(frame.hours)}
-            title={frame.above_trigger && projection.trigger_ft ? `Above the ${projection.trigger_ft} ft sample trigger` : undefined}
+            title={frame.above_trigger && projection.trigger_ft ? `Above the ${projection.trigger_ft} ft flood trigger` : undefined}
           >
             +{frame.hours} h <b>{frame.gauge_ft.toFixed(1)} ft</b>{frame.above_trigger ? " ⚠" : ""}
           </button>

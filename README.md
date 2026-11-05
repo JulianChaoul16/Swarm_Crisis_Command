@@ -1,17 +1,39 @@
 # Crisis Command
 
-**A human-led agent swarm for city emergency operations. The agents triage, the solver plans, a
-person decides.**
+**An open-source, human-led agent swarm for city emergency operations. The agents triage, the
+solver plans, a person decides.**
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-3776ab.svg)
+![Node 20+](https://img.shields.io/badge/node-20%2B-339933.svg)
+![Tests: 116 passing](https://img.shields.io/badge/tests-116%20passing-brightgreen.svg)
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)](CONTRIBUTING.md)
 
 Built for the Meta AI Developer Hackathon on Meta's Muse Spark, Muse Voice Transcribe, SAM 3.1
 and Muse Wonder. The engine has no city or hazard built into it: a city is a scenario (places,
 roads, crews, local plans). The bundled demo is a flash flood in **Richmond, VA**.
 
-> **Simulation only.** Incidents, units, unit positions, gauge readings and outcomes are
-> synthetic. The demo's street geometry is real (OpenStreetMap); the fleet and the scenario are
-> invented. Nothing is dispatched. This is not a certified emergency system.
+> **Demo data.** The incidents, crews, unit positions and gauge readings in the demo are a
+> scenario built for it; the street geometry is real (OpenStreetMap). Nothing is sent to real
+> crews yet, and it is not a certified dispatch system.
 
 ---
+
+## Quick start
+
+```powershell
+git clone <this repo>; cd Swarm_Crisis_Command
+pip install -r requirements.txt
+cd app; npm install; cd ..
+copy .env.example .env        # add META_API_KEY (optional: without it the agents use rules)
+python -m uvicorn crisis_command.api.server:app --port 8000
+cd app; npm run dev           # dashboard: http://localhost:3000 · citizen hub: /report
+```
+
+It starts in **live intake**: Richmond's roads and 12 crews, no incidents. Send a report from
+`/report` (or `POST /api/intake`) and watch the swarm score it, the solver plan it and the
+dashboard ask you to approve. The scripted Richmond flood demo is optional
+(`DEMO_ENABLED=true`, see below).
 
 ## The problem
 
@@ -30,7 +52,7 @@ keeps residents in the loop through a citizen hub.
    numbers and emails are redacted on this machine before any other cloud call.
 2. **Reads.** **Muse Spark** turns the report into structured fields (type, place, people,
    needs) and votes on severity.
-3. **Looks.** A citizen photo goes to **SAM 3.1** (boxes for flooded street, vehicles, smoke)
+3. **Looks.** A satellite or field image goes to **SAM 3.1** (boxes for flooded street, vehicles, smoke)
    and **Muse Wonder** (estimated water depth, whether the road can be driven, fire). A road it
    judges impassable is closed on the map.
 4. **Agrees.** Three independent votes (Intake, Vision, and a computed access check) are combined
@@ -54,28 +76,30 @@ re-plans with them.
 
 | Tab | What's on it |
 |---|---|
-| **Operations map** | Left: people affected, live transcript, the photo with SAM boxes, and the ranked incident queue (each card shows its three votes and their sources, and a Resolved button). Center: MapLibre on satellite imagery with toggles for flood zones, the projected flood, fire, units, closed roads, power outages, hospitals and shelters. Below it, a time scrubber (up to 2 h of recorded history) and an always-on trend projection for +1 to +4 h, labelled "not a forecast". Right: the recommendation, what it changes, Approve & Dispatch, the public alert and the activity feed. |
-| **Personnel** | Every crew: status, capabilities, simulated position, every order it received (dispatch, reroute, stand down), and the public broadcasts. |
+| **Operations map** | Left: people affected, the latest call or field radio report, the river gauge chart, the satellite image with SAM boxes, reports that need a person, and the ranked incident queue (each card shows its three votes and their sources, and a Resolved button). Center: MapLibre on satellite imagery with toggles for flood zones, the projected flood, fire, units, closed roads, power outages, hospitals and shelters. Below it, a time scrubber (up to 2 h of recorded history) and an always-on trend projection for +1 to +4 h, labelled "not a forecast". Right: the recommendation, what it changes, Approve & Dispatch, the public alert and the activity feed. |
+| **Personnel** | Every crew: status, capabilities, position (no GPS feed yet), every order it received (dispatch, reroute, stand down), and the public broadcasts. |
 | **Agents & decisions** | For each incident, every agent's score and reasons and the consensus, plus each agent's own panel. |
 | **`/report`: citizen hub** | For residents, on their phones. **Alerts**: approved English/Spanish public alerts, closed roads and the river gauge. **Report**: type or speak a report; it goes through normal intake. **My reports**: each report this phone sent, tracked by a private receipt, with live status (received → on the command screen → help dispatched, naming the crews → resolved), and the real reason when no crew can be sent yet. Nobody sees anyone else's reports. |
 
-## Demo walkthrough: Richmond flash flood (about 3 minutes)
+## Optional demo: Richmond flash flood (about 3 minutes)
 
-Set `DEMO_ENABLED=true` in `.env`. The demo replays recorded real model answers, so it works
+Off by default. Set `DEMO_ENABLED=true` in `.env` and restart the API. The demo replays recorded real model answers, so it works
 offline and gives the same result every time.
 
 1. Press **Demo**. Five incidents are open on a seeded James River / Shockoe Bottom flood, with
    12 crews.
 2. Press **▶** (or the **→** key) once per event:
    1. a 911 call about a bus stuck in floodwater (live transcript, scored by the swarm)
-   2. a citizen photo: SAM boxes the water, Wonder judges Dock St impassable, and Dock St closes
-   3. the James River gauge rises from 11.2 to 11.8 ft, and the plan and projection change
+   2. a satellite image of Dock St: SAM boxes the water, Wonder judges it impassable, and Dock St closes
+   3. the James River gauge rises from 11.2 to 11.8 ft: a river chart shows the readings, the
+      dashed trend and the 12 ft flood trigger, and the plan and projection change
 3. Read the recommendation and press **Approve & Dispatch**. Crews move and the bilingual alert
    goes out.
 4. Press ▶: a critical 911 call from the Hull St underpass. Every crew is out, so the solver
    reroutes two of them to it and the Manchester dialysis transfer waits. Approve.
-5. Press ▶: the Riverside rescue reports everyone safe. The incident closes, its crews stand down,
-   and the plan covers the waiting call again. Approve. That's the full loop.
+5. Press ▶: Swift Water Team 1 radios in that the Riverside residents are safe (a field radio
+   report card). The incident closes, its crews stand down, and the plan covers the waiting call
+   again. Approve. That's the full loop.
 
 Open `/report` on a phone at any point to send a report and watch it appear on the command
 screen.
@@ -109,7 +133,7 @@ flowchart LR
   L --> R[Redaction<br/>local code]
   T[Citizen hub / API / SQL feed] --> R
   R --> I[Intake Agent<br/>Muse Spark]
-  P[Citizen photo] --> V[Vision Agent<br/>SAM 3.1 + Muse Wonder]
+  P[Satellite / field image] --> V[Vision Agent<br/>SAM 3.1 + Muse Wonder]
   G[River gauge] --> AC
   subgraph Board[Shared IncidentBoard + EventBus]
     I --> C((Consensus))
@@ -146,11 +170,13 @@ flowchart LR
 
 One API key covers all of them, and every call goes through one file:
 [`crisis_command/meta_api.py`](crisis_command/meta_api.py). **Muse Image** was used only to make
-the test photos, and they're labelled as AI-generated.
+the satellite test images, and they're labelled as AI-generated.
 
-**Record and replay.** In live mode every model answer is saved to `demo_cache/responses/`, and
-the demo replays only those recordings, so everything in it is a real model answer. If a live
-call fails, the app uses the recording, then rules, and says so in the activity feed.
+**Record and replay.** `python tools/record_demo.py` runs the demo against the live models and
+saves every answer to `demo_cache/responses/`. The demo replays those recordings, so everything in
+it is a real model answer, and calls the live model only for something new, such as a resident's
+report sent during the demo. If a live call fails, the app uses a recording, then rules, and says
+so in the activity feed. The running server never writes recordings.
 
 ## Trust: no invented facts
 
@@ -184,7 +210,7 @@ reports and answer keys were written by the project author.
 | Live end-to-end latency | **18–22 s** from a raw 911 transcript to an explained recommendation ready to approve | live runs, Muse Spark 1.3 |
 | Exact solver vs. brute force | Optimal on **60/60** random instances | `tests/test_planner_optimal.py` |
 | Planner scenario variants | Expected outcome in 12/12 variants × 3 runs; 0 invalid plans committed | `python -m evaluation.run_eval`, [docs/evaluation.md](docs/evaluation.md) |
-| Automated tests | **113 passing** | `python -m unittest discover -s tests` |
+| Automated tests | **116 passing** | `python -m unittest discover -s tests` |
 
 There's also a separate study in [`findings/`](findings/README.md) comparing a person, classic
 algorithms and Muse Spark on the same six tasks, which informed what the AI does and what code does.
@@ -215,7 +241,7 @@ Requires Python 3.12+ and Node 20+.
 pip install -r requirements.txt
 cd app; npm install; cd ..
 
-copy .env.example .env        # add META_API_KEY; set DEMO_ENABLED=true for the demo
+copy .env.example .env        # add META_API_KEY; DEMO_ENABLED=true only for the scripted demo
 
 python -m uvicorn crisis_command.api.server:app --host 0.0.0.0 --port 8000
 cd app; npm run dev           # http://localhost:3000   (citizen hub: /report)
@@ -250,7 +276,8 @@ The repo is two Railway services from one GitHub repo, each with its own config 
 
 1. **New project → Deploy from GitHub repo**, and pick this repo. That first service is the
    **api**; it reads `/railway.json` and `.python-version` (Python 3.12).
-2. In the api's **Variables**, add `META_API_KEY` and, for the demo, `DEMO_ENABLED=true`
+2. In the api's **Variables**, add `META_API_KEY` (and `DEMO_ENABLED=true` only if you want the
+   scripted demo instead of live intake)
    (the other model settings default as in `.env.example`). Under **Networking**, generate a
    public domain.
 3. **New → GitHub repo** again, same repo, for the **dashboard**. In its **Settings**, set
@@ -287,14 +314,14 @@ railway.json         Railway config for the api (app/railway.json for the dashbo
 
 ## Limits
 
-- One scenario bundled (a Richmond flood) with a simulated fleet of 12 crews. No real dispatch,
+- One scenario bundled (a Richmond flood) with a scenario fleet of 12 crews. No real dispatch,
   GPS, power grid, hospital bed or CAD feeds; the connectors are in place for them.
 - SAM 3.1 returns boxes; its masks aren't decoded yet. The photo's map position is an assumed
   footprint around Dock St, not georeferenced.
 - On the seeded incidents, the Vision scores come from labelled sample flood cover.
 - The projection is a straight-line trend from the gauge, not a flood forecast.
 - The sample flood plan and shelter list in `demo_cache/knowledge/` were written for this
-  exercise. They aren't City of Richmond documents.
+  project. They aren't City of Richmond documents.
 - Citizen receipts are kept in the phone's browser; there are no accounts or notifications yet.
 - No practitioner has reviewed this yet.
 
@@ -311,6 +338,17 @@ this is a proposal.
    city's own plans and shelter list, and CAD.
 4. **Keep a person in charge.** The swarm ranks, explains and drafts. Dispatch stays with the
    operator.
+
+## Contributing
+
+Contributions are welcome, especially a second city, real data feeds (gauges, CAD, GPS) and
+other hazards. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the checks to run and good
+places to start, and [SECURITY.md](SECURITY.md) to report a vulnerability.
+
+## License
+
+[MIT](LICENSE). Street geometry © OpenStreetMap contributors (ODbL). The Meta models are used
+through Meta's API under Meta's terms; bring your own key.
 
 ## How it was built
 

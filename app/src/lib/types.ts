@@ -268,7 +268,8 @@ export type Swarm = {
     estimate_source: string;
     note: string;
   }[];
-  transcripts: { audio_id: string; text: string; source: string; note: string }[];
+  transcripts: { audio_id: string; text: string; source: string; note: string; kind?: "radio" | "report" }[];
+  gauge_history: { value: number; hour: number | null; at: string }[];
   activity: { at: string; agent: string; source: string; text: string; incident_id: string | null }[];
   consensus_rule: string;
 };

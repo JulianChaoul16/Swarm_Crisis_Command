@@ -33,6 +33,7 @@ from .reports import (
     ReportFields,
     ReportStatus,
     evaluate,
+    fill_gaps,
 )
 from .scenario import FLOOD_SCENARIO, Scenario
 from .store import OperationsStore
@@ -78,8 +79,10 @@ may be informal, misspelled, in any language, or contain irrelevant numbers.
 
 - report_type: "incident" if people or property need a response; "road_status" if the report
   only says whether a road is open or closed.
-- location: the known place the report is about, matching nicknames and misspellings; null if
-  no known place matches. Never pick a place the report does not refer to.
+- location: the known area the report is in. Each known area lists the streets, neighbourhoods
+  and landmarks inside or nearest to it: pick the area whose list contains or is closest to what
+  the report names, matching nicknames and misspellings. null only if the report gives no place
+  at all.
 - kind: a short lowercase description, e.g. "residents trapped by rising water".
 - severity: critical = someone trapped, in water, or in immediate danger to life; high =
   injury, fire, a vulnerable person whose condition is unknown, or water about to reach
@@ -312,9 +315,11 @@ class CommandService:
         )
         if result.value is None:
             return replace(report, extraction_error=f"No reading: {result.note}")
+        fields, assumptions = fill_gaps(ReportFields.from_mapping(result.value), report.content, context.capabilities)
         return replace(
             report,
-            fields=ReportFields.from_mapping(result.value),
+            fields=fields,
+            assumptions=assumptions,
             extracted_by=f"model:{result.model} ({result.source})",
         )
 
@@ -621,16 +626,21 @@ class CommandService:
             )
         return proposal
 
-    def intake_message(self, text: str, source: str) -> Report:
+    def intake_message(self, text: str, source: str, show: bool = True) -> Report:
         """A report from outside (the report page): read by the Intake Agent, applied if it is
-        complete, then the swarm votes and the solver re-plans. Dispatch still needs approval."""
+        complete, then the swarm votes and the solver re-plans. Dispatch still needs approval.
+        `show` puts its text on the command screen (a spoken report is already shown as a transcript)."""
         report = self.submit_report(text, source)
+        if show:
+            self.board.transcripts.append({"audio_id": f"report-{report.id}", "kind": "report", "text": report.content,
+                                           "source": source, "note": f"{report.id}, received {report.received_at:%H:%M:%S} UTC"})
         if report.extraction_error:
             self.board.log("Intake Agent", "intake", f"{report.id} could not be read: {report.extraction_error}")
             return report
         self.board.log("Intake Agent", report.extracted_by or "intake",
                        f"{report.id} from {source} read as {report.fields.kind} at {report.fields.location}, "
-                       f"{report.fields.people} people ({report.status.value})")
+                       f"{report.fields.people} people ({report.status.value})"
+                       + (f"; assumed: {'; '.join(report.assumptions)}" if report.assumptions else ""))
         if report.status == ReportStatus.READY:
             report = self.confirm_report(report.id, actor="auto-apply (complete report)")
         return report
@@ -646,7 +656,7 @@ class CommandService:
         self.board.transcripts.append({"audio_id": f"report-{len(self.board.transcripts) + 1}", "text": text,
                                        "source": result.label, "note": f"Spoken report from {source}"})
         self.board.log("Listener Agent", result.label, f"Transcribed: \"{text[:90]}\"")
-        return text, self.intake_message(text, f"{source} (transcribed)")
+        return text, self.intake_message(text, f"{source} (transcribed)", show=False)
 
     def resolve_incident(self, incident_id: str, reported_by: str, text: str) -> tuple[str, ...]:
         """An incident is resolved (field unit or operator): close it, free its units, tell

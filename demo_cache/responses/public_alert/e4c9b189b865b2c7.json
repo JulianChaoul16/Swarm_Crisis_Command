@@ -2,7 +2,7 @@
  "function": "public_alert",
  "model": "Muse Spark",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T20:23:28.428047+00:00",
+ "recorded_at": "2026-11-04T23:06:36.309609+00:00",
  "input": {
   "responding_to": [
    {
@@ -20,7 +20,7 @@
   ]
  },
  "output": {
-  "english": "This is a practice flood alert for Richmond VA. Crews are helping people stuck in floodwater in Shockoe Bottom and South Junction. Please stay away from Dock St and Lee Bridge and never drive through floodwater.",
-  "spanish": "Este es un aviso de inundación de práctica para Richmond VA. Los equipos están ayudando a personas atrapadas en el agua en Shockoe Bottom y South Junction. Evite Dock St y Lee Bridge y nunca maneje por el agua."
+  "english": "There is dangerous flooding in Shockoe Bottom and South Junction. Avoid Dock St and Lee Bridge because they are closed. Do not drive through floodwater and call for help if you are in danger.",
+  "spanish": "Hay inundaciones peligrosas en Shockoe Bottom y South Junction. Evite Dock St y Lee Bridge porque están cerradas. No conduzca por el agua y pida ayuda si está en peligro."
  }
 }

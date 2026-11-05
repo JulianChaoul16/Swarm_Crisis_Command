@@ -211,6 +211,9 @@ class MetaHub:
     # Live answers are recorded only where nothing is recorded yet, unless re-recording, so
     # ordinary live use never changes what the demo replays.
     overwrite: bool = False
+    # Whether live answers are saved at all. The running server turns this off so everyday
+    # use never writes into the repo; re-recording the demo turns it on.
+    record: bool = True
     city: str = DEFAULT_CITY
     city_short: str = DEFAULT_CITY_SHORT
     hazard: str = DEFAULT_HAZARD
@@ -219,18 +222,39 @@ class MetaHub:
     def spark_live(self) -> bool:
         return self.mode == "live" and not isinstance(self.client, UnavailableModelClient)
 
+    # Demo mode replays the recording when there is one and calls the live model only when
+    # there is none (e.g. a resident's new report), without recording it, so the scripted run
+    # stays identical and the committed recordings stay the demo's own.
+    def _may_call(self, model: str) -> bool:
+        # An unavailable client means offline (no key, or tests): no model is called live.
+        if self.mode not in ("live", "demo") or isinstance(self.client, UnavailableModelClient):
+            return False
+        return model == MUSE_SPARK or self.wired(model)
+
+    def _replay(self, function: str, payload: Any, model: str) -> "ModelResult | None":
+        if self.mode != "demo":
+            return None
+        cached = self._cached(function, payload)
+        if cached is None:
+            return None
+        return ModelResult(cached["output"], model, "cache", f"recorded {cached['recorded_at'][:16]}")
+
+    def _keep(self, function: str, payload: Any, model: str, output: Any) -> None:
+        if self.mode == "live" and self.record:
+            self._record(function, payload, model, output)
+
     def wired(self, model: str) -> bool:
         """An image model is called live when its ID is configured (SAM 3.1, Muse Wonder)."""
         return model in WIRED and bool(setting(f"{MODEL_SETTINGS[model]}_MODEL"))
 
     def status(self) -> list[dict[str, str]]:
-        spark = ("live" if self.spark_live else "cache (demo mode)" if self.mode == "demo"
-                 else "not connected")
+        spark = ("live" if self.spark_live else ("recordings, live when none" if self._may_call(MUSE_SPARK)
+                 else "cache (demo mode)") if self.mode == "demo" else "not connected")
         rows = [{"model": MUSE_SPARK, "status": spark,
                  "detail": f"{self.client.model_id} via Meta Responses API" if self.spark_live else ""}]
         for model, detail in NOT_CONNECTED.items():
             if self.wired(model):
-                rows.append({"model": model, "status": "live" if self.mode == "live" else "cache (demo mode)",
+                rows.append({"model": model, "status": "live" if self.mode == "live" else "recordings, live when none",
                              "detail": setting(f"{MODEL_SETTINGS[model]}_MODEL")})
                 continue
             model_id = setting(f"{MODEL_SETTINGS[model]}_MODEL")
@@ -266,11 +290,13 @@ class MetaHub:
                fallback: Callable[[], Any]) -> ModelResult:
         """Muse Spark with record/replay; falls back to the cache, then to rules."""
         started = datetime.now(timezone.utc)
-        if self.spark_live:
+        if (replayed := self._replay(function, payload, MUSE_SPARK)) is not None:
+            return replayed
+        if self._may_call(MUSE_SPARK):
             try:
                 output = self.client.complete_json(system=system, user=json.dumps(payload, default=str),
                                                    schema=schema, timeout=self.timeout)
-                self._record(function, payload, MUSE_SPARK, output)
+                self._keep(function, payload, MUSE_SPARK, output)
                 ms = round((datetime.now(timezone.utc) - started).total_seconds() * 1000)
                 self.calls.append({"function": function, "source": "live", "ms": ms})
                 return ModelResult(output, MUSE_SPARK, "live", latency_ms=ms)
@@ -297,13 +323,15 @@ class MetaHub:
 
         payload = {"pcm_sha256": hashlib.sha256(pcm).hexdigest()[:16], "seconds": round(len(pcm) / 48000, 1)}
         failure = None
-        if self.mode == "live" and self.wired(MUSE_VOICE):
+        if (replayed := self._replay("transcribe", payload, MUSE_VOICE)) is not None:
+            return replayed
+        if self._may_call(MUSE_VOICE):
             started = datetime.now(timezone.utc)
             try:
                 text = asyncio.run(_stream_asr(pcm, setting("META_API_KEY"), setting("META_VOICE_MODEL")))
                 if not text:
                     raise ValueError("empty transcript")
-                self._record("transcribe", payload, MUSE_VOICE, {"text": text})
+                self._keep("transcribe", payload, MUSE_VOICE, {"text": text})
                 ms = round((datetime.now(timezone.utc) - started).total_seconds() * 1000)
                 self.calls.append({"function": "transcribe", "source": "live", "ms": ms})
                 return ModelResult({"text": text}, MUSE_VOICE, "live", latency_ms=ms)
@@ -372,7 +400,9 @@ class MetaHub:
         digest = hashlib.sha256(image.read_bytes()).hexdigest()[:16]
         payload = {"image_sha256": digest, **key_extra}
         failure = None
-        if self.mode == "live" and self.wired(model):
+        if (replayed := self._replay(function, payload, model)) is not None:
+            return replayed
+        if self._may_call(model):
             prefix = MODEL_SETTINGS[model]
             body = {
                 "model": setting(f"{prefix}_MODEL"),
@@ -397,7 +427,7 @@ class MetaHub:
                 value = parse(text)
                 if value is None:
                     raise ValueError("unreadable model output")
-                self._record(function, payload, model, value)
+                self._keep(function, payload, model, value)
                 ms = round((datetime.now(timezone.utc) - started).total_seconds() * 1000)
                 self.calls.append({"function": function, "source": "live", "ms": ms})
                 return ModelResult(value, model, "live", latency_ms=ms)
@@ -496,7 +526,7 @@ class MetaHub:
         return self._RECOMMEND_SYSTEM.format(city=self.city_short, hazard=self.hazard)
 
     _RECOMMEND_SYSTEM = (
-        "You are the command agent in a SIMULATED {city} {hazard} exercise. The dispatch decision "
+        "You are the command agent for {city} {hazard} emergency operations. The dispatch decision "
         "was made by an exact solver and is given; do not change it. Write why: 2-3 short bullets "
         "explaining it, each ending with its source in brackets (an agent name or a citation from "
         "the facts). Write tradeoff: one sentence on what this delays or costs, from the facts. "
@@ -517,7 +547,7 @@ class MetaHub:
         return self._ALERT_SYSTEM.format(city=self.city, hazard=self.hazard)
 
     _ALERT_SYSTEM = (
-        "Write a public {hazard} alert for residents of {city} in a SIMULATED exercise, from the "
+        "Write a public {hazard} alert for residents of {city}, from the "
         "approved actions given. Two versions: English and Spanish, each at most 3 short sentences "
         "at a 6th-grade reading level: what is happening, where to avoid, what to do. Do not invent "
         "places, numbers or shelters beyond the facts. This text is for the public: no citations, "

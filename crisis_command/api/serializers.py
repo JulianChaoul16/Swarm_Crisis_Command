@@ -165,7 +165,7 @@ AGENT_ROSTER = (
     ("Intake Agent", "Reads every report (text or transcript) into structured fields and votes how urgent "
      "it is (0-100). Personal details are redacted on this machine first.",
      ("Muse Spark",), ("Intake Agent",)),
-    ("Vision Agent", "Reads citizen photos: where the water is and whether a road is passable. Votes on flood exposure.",
+    ("Vision Agent", "Reads satellite and field images: where the water is and whether a road is passable. Votes on flood exposure.",
      ("SAM 3.1", "Muse Wonder"), ("Vision Agent",)),
     ("Command Agent", "Explains the solver's recommendation (why, what it delays) and, after approval, writes "
      "the public alert in English and Spanish.", ("Muse Spark", "Muse Image"), ("Command Agent",)),
@@ -224,6 +224,7 @@ def serialize_swarm(board: IncidentBoard) -> dict[str, Any]:
         "gauge": data["gauge"],
         "imagery": data["imagery"],
         "transcripts": data["transcripts"],
+        "gauge_history": data["gauge_history"],
         # Newest first, capped for the UI.
         "activity": [
             {"at": item.at.isoformat(), "agent": item.agent, "source": item.source,
@@ -254,6 +255,7 @@ def serialize_report(report: Report) -> dict[str, Any]:
         "linked_incident_id": report.linked_incident_id,
         "linked_road_id": report.linked_road_id,
         "decision_reason": report.decision_reason,
+        "assumptions": list(report.assumptions),
     }
 
 

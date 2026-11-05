@@ -98,6 +98,8 @@ class IncidentBoard:
     flood_cover: dict[str, dict[str, Any]] = field(default_factory=dict)
     # River gauge reading (scenario value) and imagery results (masks, estimates) for the map.
     gauge: dict[str, Any] = field(default_factory=dict)
+    # Every distinct gauge reading in order, for the river chart.
+    gauge_history: list[dict[str, Any]] = field(default_factory=list)
     imagery: list[dict[str, Any]] = field(default_factory=list)
     transcripts: list[dict[str, Any]] = field(default_factory=list)
     activity: list[Activity] = field(default_factory=list)
@@ -138,6 +140,9 @@ class IncidentBoard:
         with self._lock:
             before = self.gauge.get("value")
             self.gauge = reading
+            if before != reading.get("value"):
+                self.gauge_history.append({"value": reading.get("value"), "hour": reading.get("scenario_hour"),
+                                           "at": _now().isoformat()})
         if before != reading.get("value"):
             self.log("River gauge", source, f"James River at Westham {reading['value']} ft, {reading.get('trend', '')}")
             self.bus.publish(GAUGE_CHANGED, {"gauge": reading})
@@ -162,6 +167,7 @@ class IncidentBoard:
                 "finals": dict(self.finals),
                 "flood_cover": dict(self.flood_cover),
                 "gauge": dict(self.gauge),
+                "gauge_history": list(self.gauge_history),
                 "imagery": list(self.imagery),
                 "transcripts": list(self.transcripts),
                 "activity": list(self.activity),

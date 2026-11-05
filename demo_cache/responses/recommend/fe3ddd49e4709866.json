@@ -2,7 +2,7 @@
  "function": "recommend",
  "model": "Muse Spark",
  "model_id": "muse-spark-1.3",
- "recorded_at": "2026-11-04T20:20:24.273509+00:00",
+ "recorded_at": "2026-11-04T23:05:52.215897+00:00",
  "input": {
   "recommended": {
    "incident": "incident-9",
@@ -15,6 +15,13 @@
    ]
   },
   "swarm_votes": {
+   "Intake Agent": {
+    "score": 95,
+    "reasons": [
+     "residents trapped by rising water at Riverside Apartments, reported severity critical",
+     "5 people at risk with medical and rescue needs"
+    ]
+   },
    "Vision Agent": {
     "score": 86,
     "reasons": [
@@ -29,24 +36,17 @@
      "water still rising around access routes",
      "Per Sample Richmond Flood Response Plan (exercise document, not an official City of Richmond plan), 3.1 Life safety first: Rescue of people in moving water, trapped on roofs or in vehicles takes priority over property and infrastructure incidents."
     ]
-   },
-   "Intake Agent": {
-    "score": 95,
-    "reasons": [
-     "residents trapped by rising water at Riverside Apartments, reported severity critical",
-     "5 people at risk with medical and rescue needs"
-    ]
    }
   },
   "consensus": 92,
   "unmet": []
  },
  "output": {
-  "tradeoff": "What this dispatch delays or costs is unknown from the facts given.",
+  "tradeoff": "What this delays or costs for other incidents is unknown from the facts, with unmet listed as [].",
   "why": [
-   "Residents trapped by rising water at Riverside Apartments reported severity critical with 5 people at risk [Intake Agent]",
+   "Residents trapped by rising water at Riverside Apartments, severity critical [Intake Agent]",
    "80% of the area around it is flooded [Vision Agent]",
-   "Nearest rescue unit 0.0 min away and medical unit 0.9 min away with life safety first for rescue priority [Access check]"
+   "Life safety first with nearest rescue 0.0 min and medical 0.9 min away, water still rising [Access check]"
   ]
  }
 }

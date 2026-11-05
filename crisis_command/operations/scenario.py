@@ -291,13 +291,27 @@ DEMO_ROAD_NAMES = {
 }
 
 DEMO_PLACE_NOTES = {
-    "Shockoe Bottom": "E Main St between 15th and 21st St, including E 18th St, Dock St and Main Street Station",
-    "Downtown Junction": "14th St at Main St, north end of the 14th St (Mayo) Bridge",
-    "South Junction": "south end of the 14th St (Mayo) Bridge, Hull St at Commerce Rd",
-    "East Junction": "Rocketts Landing, E Main St at Williamsburg Ave",
-    "Riverside Apartments": "south-bank apartments east of the Mayo Bridge",
-    "Manchester": "Hull St at Cowardin Ave and the blocks around it",
-    "Broad & 3rd": "E Broad St at N 3rd St",
+    # Areas: the streets, neighbourhoods and landmarks in or nearest to each, so the report
+    # reader can place any address in the city on the nearest one.
+    "Shockoe Bottom": "E Main St between 15th and 21st St, including E 18th St, Dock St, E Cary St in the "
+                      "Bottom, Main Street Station, the 17th Street Market and the Floodwall",
+    "Downtown Junction": "14th St at Main St, north end of the 14th St (Mayo) Bridge; also downtown: "
+                         "E Main St, E Cary St, Bank St, Capitol Square, the Financial District and the Canal Walk",
+    "South Junction": "south end of the 14th St (Mayo) Bridge, Hull St at Commerce Rd, Mayo Island",
+    "East Junction": "Rocketts Landing, E Main St at Williamsburg Ave, Fulton, Stone Brewing",
+    "Riverside Apartments": "south-bank apartments east of the Mayo Bridge, Semmes Ave and the south riverfront",
+    "Manchester": "Hull St at Cowardin Ave and the blocks around it, Manchester, Blackwell, Bainbridge St, "
+                  "Decatur St and Perry St",
+    "Broad & 3rd": "E Broad St at N 3rd St, Grace St, Franklin St, the Arts District and Jackson Ward's south edge",
+    "West End": "W Broad St, the Fan, Museum District, Monroe Park, Cary St in Carytown, Scott's Addition "
+                "and the near West End",
+    "Fire Station North": "N 2nd St, Jackson Ward, Leigh St and the blocks north of Broad St downtown",
+    "Hospital": "VCU Medical Center, E Broad St and E Marshall St, Court End, the Capitol area",
+    "High School Shelter": "Church Hill, E Broad St east of 21st St, Libbie Hill, Chimborazo Park, Union Hill",
+    "Upriver North": "Belvidere St, the north end of the Lee Bridge, Oregon Hill, Hollywood Cemetery, "
+                     "Tredegar and Brown's Island",
+    "Upriver South": "Cowardin Ave, the south end of the Lee Bridge, Forest Hill Ave, Woodland Heights",
+    "South Station": "Commerce Rd, Maury St and the Southside industrial area",
     "dock-street": "Dock St, along the river below Shockoe Bottom",
     "main-street-bridge": "the 14th St (Mayo) Bridge over the James River",
     "east-main": "E Main St from Shockoe Bottom to Rocketts Landing",

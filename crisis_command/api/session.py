@@ -20,6 +20,7 @@ DEMO_ENABLED = setting("DEMO_ENABLED").strip().lower() in ("1", "true", "yes", "
 
 service = CommandService(scenario=DEMO_FLOOD_SCENARIO if DEMO_ENABLED else LIVE_RICHMOND_SCENARIO,
                          background_models=True)
+service.hub.record = False  # the server never writes recordings; tools/record_demo.py does
 demo = DemoRunner(service) if DEMO_ENABLED else None
 
 

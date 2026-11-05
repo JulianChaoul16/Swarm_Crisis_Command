@@ -144,6 +144,31 @@ function Votes({ entry }: { entry: Swarm["incidents"][string] | undefined }) {
 
 const time = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
+/** Reports the swarm could not use yet (unreadable, or missing a detail): a person must see them. */
+function HeldReports({ reports, busy, onDismiss }: { reports: WorldState["reports"]; busy: boolean; onDismiss: (id: string) => void }) {
+  const held = reports.filter((r) => r.status === "needs_extraction" || r.status === "needs_clarification");
+  if (!held.length) return null;
+  return (
+    <div className="held">
+      <div className="rec-label">Reports needing a person ({held.length})</div>
+      <ul>
+        {held.map((r) => (
+          <li key={r.id}>
+            <div className="muted small">{r.id} · {r.source} · {time(r.received_at)}</div>
+            <div className="held-text">“{r.content}”</div>
+            <div className="small held-why">
+              {r.extraction_error
+                ? "Not read automatically; read it and act on it directly."
+                : `Missing: ${r.missing_fields.join(", ").replaceAll("_", " ")}.`}
+            </div>
+            <button className="ghost resolve" disabled={busy} onClick={() => onDismiss(r.id)}>Dismiss</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function IncidentQueue({ incidents, focus, swarm, busy, onResolve }: {
   incidents: Incident[];
   focus: string | null;
@@ -312,11 +337,10 @@ function Recommendation({
           <button className="approve" disabled={busy || !plan.valid || !plan.assignments.length} onClick={() => onApprove(plan)}>
             Approve &amp; Dispatch
           </button>
-          <button className="ghost" disabled title="Arrives with the swarm (Phase 2-3)">Simulate Alternative</button>
           <button className="ghost" disabled={busy} onClick={() => onReject(plan)}>Reject</button>
         </div>
       )}
-      {plan.status === "approved" && <p className="approved">✓ Approved by {plan.decided_by}: units dispatched (simulated)</p>}
+      {plan.status === "approved" && <p className="approved">✓ Approved by {plan.decided_by}: units dispatched</p>}
       <Alert {...(world.alerts[plan.id] ? { alert: world.alerts[plan.id], planId: plan.id } : latestAlert(world))} />
     </div>
   );
@@ -363,12 +387,80 @@ function DemoNote({ demo }: { demo: DemoStatus }) {
   );
 }
 
+/** The river gauge as a chart: readings so far, the dashed trend for the next hours, and the
+ *  flood trigger line. Appears once the scenario has a reading. */
+function GaugeCard({ swarm, projection }: { swarm: Swarm; projection: WorldState["gis"]["projection"] }) {
+  const readings = swarm.gauge_history;
+  if (!readings.length) return null;
+  const last = readings[readings.length - 1];
+  const observed = readings.map((r, i) => ({ x: r.hour ?? i, y: r.value }));
+  const lastHour = observed[observed.length - 1].x;
+  const projected = projection.available ? projection.frames.map((f) => ({ x: lastHour + f.hours, y: f.gauge_ft })) : [];
+  const trigger = projection.trigger_ft ?? null;
+  const points = [...observed, ...projected];
+  const values = points.map((p) => p.y).concat(trigger ? [trigger] : []);
+  const lo = Math.min(...values) - 0.3;
+  const hi = Math.max(...values) + 0.3;
+  const x0 = Math.min(...points.map((p) => p.x));
+  const x1 = Math.max(x0 + 1, ...points.map((p) => p.x));
+  const W = 300, H = 120, L = 34, R = 8, T = 10, B = 20;
+  const sx = (x: number) => L + ((x - x0) / (x1 - x0)) * (W - L - R);
+  const sy = (y: number) => T + (1 - (y - lo) / (hi - lo)) * (H - T - B);
+  const line = (pts: { x: number; y: number }[]) => pts.map((p) => `${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`).join(" ");
+  const rate = projection.rate_ft_per_h;
+  const crosses = projection.frames.find((f) => f.above_trigger);
+  return (
+    <div key={last.value} className="gauge-card rec-flash">
+      <div className="rec-label">River gauge · James River at Westham</div>
+      <div className="gauge-now">
+        <b>{last.value.toFixed(1)} ft</b>{" "}
+        <span className="muted">{swarm.gauge.trend ?? ""}{rate ? ` · ${rate > 0 ? "+" : ""}${rate.toFixed(2)} ft/h` : ""}</span>
+        {crosses && trigger && <span className="gauge-warn"> · crosses {trigger} ft in ~{crosses.hours} h</span>}
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="gauge-svg" role="img"
+        aria-label={`Gauge ${last.value} ft${crosses ? `, trend crosses ${trigger} ft in about ${crosses.hours} hours` : ""}`}>
+        {/* With one reading the three gridlines coincide; draw each value once. */}
+        {[...new Set([lo + 0.3, (lo + hi) / 2, hi - 0.3].map((v) => v.toFixed(1)))].map(Number).map((v, i) => (
+          <g key={i}>
+            <line x1={L} x2={W - R} y1={sy(v)} y2={sy(v)} className="gauge-grid" />
+            <text x={L - 4} y={sy(v) + 3} className="gauge-axis" textAnchor="end">{v.toFixed(1)}</text>
+          </g>
+        ))}
+        {trigger && (
+          <g>
+            <line x1={L} x2={W - R} y1={sy(trigger)} y2={sy(trigger)} className="gauge-trigger" />
+            <text x={W - R} y={sy(trigger) - 4} className="gauge-trigger-label" textAnchor="end">{trigger} ft flood trigger</text>
+          </g>
+        )}
+        {projected.length > 0 && <polyline points={line([observed[observed.length - 1], ...projected])} className="gauge-projected" />}
+        <polyline points={line(observed)} className="gauge-observed" />
+        {observed.map((p, i) => (
+          <g key={i}>
+            <circle cx={sx(p.x)} cy={sy(p.y)} r={4} className="gauge-dot" />
+            <text x={sx(p.x)} y={sy(p.y) + 15} className="gauge-value" textAnchor="middle">{p.y.toFixed(1)}</text>
+          </g>
+        ))}
+        <text x={sx(lastHour)} y={H - 4} className="gauge-axis" textAnchor="middle">now</text>
+        {projected.length > 0 && (
+          <text x={sx(projected[projected.length - 1].x)} y={H - 4} className="gauge-axis" textAnchor="end">
+            +{projection.frames[projection.frames.length - 1].hours} h
+          </text>
+        )}
+      </svg>
+      <div className="muted small">Solid: readings · dashed: trend, not a forecast</div>
+    </div>
+  );
+}
+
 function Transcripts({ swarm }: { swarm: Swarm }) {
   if (!swarm.transcripts.length) return null;
   const last = swarm.transcripts[swarm.transcripts.length - 1];
   return (
-    <div className="transcript">
-      <div className="rec-label">Listener Agent · transcript <Pill label={last.source} title={last.note} /></div>
+    <div key={last.audio_id} className={`transcript rec-flash ${last.kind ?? ""}`}>
+      <div className="rec-label">
+        {last.kind === "radio" ? "Field radio report" : last.kind === "report" ? "Incoming report" : "Listener Agent · transcript"}{" "}
+        <Pill label={last.source} title={last.note} />
+      </div>
       <p>“{last.text}”</p>
     </div>
   );
@@ -391,7 +483,7 @@ function VisionBadge({ swarm }: { swarm: Swarm }) {
 
 const BOX_COLORS = ["#3b82f6", "#facc15", "#f97316", "#22c55e"];
 
-/** The citizen photo with SAM 3.1's boxes drawn on it. */
+/** The satellite image with SAM 3.1's boxes drawn on it. */
 function PhotoCard({ swarm }: { swarm: Swarm }) {
   const [open, setOpen] = useState(false);
   if (!swarm.imagery.length) return null;
@@ -402,12 +494,12 @@ function PhotoCard({ swarm }: { swarm: Swarm }) {
   return (
     <div className={`photo ${open ? "photo-open" : ""}`}>
       <div className="rec-label">
-        Vision Agent · citizen photo <Pill label={image.boxes_source} title={image.note} />{" "}
+        Vision Agent · satellite image <Pill label={image.boxes_source} title={image.note} />{" "}
         <Pill label={image.estimate_source} />
       </div>
       <button className="photo-frame" onClick={() => setOpen(!open)} title={open ? "Click to shrink" : "Click to enlarge"}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={image.image_url} alt={`Photo of ${image.place}`} />
+        <img src={image.image_url} alt={`Satellite image of ${image.place}`} />
         <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
           {prompts.map((prompt, index) =>
             image.objects[prompt].map(([x1, y1, x2, y2], i) => (
@@ -425,7 +517,7 @@ function PhotoCard({ swarm }: { swarm: Swarm }) {
       </div>
       <p className="photo-reason"><b>Wonder ESTIMATE:</b> {image.estimate.depth_in_low}–{image.estimate.depth_in_high} in,{" "}
         {image.estimate.passable_for_cars ? "passable" : "impassable"} ({Math.round(image.estimate.confidence * 100)}%, model-stated). “{image.estimate.reason}”</p>
-      <p className="muted photo-note">AI-generated test image (Muse Image), not a real photo. Map position is an assumed footprint.</p>
+      <p className="muted photo-note">AI-generated satellite image (Muse Image). Map position is an assumed footprint.</p>
     </div>
   );
 }
@@ -528,7 +620,7 @@ function PersonnelTab({ world }: { world: WorldState }) {
             </header>
             <div className="muted small">
               {unit.capabilities.join(", ")}{unit.capacity ? ` · carries up to ${unit.capacity}` : ""} · at {unit.location ?? "en route"}
-              <span title={unit.position_source}> (simulated position)</span>
+              <span title={unit.position_source}> (GPS feed not connected)</span>
             </div>
             {unit.assignment && (
               <div className="unit-assignment">Assigned: <b>{unit.assignment.place ?? unit.assignment.incident_id}</b> · {unit.assignment.kind}</div>
@@ -649,13 +741,12 @@ export default function CommandScreen() {
   }, [refresh]);
 
   const demoRunning = Boolean(world?.demo?.running || world?.demo?.busy);
-  const liveIntake = world ? !world.mode?.demo_enabled : false;
   useEffect(() => {
-    // Poll while the demo plays, and always in live intake (reports arrive from outside).
-    if (!demoRunning && !liveIntake) return;
-    const timer = setInterval(() => refresh().catch(() => null), demoRunning ? 1500 : 3000);
+    // Always poll: reports from the citizen hub, the API or a connector can arrive at any time,
+    // including after the demo has finished. Faster while the demo is playing.
+    const timer = setInterval(() => refresh().catch(() => null), demoRunning ? 1500 : 2500);
     return () => clearInterval(timer);
-  }, [demoRunning, liveIntake, refresh]);
+  }, [demoRunning, refresh]);
 
   const queue = useMemo(() => (world ? rank(world.incidents, world.swarm) : []), [world]);
   // What the map shows: live state, a recorded frame (scrubbed back) or a projection hour.
@@ -731,7 +822,7 @@ export default function CommandScreen() {
     <div className="screen">
       <header className="nav">
         <div className="brand">
-          <span className="brand-mark">◆</span> Crisis Command <span className="sim">SIMULATION</span>
+          <span className="brand-mark">◆</span> Crisis Command {world?.demo && <span className="scenario-tag">Demo scenario</span>}
         </div>
         {world && (
           <nav className="tabs" role="tablist">
@@ -770,7 +861,10 @@ export default function CommandScreen() {
               </p>
             )}
             <Transcripts swarm={world.swarm} />
+            <GaugeCard swarm={world.swarm} projection={world.gis.projection} />
             <PhotoCard swarm={world.swarm} />
+            <HeldReports reports={world.reports} busy={busy}
+              onDismiss={(id) => run(() => api.rejectReport(id, "Dismissed by operator after reading it."))} />
             <IncidentQueue incidents={queue} focus={queue[0]?.id ?? null} swarm={world.swarm} busy={busy}
               onResolve={(id) => run(() => api.resolveIncident(id))} />
           </section>
