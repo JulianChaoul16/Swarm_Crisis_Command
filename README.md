@@ -1,5 +1,7 @@
 # Crisis Command
 
+![Crisis Command: the agents triage, the solver plans, a person decides](docs/brand/crisis-command-banner.png)
+
 **An open-source, human-led agent swarm for city emergency operations. The agents triage, the
 solver plans, a person decides.**
 

@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" font-family="'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif">
+  <title>Crisis Command: the agents triage, the solver plans, a person decides</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d1426"/>
+      <stop offset="1" stop-color="#070b15"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.3" r="0.45">
+      <stop offset="0" stop-color="#3b5bdb" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#3b5bdb" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#1a2440" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#3b82f6" stop-opacity="0.12"/>
+    </linearGradient>
+    <clipPath id="card"><rect width="250" height="150" rx="16"/></clipPath>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#5b6b8c"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <rect width="1280" height="640" fill="url(#grid)" opacity="0.55"/>
+  <rect width="1280" height="640" fill="url(#glow)"/>
+
+  <!-- Mini operations map (top right) -->
+  <g transform="translate(790 54)">
+    <rect width="410" height="270" rx="16" fill="#0b1222" stroke="#243049"/>
+    <!-- flood zone -->
+    <path d="M0 150 C60 130 110 175 170 160 C230 145 260 190 330 182 C370 178 395 196 410 200 L410 254 Q410 270 394 270 L16 270 Q0 270 0 254 Z" fill="url(#water)"/>
+    <path d="M0 150 C60 130 110 175 170 160 C230 145 260 190 330 182 C370 178 395 196 410 200" fill="none" stroke="#60a5fa" stroke-opacity="0.6" stroke-width="1.5"/>
+    <!-- roads -->
+    <g stroke="#3a4766" stroke-width="5" stroke-linecap="round" fill="none">
+      <path d="M30 40 H380"/>
+      <path d="M60 40 V240"/>
+      <path d="M210 40 V250"/>
+      <path d="M350 40 V230"/>
+      <path d="M60 120 H350"/>
+      <path d="M60 205 H210"/>
+    </g>
+    <!-- closed road -->
+    <path d="M210 205 H350" stroke="#0b1222" stroke-width="7" stroke-linecap="round"/>
+    <path d="M210 205 H350" stroke="#f87171" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round"/>
+    <g transform="translate(280 205)">
+      <circle r="11" fill="#0b1222" stroke="#f87171" stroke-width="2"/>
+      <path d="M-5 -5L5 5M5 -5L-5 5" stroke="#f87171" stroke-width="2.4" stroke-linecap="round"/>
+    </g>
+    <!-- planned route around the closure -->
+    <path d="M60 40 H210 V120 H350 V188" fill="none" stroke="#34d399" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- unit -->
+    <g transform="translate(60 40)">
+      <rect x="-10" y="-10" width="20" height="20" rx="5" fill="#34d399"/>
+      <path d="M-4 0L-1 3L5 -4" stroke="#06261b" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <!-- incidents -->
+    <g transform="translate(350 205)">
+      <circle r="24" fill="#ef4444" fill-opacity="0.16"/>
+      <circle r="15" fill="#ef4444" fill-opacity="0.28"/>
+      <circle r="8" fill="#ef4444"/>
+    </g>
+    <g transform="translate(130 205)">
+      <circle r="13" fill="#fb923c" fill-opacity="0.22"/>
+      <circle r="6.5" fill="#fb923c"/>
+    </g>
+    <g transform="translate(285 120)">
+      <circle r="11" fill="#facc15" fill-opacity="0.2"/>
+      <circle r="5.5" fill="#facc15"/>
+    </g>
+    <!-- queue chip -->
+    <g transform="translate(20 66)">
+      <rect width="116" height="34" rx="9" fill="#111827" stroke="#243049"/>
+      <circle cx="17" cy="17" r="5" fill="#ef4444"/>
+      <text x="30" y="22" font-size="13" font-weight="600" fill="#e5e9f2">#1 · score 94</text>
+    </g>
+  </g>
+
+  <!-- Logo + title -->
+  <g transform="translate(80 72)">
+    <circle cx="34" cy="34" r="32" fill="#111827" stroke="#60a5fa" stroke-width="2.5"/>
+    <g stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round">
+      <line x1="34" y1="34" x2="34" y2="13"/>
+      <line x1="34" y1="34" x2="16" y2="45"/>
+      <line x1="34" y1="34" x2="52" y2="45"/>
+    </g>
+    <circle cx="34" cy="13" r="5.5" fill="#a78bfa"/>
+    <circle cx="16" cy="45" r="5.5" fill="#a78bfa"/>
+    <circle cx="52" cy="45" r="5.5" fill="#a78bfa"/>
+    <circle cx="34" cy="34" r="8.5" fill="#34d399"/>
+    <text x="86" y="28" font-size="15" font-weight="700" letter-spacing="3" fill="#8b97ad">AI EMERGENCY OPERATIONS</text>
+    <text x="86" y="52" font-size="15" fill="#5b6b8c">For floods, fires, storms and more</text>
+  </g>
+
+  <text x="78" y="232" font-size="78" font-weight="800" fill="#f3f6fc" letter-spacing="-1.5">Crisis Command</text>
+  <text x="80" y="284" font-size="27" fill="#aab4c8">
+    <tspan fill="#c4b5fd">The agents triage.</tspan>
+    <tspan fill="#93c5fd"> The solver plans.</tspan>
+    <tspan fill="#6ee7b7"> A person decides.</tspan>
+  </text>
+
+  <!-- Pipeline -->
+  <g font-size="15">
+    <!-- 1 Inputs -->
+    <g transform="translate(80 380)">
+      <rect width="250" height="150" rx="16" fill="#111827" stroke="#2c3a58"/>
+      <rect width="250" height="5" fill="#94a3b8" clip-path="url(#card)"/>
+      <text x="22" y="38" font-size="13" font-weight="700" letter-spacing="2" fill="#94a3b8">1 · INPUTS</text>
+      <text x="22" y="74" font-size="24" font-weight="700" fill="#f3f6fc">Every report</text>
+      <text x="22" y="104" fill="#8b97ad">911 calls, photos,</text>
+      <text x="22" y="126" fill="#8b97ad">sensors and radio</text>
+    </g>
+    <!-- 2 Agents -->
+    <g transform="translate(370 380)">
+      <rect width="250" height="150" rx="16" fill="#151530" stroke="#3b3470"/>
+      <rect width="250" height="5" fill="#a78bfa" clip-path="url(#card)"/>
+      <text x="22" y="38" font-size="13" font-weight="700" letter-spacing="2" fill="#a78bfa">2 · AI AGENTS</text>
+      <text x="22" y="74" font-size="24" font-weight="700" fill="#f3f6fc">Assess the scene</text>
+      <text x="22" y="104" fill="#8b97ad">Hear, read and see,</text>
+      <text x="22" y="126" fill="#8b97ad">then vote on severity</text>
+    </g>
+    <!-- 3 Solver -->
+    <g transform="translate(660 380)">
+      <rect width="250" height="150" rx="16" fill="#0f1a33" stroke="#284878"/>
+      <rect width="250" height="5" fill="#60a5fa" clip-path="url(#card)"/>
+      <text x="22" y="38" font-size="13" font-weight="700" letter-spacing="2" fill="#60a5fa">3 · EXACT SOLVER</text>
+      <text x="22" y="74" font-size="24" font-weight="700" fill="#f3f6fc">Plan the dispatch</text>
+      <text x="22" y="104" fill="#8b97ad">Right teams, open roads,</text>
+      <text x="22" y="126" fill="#8b97ad">most urgent first</text>
+    </g>
+    <!-- 4 Human -->
+    <g transform="translate(950 380)">
+      <rect width="250" height="150" rx="16" fill="#0d2420" stroke="#1f5a48"/>
+      <rect width="250" height="5" fill="#34d399" clip-path="url(#card)"/>
+      <text x="22" y="38" font-size="13" font-weight="700" letter-spacing="2" fill="#34d399">4 · HUMAN APPROVAL</text>
+      <text x="22" y="74" font-size="21" font-weight="700" fill="#f3f6fc">Approve &amp; dispatch</text>
+      <text x="22" y="104" fill="#8b97ad">Nothing is dispatched</text>
+      <text x="22" y="126" fill="#8b97ad">without sign-off</text>
+    </g>
+    <!-- arrows -->
+    <g stroke="#5b6b8c" stroke-width="2.5" marker-end="url(#arrow)">
+      <line x1="336" y1="455" x2="362" y2="455"/>
+      <line x1="626" y1="455" x2="652" y2="455"/>
+      <line x1="916" y1="455" x2="942" y2="455"/>
+    </g>
+  </g>
+
+  <!-- Footer -->
+  <line x1="80" y1="570" x2="1200" y2="570" stroke="#1d2740"/>
+  <text x="80" y="604" font-size="16" fill="#8b97ad">Built on Meta AI: <tspan fill="#c9d1e0">Muse Spark · Muse Voice Transcribe · SAM 3.1 · Muse Wonder</tspan></text>
+  <text x="1200" y="604" font-size="16" fill="#5b6b8c" text-anchor="end">Human-led · Explainable · Open source</text>
+</svg>

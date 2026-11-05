@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Crisis Command logo</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d1426"/>
+      <stop offset="1" stop-color="#070b15"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="170" fill="#111827" stroke="#60a5fa" stroke-width="16"/>
+  <g stroke="#a78bfa" stroke-width="16" stroke-linecap="round">
+    <line x1="256" y1="256" x2="256" y2="146"/>
+    <line x1="256" y1="256" x2="161" y2="311"/>
+    <line x1="256" y1="256" x2="351" y2="311"/>
+  </g>
+  <circle cx="256" cy="146" r="30" fill="#a78bfa"/>
+  <circle cx="161" cy="311" r="30" fill="#a78bfa"/>
+  <circle cx="351" cy="311" r="30" fill="#a78bfa"/>
+  <circle cx="256" cy="256" r="46" fill="#34d399"/>
+</svg>
